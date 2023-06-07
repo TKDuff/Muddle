@@ -22,7 +22,7 @@ io.on('connection', (socket) => {
     socket.on('chat message', (message) => {
         console.log(`Received message: ${message}`);
         // Broadcast the message to all connected clients
-        io.emit('receive-message', message);
+        socket.broadcast.emit('receive-message', message);
     });
     
     socket.on('disconnect', () => {
