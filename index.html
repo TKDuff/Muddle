@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Socket.IO Example</h1>
+    <input type="text" id="messageInput" placeholder="Enter a message">
+    <button onclick="sendMessage()">Send</button>
+
+</body>
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+<script>
+// Connect to the server
+const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
+
+// Function to send a message to the server
+function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value;
+      socket.emit('chat message', message);
+      messageInput.value = ''; // Clear the input field
+    }
+
+    socket.on('receive-message', message => {
+        console.log(message, 'was received');
+    })
+
+
+
+
+</script>
+</html>
