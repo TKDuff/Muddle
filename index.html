@@ -29,8 +29,10 @@ function sendMessage() {
       messageInput.value = ''; // Clear the input field
     }
 
-    socket.on('receive-message', message => {
-        addParagraph(message);
+    socket.on('locations', locations => {
+        //addParagraph(message);
+        //const jsonObject = JSON.parse(locations);
+        console.log(locations[5].confession);
     })
     
     function addParagraph(message) {
