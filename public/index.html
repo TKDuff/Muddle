@@ -1,21 +1,31 @@
 <html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Socket.IO Example</h1>
-    <input type="text" id="messageInput" placeholder="Enter a message">
-    <button onclick="sendMessage()">Send</button>
+<html>
+    <head> 
+        <title>Location</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+        <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+        <script src="index.js" type="text/javascript" defer>//defer used as html map must load before can make call to L.map in client.js</script> 
+        <style>#brookfieldMap { height: 400px; }</style>
+    </head>
     
-    <!-- Container for the paragraphs -->
-    
-    <div id="paragraphContainer"></div>
+    <body>
+        <t1>Simple User Location</t1>
+        <div id="brookfieldMap"></div>
 
-</body>
-<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
-<script src="index.js" type="text/javascript" defer></script>
+        <div id="commentBox">
+            <textarea rows="4" cols="50" id="confessionBox"></textarea>  
+            <br>
+            <button id="submit" onclick="postConfession()">Submit</button> 
+            <br>
+            <button id="get" onclick="getConfession()">Get</button>     
+        </div>
+        <!--
+        <h1>Socket.IO Example</h1>
+        <input type="text" id="messageInput" placeholder="Enter a message">
+        <button onclick="sendMessage()">Send</button>
+        Container for the paragraphs 
+        <div id="paragraphContainer"></div> -->
+    
+    </body>
 </html>
