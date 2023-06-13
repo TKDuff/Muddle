@@ -37,14 +37,14 @@ io.on('connection', async (socket) => {
     } catch (error) {
       console.error('Error loading locations from the collection:', error);
     }
-    /*
+    
     // Handle chat message event from the client
     socket.on('chat message', (message) => {
         console.log('Received message: ${message}');
         insertStringIntoLocationsCollection(message);
         console.log(`Received message: ${message}`);
         //socket.broadcast.emit('receive-message', message);    Broadcast the message to all connected clients
-    });*/
+    });
 
 });
 
@@ -55,7 +55,7 @@ async function insertStringIntoLocationsCollection(string) {
       const collection = database.collection('Locations');
   
       // Insert the string into the collection
-      await collection.insertOne({ message: string });
+      await collection.insertOne({ confession: string });
       console.log('String inserted into the "Locations" collection');
     } catch (error) {
       console.error('Error inserting string into the collection:', error);

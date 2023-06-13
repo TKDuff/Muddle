@@ -32,7 +32,13 @@ function sendMessage() {
     socket.on('locations', locations => {
         //addParagraph(message);
         //const jsonObject = JSON.parse(locations);
-        console.log(locations[5].confession);
+        /*
+        for(var location in locations){
+            console.log('output', locations[location].confession);
+        } */
+        locations.forEach((obj) => {
+            console.log(obj.confession);
+ }); 
     })
     
     function addParagraph(message) {
