@@ -18,9 +18,11 @@ async function connectToDatabase() {
     }
 }
 
+
 // Handle client connections
 io.on('connection', async (socket) => {
     console.log('A client connected');
+    /*
     try {  
       const locations = await collection.find({}).toArray();
 
@@ -28,24 +30,23 @@ io.on('connection', async (socket) => {
       socket.emit('locations', locations);
     } catch (error) {
       console.error('Error loading locations from the collection:', error);
-    }
+    }*/
     
     // Handle chat message event from the client
-    socket.on('chat message', (message) => {
-        console.log('Received message: ${message}');
+    socket.on('confessionFromClient', (message) => {
+        console.log(message);
         insertStringIntoLocationsCollection(message);
-        console.log(`Received message: ${message}`);
         //socket.broadcast.emit('receive-message', message);    Broadcast the message to all connected clients
     });
 
 });
 
 // Insert strings into the "Locations" collection
-async function insertStringIntoLocationsCollection(string) {
+async function insertStringIntoLocationsCollection(message) {
     try {
       // Insert the string into the collection
-      await collection.insertOne({ confession: string });
-      console.log('String inserted into the "Locations" collection');
+      const result = await collection.insertOne(message);
+      console.log(result.insertedId);
     } catch (error) {
       console.error('Error inserting string into the collection:', error);
     }
