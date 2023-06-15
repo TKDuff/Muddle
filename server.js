@@ -22,15 +22,11 @@ async function connectToDatabase() {
 // Handle client connections
 io.on('connection', async (socket) => {
     console.log('A client connected');
-    /*
-    try {  
-      const locations = await collection.find({}).toArray();
-
-      // Emit the "locations" event to the client with the locations data
-      socket.emit('locations', locations);
-    } catch (error) {
-      console.error('Error loading locations from the collection:', error);
-    }*/
+    
+    // Emit the "locations" event to the client with the locations data
+    const locations = await collection.find({}).toArray();
+    socket.emit('locations', locations);
+    
     
     // Handle chat message event from the client
     socket.on('confessionFromClient', (message) => {

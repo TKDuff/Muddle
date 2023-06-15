@@ -9,10 +9,9 @@ tiles.addTo(map);
 const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
 
 socket.on('locations', locations => {
-    //addParagraph(message);
-    //const jsonObject = JSON.parse(locations);
     locations.forEach((obj) => {
-        console.log(obj.confession);
+        //console.log(obj.lat, obj.long, obj.confession);
+        createMarker(obj.lat, obj.long, obj.confession);
     }); 
 })
 
@@ -24,18 +23,11 @@ function postConfession() {
     });
 }
 
-/*
-function addParagraph(message) {
-    // Create a new paragraph element
-    const newParagraph = document.createElement('p');
+const errorCallback = (position) => {
+    console.error(error);
+}
 
-    // Set the content of the paragraph
-    newParagraph.textContent = message;
-
-    // Append the new paragraph to the container
-    paragraphContainer.appendChild(newParagraph);
-}*/
-
+//method that gets user location and sends it to the server
 const successCallback = (position) => {
     let lat = parseFloat(position.coords.latitude) * ( 1 + (Math.random() * 0.00005));
     let long = parseFloat(position.coords.longitude)* ( 1 + (Math.random() * 0.00005));
@@ -43,24 +35,15 @@ const successCallback = (position) => {
     let confession = document.getElementById("confessionBox").value;
 
     const data = {time, lat, long, confession};
-    //createMarker(lat, long, confession);
     createMarker(lat, long, confession);
     sendMessage(data);
 }
 
 // Function to send a message to the server
 function sendMessage(message) {
-    //const messageInput = document.getElementById('submit');
-    //const message = messageInput.value;
     socket.emit('confessionFromClient', message);
-}
-
-
-const errorCallback = (position) => {
-    console.error(error);
 }
 
 function createMarker(lat, long, confession) {
     L.marker([lat, long]).addTo(map).bindPopup(confession).openPopup();
-    
 }
