@@ -8,6 +8,10 @@ const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?ret
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
 
+// Create a change stream for the "Locations" collection
+const changeStream = collection.watch();
+
+
 async function connectToDatabase() {
     try {
         await client.connect();
@@ -19,7 +23,7 @@ async function connectToDatabase() {
 }
 
 
-// Handle client connections
+// Handle client connections, when client connect find all confessions in DB and post to client, to create markers
 io.on('connection', async (socket) => {
     console.log('A client connected');
     
@@ -30,18 +34,18 @@ io.on('connection', async (socket) => {
     
     // Handle chat message event from the client
     socket.on('confessionFromClient', (message) => {
-        console.log(message);
         insertStringIntoLocationsCollection(message);
-        //socket.broadcast.emit('receive-message', message);    Broadcast the message to all connected clients
     });
 
 });
 
 // Insert strings into the "Locations" collection
 async function insertStringIntoLocationsCollection(message) {
+  const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     try {
       // Insert the string into the collection
-      const result = await collection.insertOne(message);
+      messageVar._id = keyVar
+      const result = await collection.insertOne(messageVar);
       console.log(result.insertedId);
     } catch (error) {
       console.error('Error inserting string into the collection:', error);
@@ -54,3 +58,12 @@ httpServer.listen(3000, () => {
     app.use(express.static('public'))   //display html file in public file
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
+
+// Listen for change events
+changeStream.on('change', (change) => {
+  if (change.operationType === 'insert') {
+    const newLocation = change.fullDocument;
+    // Emit the newLocation object to all connected clients
+    io.emit('newLocation', newLocation);
+  }
+});

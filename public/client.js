@@ -10,14 +10,13 @@ const socket = io('http://localhost:3000'); //the localhost address is not neede
 
 socket.on('locations', locations => {
     locations.forEach((obj) => {
-        //console.log(obj.lat, obj.long, obj.confession);
         createMarker(obj.lat, obj.long, obj.confession);
     }); 
 })
 
 function postConfession() {
     //get the users location
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
+    navigator.geolocation.getCurrentPosition(sendToServer, errorCallback, {
         enableHighAccuracy: true,
         maximumAge: 5000
     });
@@ -28,22 +27,23 @@ const errorCallback = (position) => {
 }
 
 //method that gets user location and sends it to the server
-const successCallback = (position) => {
+const sendToServer = (position) => {
     let lat = parseFloat(position.coords.latitude) * ( 1 + (Math.random() * 0.00005));
     let long = parseFloat(position.coords.longitude)* ( 1 + (Math.random() * 0.00005));
     let time = Date.now();
     let confession = document.getElementById("confessionBox").value;
+    let key = `${time},${lat},${long},${confession}`
 
     const data = {time, lat, long, confession};
-    createMarker(lat, long, confession);
-    sendMessage(data);
-}
-
-// Function to send a message to the server
-function sendMessage(message) {
-    socket.emit('confessionFromClient', message);
+    socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
 }
 
 function createMarker(lat, long, confession) {
     L.marker([lat, long]).addTo(map).bindPopup(confession).openPopup();
 }
+
+// Listen for the 'newLocation' event from the server
+socket.on('newLocation', (newLocation) => {
+    console.log('New location added:', newLocation);
+    createMarker(newLocation.lat, newLocation.long, newLocation.confession);
+});
