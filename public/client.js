@@ -10,7 +10,7 @@ const socket = io('http://localhost:3000'); //the localhost address is not neede
 
 socket.on('locations', locations => {
     locations.forEach((obj) => {
-        createMarker(obj.lat, obj.long, obj.confession);
+        createMarker(obj.lat, obj.long, obj.confession, obj._id);
     }); 
 })
 
@@ -32,18 +32,24 @@ const sendToServer = (position) => {
     let long = parseFloat(position.coords.longitude)* ( 1 + (Math.random() * 0.00005));
     let time = Date.now();
     let confession = document.getElementById("confessionBox").value;
-    let key = `${time},${lat},${long},${confession}`
+    let key = `${time},${confession}`
 
     const data = {time, lat, long, confession};
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
 }
 
-function createMarker(lat, long, confession) {
-    L.marker([lat, long]).addTo(map).bindPopup(confession).openPopup();
-}
-
 // Listen for the 'newLocation' event from the server
 socket.on('newLocation', (newLocation) => {
     console.log('New location added:', newLocation);
-    createMarker(newLocation.lat, newLocation.long, newLocation.confession);
+    createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id);
 });
+
+
+function createMarker(lat, long, confession, keyID) {
+    const marker = L.marker([lat, long], {keyID: keyID}).on('click', getConfessionKey)
+    marker.addTo(map).bindPopup(confession).openPopup();
+}
+
+const getConfessionKey = (e) => {
+    console.log(e.target.options.keyID);
+}
