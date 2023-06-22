@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.306, -6.183], 16);
+const map = L.map('brookfieldMap').setView([53.306, -6.183], 18);
 const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const tiles = L.tileLayer(tileUrl, { attribution });
@@ -7,6 +7,30 @@ tiles.addTo(map);
 
 // Connect to the server
 const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
+
+const SVGIcon = L.divIcon({
+    className: 'SVG-Icon',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="120" height="120">
+    <defs>
+    <linearGradient id="myGradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" id="Down" stop-color="rgb(255, 255, 100)"/>
+    <stop offset="50%" id="Middle" stop-color="rgb(255, 255, 100)"/>
+    <stop offset="100%" id="Up" stop-color="rgb(255, 255, 100)"/>
+    </linearGradient>
+    </defs>
+    <g>
+    <rect width="200" height="200" fill="url(#myGradient)" />
+    <foreignObject x="110" y="160" width="80" height="25">
+    <button id="Up" onclick="checkVote(this.id)">Upvote</button>
+    </foreignObject>
+    <foreignObject x="10" y="160" width="80" height="25">
+    <button id="Down" onclick="checkVote(this.id)">Downvote</button>
+    </foreignObject>
+    </g>
+    </svg>`,
+    iconSize: [60, 60],
+    iconAnchor: [0, 0]
+})
 
 socket.on('locations', locations => {
     locations.forEach((obj) => {
@@ -46,7 +70,7 @@ socket.on('newLocation', (newLocation) => {
 
 
 function createMarker(lat, long, confession, keyID) {
-    const marker = L.marker([lat, long], {keyID: keyID}).on('click', getConfessionKey)
+    const marker = L.marker([lat, long], {icon: SVGIcon, keyID: keyID}).on('click', getConfessionKey)
     marker.addTo(map).bindPopup(confession).openPopup();
 }
 
