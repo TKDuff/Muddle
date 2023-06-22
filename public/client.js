@@ -51,5 +51,5 @@ function createMarker(lat, long, confession, keyID) {
 }
 
 const getConfessionKey = (e) => {
-    console.log(e.target.options.keyID);
+    console.log('You clicked on ',e.target.options.keyID);
 }
