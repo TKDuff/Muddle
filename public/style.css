@@ -1,6 +1,11 @@
-.SVG-Icon button {
-    width: 630px;
-    height: 60px;
-    font-size: 15px;
+#upVote {
+    position: absolute;
+    top:  175px;
+    right: 0px;
 }
 
+#downVote {
+    position: absolute;
+    top:  175px;
+    left: 0px;
+}

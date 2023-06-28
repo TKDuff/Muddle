@@ -3,7 +3,7 @@ const app = express();
 const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer);
 
-const { MongoClient } = require('mongodb');
+const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
@@ -37,6 +37,10 @@ io.on('connection', async (socket) => {
         insertStringIntoLocationsCollection(message);
     });
 
+    socket.on('voteOnMarker', (markerKey) => {
+      findMarkerInCollection(markerKey);
+    });
+
 });
 
 // Insert strings into the "Locations" collection
@@ -50,7 +54,15 @@ async function insertStringIntoLocationsCollection(message) {
     } catch (error) {
       console.error('Error inserting string into the collection:', error);
     }
-  }
+}
+
+
+async function findMarkerInCollection(markerKey) {
+  console.log(typeof markerKey);
+  //const item = await collection.findOne( {_id: markerKey} );
+  //console.log(item);
+
+}
 
 // Start the server
 httpServer.listen(3000, () => {
