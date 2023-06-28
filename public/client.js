@@ -47,16 +47,12 @@ socket.on('newLocation', (newLocation) => {
 });
 
 
-
-
 function createMarker(lat, long, confession, keyID) {
     const marker = L.marker([lat, long], {icon: createDivIcon(keyID)});
     marker.addTo(map).bindPopup(confession).openPopup();
 }
 
-
 const createDivIcon = (keyID) => {
-
     return L.divIcon({
         className: 'SVG-Icon',
         html: `<div id="${keyID}">
@@ -71,29 +67,20 @@ const createDivIcon = (keyID) => {
         <g>
         <rect width="200" height="200" fill="url(#myGradient)" />
         <foreignObject width="100%" height="100%">
-        <button id="upVote" >Upvote</button>
-        <button id="downVote" >Downvote</button>
+        <button id="up" >Upvote</button>
+        <button id="down" >Downvote</button>
         </foreignObject>
         </g>
         </svg>
         </div>`,
         iconSize: [120, 120],
-        iconAnchor: [0, 0]
-    });
+        iconAnchor: [0, 0]});
 };
-
 
 mapDiv.addEventListener('click', function(event){
     let keyID;
-    if(event.target.id == 'upVote'){
-        console.log(event.target.closest('div').id);
+    if(event.target.id == 'up' || event.target.id == 'down') {
         keyID = event.target.closest('div').id;
-        socket.emit('voteOnMarker', {markerKey: keyID});
-    } else if(event.target.id == 'downVote'){
-        console.log(event.target.closest('div').id);
-        keyID = keyID = event.target.closest('div').id;
-        socket.emit('voteOnMarker', {markerKey: keyID});
+        socket.emit('voteOnMarker', {direction: event.target.id, keyID: keyID});
     }
-    
-    
 });

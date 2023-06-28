@@ -38,7 +38,7 @@ io.on('connection', async (socket) => {
     });
 
     socket.on('voteOnMarker', (markerKey) => {
-      findMarkerInCollection(markerKey);
+      voteOnMarker(markerKey);
     });
 
 });
@@ -57,10 +57,11 @@ async function insertStringIntoLocationsCollection(message) {
 }
 
 
-async function findMarkerInCollection(markerKey) {
-  console.log(typeof markerKey);
-  //const item = await collection.findOne( {_id: markerKey} );
-  //console.log(item);
+async function voteOnMarker(markerKey) {
+  const {direction, keyID} = markerKey;
+  const query = {_id: keyID};
+  const update = { $inc: { [direction] : 1 } };
+  const result = await collection.updateOne(query, update);
 
 }
 

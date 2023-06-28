@@ -1,10 +1,10 @@
-#upVote {
+#up {
     position: absolute;
     top:  175px;
     right: 0px;
 }
 
-#downVote {
+#down {
     position: absolute;
     top:  175px;
     left: 0px;
