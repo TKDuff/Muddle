@@ -50,7 +50,6 @@ async function insertStringIntoLocationsCollection(message) {
       // Insert the string into the collection
       messageVar._id = keyVar
       const result = await collection.insertOne(messageVar);
-      console.log(result.insertedId);
     } catch (error) {
       console.error('Error inserting string into the collection:', error);
     }
@@ -59,16 +58,16 @@ async function insertStringIntoLocationsCollection(message) {
 
 async function voteOnMarker(markerKey) {
   const {direction, keyID} = markerKey;
-  const query = {_id: keyID};
+  const query = {_id: parseInt(keyID)}; 
   const update = { $inc: { [direction] : 1 } };
-  const result = await collection.updateOne(query, update);
-
+  collection.updateOne(query, update);
 }
 
 // Start the server
 httpServer.listen(3000, () => {
     console.log(`Server is running on port 3000`);
     app.use(express.static('public'))   //display html file in public file
+    app.use('/node_modules', express.static('node_modules'));
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
 

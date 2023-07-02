@@ -34,7 +34,7 @@ const sendToServer = (position) => {
     let long = parseFloat(position.coords.longitude)* ( 1 + (Math.random() * 0.00005));
     let time = Date.now();
     let confession = document.getElementById("confessionBox").value;
-    let key = `${time},${confession}`
+    let key = time
 
     const data = {time, lat, long, confession, up, down};
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
@@ -55,7 +55,7 @@ function createMarker(lat, long, confession, keyID) {
 const createDivIcon = (keyID) => {
     return L.divIcon({
         className: 'SVG-Icon',
-        html: `<div id="${keyID}">
+        html: `<div id=${keyID}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="120" height="120">
         <defs>
         <linearGradient id="myGradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -67,8 +67,8 @@ const createDivIcon = (keyID) => {
         <g>
         <rect width="200" height="200" fill="url(#myGradient)" />
         <foreignObject width="100%" height="100%">
-        <button id="up" >Upvote</button>
-        <button id="down" >Downvote</button>
+        <button class = "TestClass" id="up" >Upvote</button>
+        <button class = "TestClass" id="down" >Downvote</button>
         </foreignObject>
         </g>
         </svg>
@@ -77,10 +77,12 @@ const createDivIcon = (keyID) => {
         iconAnchor: [0, 0]});
 };
 
-mapDiv.addEventListener('click', function(event){
-    let keyID;
-    if(event.target.id == 'up' || event.target.id == 'down') {
-        keyID = event.target.closest('div').id;
-        socket.emit('voteOnMarker', {direction: event.target.id, keyID: keyID});
-    }
+$(document).on('click', '.TestClass', function () {
+    socket.emit('voteOnMarker', {direction: this.id, keyID: $(this).closest('div').attr('id')});
 });
+
+
+
+/*
+big change, for now, the KeyId will be the time it was posed, due to jquery have a length limit on the id it returns when calling
+$(this).closest('div').attr('id'); */
