@@ -67,8 +67,8 @@ const createDivIcon = (keyID) => {
         <g>
         <rect width="200" height="200" fill="url(#myGradient)" />
         <foreignObject width="100%" height="100%">
-        <button class = "TestClass" id="up" >Upvote</button>
-        <button class = "TestClass" id="down" >Downvote</button>
+        <button class = "voteButton" id="up" >Upvote</button>
+        <button class = "voteButton" id="down" >Downvote</button>
         </foreignObject>
         </g>
         </svg>
@@ -77,12 +77,9 @@ const createDivIcon = (keyID) => {
         iconAnchor: [0, 0]});
 };
 
-$(document).on('click', '.TestClass', function () {
+$(document).on('click', '.voteButton', function () {
     socket.emit('voteOnMarker', {direction: this.id, keyID: $(this).closest('div').attr('id')});
 });
-
-
-
 /*
 big change, for now, the KeyId will be the time it was posed, due to jquery have a length limit on the id it returns when calling
 $(this).closest('div').attr('id'); */

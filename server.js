@@ -60,9 +60,22 @@ async function voteOnMarker(markerKey) {
   const {direction, keyID} = markerKey;
   const query = {_id: parseInt(keyID)}; 
   const update = { $inc: { [direction] : 1 } };
-  collection.updateOne(query, update);
-}
+  //collection.updateOne(query, update);
+  //const updatedItem = await collection.findOne(query);
+  const updatedDocument = await collection.findOneAndUpdate(query, update, { returnOriginal: false });
 
+  console.log(updatedDocument.value[direction]);
+  //io.emit();
+}
+/*
+PROBLEM: Why have two functions, "voteOnMarker" & the "changeStream.on" , both deal with sending the updated "up"/"down" values to the 
+user. I think this, voteOnMarker, is the only one we need, as when a user votes, the new value can be returned to the client.
+
+BUT: What if a user does not vote? They won't see the new value, thus the changeSteam.on functions is needed, for non-voters
+
+AWNSER: Even if the user does not vote, the socket can emit the new value to all users, regardless if the user votes, they will see the 
+new value
+ */
 // Start the server
 httpServer.listen(3000, () => {
     console.log(`Server is running on port 3000`);
@@ -71,11 +84,12 @@ httpServer.listen(3000, () => {
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
 
+  /*
 // Listen for change events
 changeStream.on('change', (change) => {
-  if (change.operationType === 'insert') {
-    const newLocation = change.fullDocument;
+  if (change.operationType === 'update') {
+    console.log(Object.values(change.updateDescription.updatedFields), Object.values(change.documentKey));
     // Emit the newLocation object to all connected clients
-    io.emit('newLocation', newLocation);
+    io.emit('newLocation', Object.values(change.updateDescription.updatedFields), Object.values(change.documentKey));
   }
-});
+});*/
