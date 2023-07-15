@@ -4,7 +4,7 @@ const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer);
 
 const { MongoClient, MaxKey } = require('mongodb');
-const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
+const uri = "";
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
 
