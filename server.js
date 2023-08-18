@@ -1,15 +1,17 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer);
 
 const { MongoClient, MaxKey } = require('mongodb');
-const uri = "";
+const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
 
 // Create a change stream for the "Locations" collection
 const changeStream = collection.watch();
+app.use(cookieParser());
 
 
 async function connectToDatabase() {
@@ -21,7 +23,15 @@ async function connectToDatabase() {
         console.error('Error connecting to the database:', error);
     }
 }
-
+app.get('/', (req, res) => {
+  if (!req.cookies.userData) {
+    res.cookie("userData", 'value');
+    console.log('User data added to cookie.');
+  } else {
+    console.log('User data cookie already set: ' + JSON.stringify(req.cookies.userData));
+  }
+  res.sendFile(__dirname + '/public/index.html');
+});
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
 io.on('connection', async (socket) => {
@@ -76,11 +86,13 @@ BUT: What if a user does not vote? They won't see the new value, thus the change
 AWNSER: Even if the user does not vote, the socket can emit the new value to all users, regardless if the user votes, they will see the 
 new value
  */
+
+//
+app.use(express.static('public'))   //display html file in public file
+app.use('/node_modules', express.static('node_modules'));
 // Start the server
 httpServer.listen(3000, () => {
     console.log(`Server is running on port 3000`);
-    app.use(express.static('public'))   //display html file in public file
-    app.use('/node_modules', express.static('node_modules'));
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
 
