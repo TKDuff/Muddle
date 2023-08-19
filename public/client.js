@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.306, -6.183], 18);
+const map = L.map('brookfieldMap').setView([53.366, -6.292], 15);
 const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const tiles = L.tileLayer(tileUrl, { attribution });
@@ -21,6 +21,10 @@ function postConfession() {
         enableHighAccuracy: true,
         maximumAge: 5000
     });
+}
+
+function wipeDB() {
+    socket.emit('wipeDB');
 }
 
 const errorCallback = (position) => {

@@ -11,6 +11,7 @@ var collection = client.db('Muddle').collection('Locations');
 
 // Create a change stream for the "Locations" collection
 const changeStream = collection.watch();
+var count = 0;
 app.use(cookieParser());
 
 
@@ -23,15 +24,17 @@ async function connectToDatabase() {
         console.error('Error connecting to the database:', error);
     }
 }
+
 app.get('/', (req, res) => {
   if (!req.cookies.userData) {
-    res.cookie("userData", 'value');
-    console.log('User data added to cookie.');
+    res.cookie("userData", count);
   } else {
     console.log('User data cookie already set: ' + JSON.stringify(req.cookies.userData));
   }
+  count++;
   res.sendFile(__dirname + '/public/index.html');
 });
+
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
 io.on('connection', async (socket) => {
@@ -51,6 +54,11 @@ io.on('connection', async (socket) => {
       voteOnMarker(markerKey);
     });
 
+    socket.on('wipeDB', () => {
+      const result = collection.deleteMany({});
+    console.log(`${result.deletedCount} documents deleted`);
+    }) 
+
 });
 
 // Insert strings into the "Locations" collection
@@ -60,12 +68,13 @@ async function insertStringIntoLocationsCollection(message) {
       // Insert the string into the collection
       messageVar._id = keyVar
       const result = await collection.insertOne(messageVar);
+      //console.log('Insterting', message, 'into the DB');
     } catch (error) {
       console.error('Error inserting string into the collection:', error);
     }
 }
 
-
+/*
 async function voteOnMarker(markerKey) {
   const {direction, keyID} = markerKey;
   const query = {_id: parseInt(keyID)}; 
@@ -76,7 +85,7 @@ async function voteOnMarker(markerKey) {
 
   console.log(updatedDocument.value[direction]);
   //io.emit();
-}
+}*/
 /*
 PROBLEM: Why have two functions, "voteOnMarker" & the "changeStream.on" , both deal with sending the updated "up"/"down" values to the 
 user. I think this, voteOnMarker, is the only one we need, as when a user votes, the new value can be returned to the client.
@@ -96,12 +105,14 @@ httpServer.listen(3000, () => {
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
 
-  /*
+  
 // Listen for change events
-changeStream.on('change', (change) => {
-  if (change.operationType === 'update') {
-    console.log(Object.values(change.updateDescription.updatedFields), Object.values(change.documentKey));
+changeStream.on('change', (change) => {  
+  if (change.operationType === 'insert') {
+    const confession = change.fullDocument.confession
+    const key = change.fullDocument._id
+    console.log(confession, key);
     // Emit the newLocation object to all connected clients
-    io.emit('newLocation', Object.values(change.updateDescription.updatedFields), Object.values(change.documentKey));
+    io.emit('newLocation', change.fullDocument);
   }
-});*/
+});
