@@ -33,12 +33,13 @@ const errorCallback = (position) => {
 
 //method that gets user location and sends it to the server
 const sendToServer = (position) => {
+    const userCookie = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);
     var up = down = 0;
     let lat = parseFloat(position.coords.latitude) * ( 1 + (Math.random() * 0.00005));
     let long = parseFloat(position.coords.longitude)* ( 1 + (Math.random() * 0.00005));
     let time = Date.now();
     let confession = document.getElementById("confessionBox").value;
-    let key = time
+    let key = userCookie;
 
     const data = {time, lat, long, confession, up, down};
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});

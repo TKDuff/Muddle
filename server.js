@@ -3,6 +3,8 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer);
+const { v4: uuidv4 } = require('uuid');
+
 
 const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
@@ -15,6 +17,7 @@ var count = 0;
 app.use(cookieParser());
 
 
+
 async function connectToDatabase() {
     try {
         await client.connect();
@@ -25,15 +28,34 @@ async function connectToDatabase() {
     }
 }
 
+
+
+
+
+
+
+
+
+
 app.get('/', (req, res) => {
   if (!req.cookies.userData) {
-    res.cookie("userData", count);
+    res.cookie("userData", uuidv4());
   } else {
-    console.log('User data cookie already set: ' + JSON.stringify(req.cookies.userData));
   }
   count++;
   res.sendFile(__dirname + '/public/index.html');
 });
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
@@ -96,7 +118,7 @@ AWNSER: Even if the user does not vote, the socket can emit the new value to all
 new value
  */
 
-//
+//these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
 // Start the server
