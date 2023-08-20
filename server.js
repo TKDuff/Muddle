@@ -90,24 +90,18 @@ async function insertStringIntoLocationsCollection(message) {
       // Insert the string into the collection
       messageVar._id = keyVar
       const result = await collection.insertOne(messageVar);
-      //console.log('Insterting', message, 'into the DB');
     } catch (error) {
       console.error('Error inserting string into the collection:', error);
     }
 }
 
-/*
-async function voteOnMarker(markerKey) {
-  const {direction, keyID} = markerKey;
-  const query = {_id: parseInt(keyID)}; 
-  const update = { $inc: { [direction] : 1 } };
-  //collection.updateOne(query, update);
-  //const updatedItem = await collection.findOne(query);
-  const updatedDocument = await collection.findOneAndUpdate(query, update, { returnOriginal: false });
 
-  console.log(updatedDocument.value[direction]);
-  //io.emit();
-}*/
+async function voteOnMarker(markerKey) {  
+  const {direction, keyID} = markerKey;
+  const query = {_id: keyID}; 
+  const update = { $inc: { [direction] : 1 } };
+  collection.updateOne(query, update);
+}
 /*
 PROBLEM: Why have two functions, "voteOnMarker" & the "changeStream.on" , both deal with sending the updated "up"/"down" values to the 
 user. I think this, voteOnMarker, is the only one we need, as when a user votes, the new value can be returned to the client.
