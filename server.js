@@ -95,12 +95,32 @@ async function insertStringIntoLocationsCollection(message) {
     }
 }
 
+//voting on a marker is pushing the cookie I.D into either the up/down array depending on the vote
+async function voteOnMarker(markerKey) {
+  const {direction, confessionKeyID ,keyID} = markerKey;
 
-async function voteOnMarker(markerKey) {  
-  const {direction, keyID} = markerKey;
-  const query = {_id: keyID}; 
-  const update = { $inc: { [direction] : 1 } };
-  collection.updateOne(query, update);
+  const query = {_id: +confessionKeyID};
+  query[direction] = { $in: [keyID] };
+
+
+  const matchingDocument = await collection.findOne(query);
+    if (matchingDocument) { //if user voted already, remove their vote from the array
+      console.log(`${keyID} exists in ${direction}.`);
+      removeVoteFromArray(direction, confessionKeyID ,keyID);
+    } else {  ////if user has not voted already, add their vote to the array
+      console.log(`${keyID} does not exist in ${direction}.`);
+      addVoteToArray(direction, confessionKeyID ,keyID);
+    }
+}
+
+async function addVoteToArray(direction, confessionKeyID ,keyID) {
+  const update = { $addToSet: { [direction]: keyID } };
+  collection.updateOne({_id: +confessionKeyID}, update);
+}
+
+async function removeVoteFromArray(direction, confessionKeyID ,keyID) {
+  const update = { $pull: { [direction]: keyID } };
+  collection.updateOne({_id: +confessionKeyID}, update);
 }
 /*
 PROBLEM: Why have two functions, "voteOnMarker" & the "changeStream.on" , both deal with sending the updated "up"/"down" values to the 

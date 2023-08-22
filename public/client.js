@@ -8,6 +8,7 @@ const mapDiv = document.getElementById('brookfieldMap');
 
 // Connect to the server
 const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
+const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
 
 socket.on('locations', locations => {
     locations.forEach((obj) => {
@@ -34,17 +35,17 @@ const errorCallback = (position) => {
 //method that gets user location and sends it to the server
 const sendToServer = (position) => {
     //be sure to set the cookie back to the document cookie 🧙‍♂️️👴️🚶️
-    const key = Math.floor((Math.random() * 1000) + 1);//decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);
+    //const key = Math.floor((Math.random() * 1000) + 1);//decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);
     const data = {
         time: Date.now(),
-        lat: parseFloat(position.coords.latitude) * (1 + (Math.random() * 0.00005)),
-        long: parseFloat(position.coords.longitude) * (1 + (Math.random() * 0.00005)),
+        lat: parseFloat(position.coords.latitude) * (1 + (Math.random() * 0.000005)),
+        long: parseFloat(position.coords.longitude) * (1 + (Math.random() * 0.000005)),
         confession: document.getElementById("confessionBox").value,
         up: [],
         down: []
     };
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
-}
+} 
 
 // Listen for the 'newLocation' event from the server
 socket.on('newLocation', (newLocation) => {
@@ -84,7 +85,7 @@ const createDivIcon = (keyID) => {
 };
 
 $(document).on('click', '.voteButton', function () {
-    socket.emit('voteOnMarker', {direction: this.id, keyID: $(this).closest('div').attr('id')});
+    socket.emit('voteOnMarker', {direction: this.id, confessionKeyID: $(this).closest('div').attr('id'), keyID: key});
 });
 /*
 big change, for now, the KeyId will be the time it was posed, due to jquery have a length limit on the id it returns when calling
