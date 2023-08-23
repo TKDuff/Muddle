@@ -98,27 +98,47 @@ async function insertStringIntoLocationsCollection(message) {
 //voting on a marker is pushing the cookie I.D into either the up/down array depending on the vote
 async function voteOnMarker(markerKey) {
   const {direction, confessionKeyID ,keyID} = markerKey;
+  const oppositeDirection = direction === 'up' ? 'down' : 'up';
 
-  const query = {_id: +confessionKeyID};
-  query[direction] = { $in: [keyID] };
-
+  const query = {
+    _id: +confessionKeyID,
+    $or: [
+      { up: keyID },   // Check if keyID exists in the 'up' array
+      { down: keyID }  // Check if keyID exists in the 'down' array
+    ]
+  };
 
   const matchingDocument = await collection.findOne(query);
-    if (matchingDocument) { //if user voted already, remove their vote from the array
-      console.log(`${keyID} exists in ${direction}.`);
-      removeVoteFromArray(direction, confessionKeyID ,keyID);
-    } else {  ////if user has not voted already, add their vote to the array
-      console.log(`${keyID} does not exist in ${direction}.`);
-      addVoteToArray(direction, confessionKeyID ,keyID);
-    }
+
+  if(!matchingDocument){
+    addVoteToDirectionArray(direction, confessionKeyID ,keyID);
+  } else if(matchingDocument[direction].includes(keyID)){
+    removeVoteFromDirectionArray(direction, confessionKeyID ,keyID);
+  } else if(matchingDocument[oppositeDirection].includes(keyID)){
+    //console.log(confessionKeyID, 'is not in', direction ,',found in opposite array', oppositeDirection, ',will swap vote');
+    removeVoteFromDirectionArray(oppositeDirection, confessionKeyID ,keyID);
+    addVoteToDirectionArray(direction, confessionKeyID ,keyID);
+  }
 }
 
-async function addVoteToArray(direction, confessionKeyID ,keyID) {
+  /*
+  const query = {_id: +confessionKeyID};
+  query[direction] = { $in: [keyID] };
+  const matchingDocument = await collection.findOne(query);
+    if (matchingDocument) { //if user voted already, remove their vote from the array
+      removeVoteFromDirectionArray(direction, confessionKeyID ,keyID);
+    } else {  ////if user has not voted already, add their vote to the array
+      addVoteToDirectionArray(direction, confessionKeyID ,keyID);
+    }
+}*/
+
+
+async function addVoteToDirectionArray(direction, confessionKeyID ,keyID) {
   const update = { $addToSet: { [direction]: keyID } };
   collection.updateOne({_id: +confessionKeyID}, update);
 }
 
-async function removeVoteFromArray(direction, confessionKeyID ,keyID) {
+async function removeVoteFromDirectionArray(direction, confessionKeyID ,keyID) {
   const update = { $pull: { [direction]: keyID } };
   collection.updateOne({_id: +confessionKeyID}, update);
 }
