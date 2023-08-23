@@ -28,15 +28,6 @@ async function connectToDatabase() {
     }
 }
 
-
-
-
-
-
-
-
-
-
 app.get('/', (req, res) => {
   if (!req.cookies.userData) {
     res.cookie("userData", uuidv4());
@@ -45,18 +36,6 @@ app.get('/', (req, res) => {
   count++;
   res.sendFile(__dirname + '/public/index.html');
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
 io.on('connection', async (socket) => {
@@ -110,28 +89,15 @@ async function voteOnMarker(markerKey) {
 
   const matchingDocument = await collection.findOne(query);
 
-  if(!matchingDocument){
+  if(!matchingDocument){    //if both arrays don't contain User Cookie, add to target array
     addVoteToDirectionArray(direction, confessionKeyID ,keyID);
-  } else if(matchingDocument[direction].includes(keyID)){
+  } else if(matchingDocument[direction].includes(keyID)){     //if target array already contains User Cookie, remove it
     removeVoteFromDirectionArray(direction, confessionKeyID ,keyID);
-  } else if(matchingDocument[oppositeDirection].includes(keyID)){
-    //console.log(confessionKeyID, 'is not in', direction ,',found in opposite array', oppositeDirection, ',will swap vote');
+  } else if(matchingDocument[oppositeDirection].includes(keyID)){   //if opposite of target array contains U.C, remove it from there and add it to target array
     removeVoteFromDirectionArray(oppositeDirection, confessionKeyID ,keyID);
     addVoteToDirectionArray(direction, confessionKeyID ,keyID);
   }
 }
-
-  /*
-  const query = {_id: +confessionKeyID};
-  query[direction] = { $in: [keyID] };
-  const matchingDocument = await collection.findOne(query);
-    if (matchingDocument) { //if user voted already, remove their vote from the array
-      removeVoteFromDirectionArray(direction, confessionKeyID ,keyID);
-    } else {  ////if user has not voted already, add their vote to the array
-      addVoteToDirectionArray(direction, confessionKeyID ,keyID);
-    }
-}*/
-
 
 async function addVoteToDirectionArray(direction, confessionKeyID ,keyID) {
   const update = { $addToSet: { [direction]: keyID } };
@@ -142,15 +108,6 @@ async function removeVoteFromDirectionArray(direction, confessionKeyID ,keyID) {
   const update = { $pull: { [direction]: keyID } };
   collection.updateOne({_id: +confessionKeyID}, update);
 }
-/*
-PROBLEM: Why have two functions, "voteOnMarker" & the "changeStream.on" , both deal with sending the updated "up"/"down" values to the 
-user. I think this, voteOnMarker, is the only one we need, as when a user votes, the new value can be returned to the client.
-
-BUT: What if a user does not vote? They won't see the new value, thus the changeSteam.on functions is needed, for non-voters
-
-AWNSER: Even if the user does not vote, the socket can emit the new value to all users, regardless if the user votes, they will see the 
-new value
- */
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
