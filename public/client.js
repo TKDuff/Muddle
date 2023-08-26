@@ -28,9 +28,14 @@ function wipeDB() {
     socket.emit('wipeDB');
 }
 
+function createFakePost() {
+    socket.emit('createFakePost', document.getElementById("fakePostCommentBox").value)
+}
+
 const errorCallback = (position) => {
     console.error(error);
 }
+
 
 //method that gets user location and sends it to the server
 const sendToServer = (position) => {

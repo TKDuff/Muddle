@@ -13,9 +13,7 @@ var collection = client.db('Muddle').collection('Locations');
 
 // Create a change stream for the "Locations" collection
 const changeStream = collection.watch();
-var count = 0;
 app.use(cookieParser());
-
 
 
 async function connectToDatabase() {
@@ -31,9 +29,7 @@ async function connectToDatabase() {
 app.get('/', (req, res) => {
   if (!req.cookies.userData) {
     res.cookie("userData", uuidv4());
-  } else {
-  }
-  count++;
+  } 
   res.sendFile(__dirname + '/public/index.html');
 });
 
@@ -59,6 +55,35 @@ io.on('connection', async (socket) => {
       const result = collection.deleteMany({});
     console.log(`${result.deletedCount} documents deleted`);
     }) 
+    
+    const LONG_DIFF = 0.008442649
+    const LAT_DIFF = 0.00432114886
+    const BASE_LAT = 53.36416607458011
+    const BASE_LONG = -6.2923026417947545
+
+    socket.on('createFakePost', (count) => {
+      let lat_row = BASE_LAT
+      let long_row = BASE_LONG
+
+      for(let i = 0; i < count; i++){
+        const data = {
+          time: i,
+          lat: lat_row,
+          long: long_row,
+          confession: `${i}`,
+          up: [],
+          down: []
+        };
+        if(i % 5 == 0){
+          long_row -= LONG_DIFF
+          lat_row = BASE_LAT
+        }
+        lat_row += LAT_DIFF
+        insertStringIntoLocationsCollection({messageVar: data, keyVar: i});
+      };
+
+      
+    })
 
 });
 
