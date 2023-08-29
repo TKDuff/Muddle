@@ -123,11 +123,11 @@ async function voteOnMarker(markerKey) {
     addVoteToDirectionArray(direction, confessionKeyID ,keyID);
   }
 
-  sendUserDirectionArrayLength(direction, oppositeDirection, confessionKeyID);
+  sendUserDirectionArrayLength(direction, confessionKeyID);
 }
 
 async function addVoteToDirectionArray(direction, confessionKeyID ,keyID) {
-  const update = { $addToSet: { [direction]: keyID } };
+  const update = { $push/*addToSet*/: { [direction]: keyID } };
   collection.updateOne({_id: +confessionKeyID}, update);
 }
 async function removeVoteFromDirectionArray(direction, confessionKeyID ,keyID) {
@@ -140,14 +140,15 @@ After a user votes, this function is called. Takes in vote direction & what post
 Gets size of array for the direction (direction) that was amended for the post that was voted on (confessionKeyID)
 Then calls emits it to all clients in order for them to change their colour. 
 */
-async function sendUserDirectionArrayLength(direction, oppositeDirection, confessionKeyID) {
+async function sendUserDirectionArrayLength(direction, confessionKeyID) {
+  console.log(confessionKeyID)
+  
   const result = await collection.aggregate([
     { $match: { _id: +confessionKeyID } }, // Match the specific document
     { $project: { upArrayLength: { $size: `$${direction}`}}}
   ]).toArray();
 
-  //console.log(result[0].upArrayLength);
-  io.emit('testDirectionCount', result[0].upArrayLength)
+  io.emit('testDirectionCount', result[0].upArrayLength, confessionKeyID)
 }
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
@@ -170,3 +171,6 @@ changeStream.on('change', (change) => {
     io.emit('newLocation', change.fullDocument);
   }
 });
+
+
+/*The + infront of confessionID will have to be removed to allow for UUID cookies */
