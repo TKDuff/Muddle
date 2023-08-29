@@ -58,6 +58,10 @@ socket.on('newLocation', (newLocation) => {
     createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id);
 });
 
+socket.on('testDirectionCount', (arrayCount) => {
+    console.log(arrayCount);
+})
+
 
 function createMarker(lat, long, confession, keyID) {
     const marker = L.marker([lat, long], {icon: createDivIcon(keyID)});

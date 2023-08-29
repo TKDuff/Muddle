@@ -146,7 +146,8 @@ async function sendUserDirectionArrayLength(direction, oppositeDirection, confes
     { $project: { upArrayLength: { $size: `$${direction}`}}}
   ]).toArray();
 
-  console.log(result[0].upArrayLength);
+  //console.log(result[0].upArrayLength);
+  io.emit('testDirectionCount', result[0].upArrayLength)
 }
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
