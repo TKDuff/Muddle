@@ -68,19 +68,19 @@ const createDivIcon = (keyID) => {
     return L.divIcon({
         className: 'SVG-Icon',
         html: `<div id=${keyID}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="120" height="120">
+        <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200" width="120" height="120">
         <defs>
-        <linearGradient id="myGradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" id="Down" stop-color="rgb(255, 255, 100)"/>
-        <stop offset="50%" id="Middle" stop-color="rgb(255, 255, 100)"/>
-        <stop offset="100%" id="Up" stop-color="rgb(255, 255, 100)"/>
+        <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" id="Down${keyID}" stop-color="rgb(255, 255, 100)"/>
+        <stop offset="50%" id="Middle${keyID}" stop-color="rgb(255, 255, 100)"/>
+        <stop offset="100%" id="Up${keyID}" stop-color="rgb(255, 255, 100)"/>
         </linearGradient>
         </defs>
         <g>
-        <rect width="200" height="200" fill="url(#myGradient)" />
+        <rect width="200" height="200" fill="url(#Gradient${keyID})" />
         <foreignObject width="100%" height="100%">
-        <button class = "voteButton" id="up" >Upvote</button>
-        <button class = "voteButton" id="down" >Downvote</button>
+        <button class = "voteButton up" id="up" >Upvote</button>
+        <button class = "voteButton down" id="down" >Downvote</button>
         </foreignObject>
         </g>
         </svg>

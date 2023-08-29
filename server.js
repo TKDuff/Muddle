@@ -122,16 +122,31 @@ async function voteOnMarker(markerKey) {
     removeVoteFromDirectionArray(oppositeDirection, confessionKeyID ,keyID);
     addVoteToDirectionArray(direction, confessionKeyID ,keyID);
   }
+
+  sendUserDirectionArrayLength(direction, oppositeDirection, confessionKeyID);
 }
 
 async function addVoteToDirectionArray(direction, confessionKeyID ,keyID) {
   const update = { $addToSet: { [direction]: keyID } };
   collection.updateOne({_id: +confessionKeyID}, update);
 }
-
 async function removeVoteFromDirectionArray(direction, confessionKeyID ,keyID) {
   const update = { $pull: { [direction]: keyID } };
   collection.updateOne({_id: +confessionKeyID}, update);
+}
+
+/*
+After a user votes, this function is called. Takes in vote direction & what post was voted on.
+Gets size of array for the direction (direction) that was amended for the post that was voted on (confessionKeyID)
+Then calls emits it to all clients in order for them to change their colour. 
+*/
+async function sendUserDirectionArrayLength(direction, oppositeDirection, confessionKeyID) {
+  const result = await collection.aggregate([
+    { $match: { _id: +confessionKeyID } }, // Match the specific document
+    { $project: { upArrayLength: { $size: `$${direction}`}}}
+  ]).toArray();
+
+  console.log(result[0].upArrayLength);
 }
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
