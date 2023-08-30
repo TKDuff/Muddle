@@ -113,44 +113,51 @@ async function voteOnMarker(markerKey) {
   };
 
   const matchingDocument = await collection.findOne(query);
-
-  if(!matchingDocument){    //if both arrays don't contain User Cookie, add to target array
-    addVoteToDirectionArray(direction, confessionKeyID ,keyID);
-  } else if(matchingDocument[direction].includes(keyID)){     //if target array already contains User Cookie, remove it
-    removeVoteFromDirectionArray(direction, confessionKeyID ,keyID);
+  let updatedDirectionArrayLength
+  if(!matchingDocument){    //if both arrays don't contain User Cookie, add to target array, '$addToSet'
+    updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
+  } else if(matchingDocument[direction].includes(keyID)){     //if target array already contains User Cookie, remove it, '$pull'
+    updatedDirectionArrayLength = await modifyVoteDirectionArray('$pull', direction, confessionKeyID ,keyID);
   } else if(matchingDocument[oppositeDirection].includes(keyID)){   //if opposite of target array contains U.C, remove it from there and add it to target array
-    removeVoteFromDirectionArray(oppositeDirection, confessionKeyID ,keyID);
-    addVoteToDirectionArray(direction, confessionKeyID ,keyID);
+    await modifyVoteDirectionArray('$pull', oppositeDirection, confessionKeyID ,keyID);
+    updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
   }
 
-  sendUserDirectionArrayLength(direction, confessionKeyID);
+  console.log(updatedDirectionArrayLength);
 }
 
-async function addVoteToDirectionArray(direction, confessionKeyID ,keyID) {
-  const update = { $push/*addToSet*/: { [direction]: keyID } };
-  collection.updateOne({_id: +confessionKeyID}, update);
+async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {
+  console.log(modification, direction);
+  const updatedDocument = await collection.findOneAndUpdate(
+    { _id: +confessionKeyID },
+    { [modification]: { [direction]: keyID }},
+    { returnDocument: 'after' }
+    );
+    return updatedDocument.value[direction].length;
 }
-async function removeVoteFromDirectionArray(direction, confessionKeyID ,keyID) {
-  const update = { $pull: { [direction]: keyID } };
-  collection.updateOne({_id: +confessionKeyID}, update);
-}
+
 
 /*
 After a user votes, this function is called. Takes in vote direction & what post was voted on.
 Gets size of array for the direction (direction) that was amended for the post that was voted on (confessionKeyID)
 Then calls emits it to all clients in order for them to change their colour. 
-*/
-async function sendUserDirectionArrayLength(direction, confessionKeyID) {
-  console.log(confessionKeyID)
+
+async function getDirectionArrayLength(direction, confessionKeyID) {
+  console.log('sendUserDirectionArrayLength log');
+  //console.log(confessionKeyID)
   
   const result = await collection.aggregate([
     { $match: { _id: +confessionKeyID } }, // Match the specific document
     { $project: { upArrayLength: { $size: `$${direction}`}}}
   ]).toArray();
 
-  io.emit('testDirectionCount', result[0].upArrayLength, confessionKeyID)
+  return {
+    ArrayLength: result[0].upArrayLength,
+    confessionKeyID: confessionKeyID,
+    direction: direction
+  }  
 }
-
+*/
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));

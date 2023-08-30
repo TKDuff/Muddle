@@ -58,8 +58,13 @@ socket.on('newLocation', (newLocation) => {
     createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id);
 });
 
-socket.on('testDirectionCount', (upArrayLength, confessionKeyID) => {
-    console.log(upArrayLength, confessionKeyID);
+socket.on('testDirectionCount', (data) => {
+    console.log(data.ArrayLength, data.confessionKeyID, data.direction);
+    /*
+    var svgPost = $(`#svg${data.confessionKeyID}`);
+    let middleOffsetString = svgPost.find(`#Middle${data.confessionKeyID}`).attr('offset');
+  let middleOffsetValue = parseInt(middleOffsetString, 10);
+  var gradientIndex;*/
 })
 
 
