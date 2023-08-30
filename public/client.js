@@ -60,25 +60,27 @@ socket.on('newLocation', (newLocation) => {
 
 /*After voting in a certain direction on a post, the modified length the direction array post is returned 
 This length is used to select the new direction gradient for the post*/
+const MIDDLE = 50
+const MIDDLE_OFFSET = 5
 socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confessionKeyID) => {
-    console.log(updatedDirectionArrayLength, direction, confessionKeyID);
-
-    /*
+    console.log(updatedDirectionArrayLength, direction, confessionKeyID);   
     var svgPost = $(`#svg${confessionKeyID}`);
     let middleOffsetString = svgPost.find(`#Middle${confessionKeyID}`).attr('offset');
     let middleOffsetValue = parseInt(middleOffsetString, 10);
     var gradientIndex;
 
     if(direction === 'Up'){
-        gradientIndex = `--left-gradient-${count}`;
+        gradientIndex = `--left-gradient-${updatedDirectionArrayLength}`;
         middleOffsetValue -= MIDDLE_OFFSET;
       } else {
-        gradientIndex = `--right-gradient-${count}`;
+        gradientIndex = `--right-gradient-${updatedDirectionArrayLength}`;
         middleOffsetValue += MIDDLE_OFFSET;
     }
+
+    console.log('The gradient index is', gradientIndex, 'the updated count is ', updatedDirectionArrayLength);
     
-    svgPost.find(`#${direction}${confessionKeyID}`).css('stop-color', `var(${gradientIndex})`);
-    svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);*/
+    svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
+    //svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
 
 
     /*
@@ -101,9 +103,9 @@ const createDivIcon = (keyID) => {
         <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200" width="120" height="120">
         <defs>
         <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" id="Down${keyID}" stop-color="rgb(255, 255, 100)"/>
+        <stop offset="0%" id="Down${keyID}" stop-color="var(--default-yellow)"/>
         <stop offset="50%" id="Middle${keyID}" stop-color="rgb(255, 255, 100)"/>
-        <stop offset="100%" id="Up${keyID}" stop-color="rgb(255, 255, 100)"/>
+        <stop offset="100%" id="Up${keyID}" stop-color="var(--default-yellow)"/>
         </linearGradient>
         </defs>
         <g>
