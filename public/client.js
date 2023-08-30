@@ -46,8 +46,8 @@ const sendToServer = (position) => {
         lat: parseFloat(position.coords.latitude) * (1 + (Math.random() * 0.000005)),
         long: parseFloat(position.coords.longitude) * (1 + (Math.random() * 0.000005)),
         confession: document.getElementById("confessionBox").value,
-        up: [],
-        down: []
+        Up: [],
+        Down: []
     };
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
 } 
@@ -58,8 +58,29 @@ socket.on('newLocation', (newLocation) => {
     createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id);
 });
 
-socket.on('testDirectionCount', (data) => {
-    console.log(data.ArrayLength, data.confessionKeyID, data.direction);
+/*After voting in a certain direction on a post, the modified length the direction array post is returned 
+This length is used to select the new direction gradient for the post*/
+socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confessionKeyID) => {
+    console.log(updatedDirectionArrayLength, direction, confessionKeyID);
+
+    /*
+    var svgPost = $(`#svg${confessionKeyID}`);
+    let middleOffsetString = svgPost.find(`#Middle${confessionKeyID}`).attr('offset');
+    let middleOffsetValue = parseInt(middleOffsetString, 10);
+    var gradientIndex;
+
+    if(direction === 'Up'){
+        gradientIndex = `--left-gradient-${count}`;
+        middleOffsetValue -= MIDDLE_OFFSET;
+      } else {
+        gradientIndex = `--right-gradient-${count}`;
+        middleOffsetValue += MIDDLE_OFFSET;
+    }
+    
+    svgPost.find(`#${direction}${confessionKeyID}`).css('stop-color', `var(${gradientIndex})`);
+    svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);*/
+
+
     /*
     var svgPost = $(`#svg${data.confessionKeyID}`);
     let middleOffsetString = svgPost.find(`#Middle${data.confessionKeyID}`).attr('offset');
@@ -88,8 +109,8 @@ const createDivIcon = (keyID) => {
         <g>
         <rect width="200" height="200" fill="url(#Gradient${keyID})" />
         <foreignObject width="100%" height="100%">
-        <button class = "voteButton up" id="up" >Upvote</button>
-        <button class = "voteButton down" id="down" >Downvote</button>
+        <button class = "voteButton up" id="Up" >Upvote</button>
+        <button class = "voteButton down" id="Down" >Downvote</button>
         </foreignObject>
         </g>
         </svg>

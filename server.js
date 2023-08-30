@@ -71,8 +71,8 @@ io.on('connection', async (socket) => {
           lat: lat_row,
           long: long_row,
           confession: `${i}`,
-          up: [],
-          down: []
+          Up: [],
+          Down: []
         };
         if(i % 5 == 0){
           long_row -= LONG_DIFF
@@ -102,13 +102,13 @@ async function insertStringIntoLocationsCollection(message) {
 //voting on a marker is pushing the cookie I.D into either the up/down array depending on the vote
 async function voteOnMarker(markerKey) {
   const {direction, confessionKeyID ,keyID} = markerKey;
-  const oppositeDirection = direction === 'up' ? 'down' : 'up';
+  const oppositeDirection = direction === 'Up' ? 'Down' : 'Up';
 
   const query = {
     _id: +confessionKeyID,
     $or: [
-      { up: keyID },   // Check if keyID exists in the 'up' array
-      { down: keyID }  // Check if keyID exists in the 'down' array
+      { Up: keyID },   // Check if keyID exists in the 'up' array
+      { Down: keyID }  // Check if keyID exists in the 'down' array
     ]
   };
 
@@ -123,11 +123,14 @@ async function voteOnMarker(markerKey) {
     updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
   }
 
-  console.log(updatedDirectionArrayLength);
+  //console.log(updatedDirectionArrayLength);
+  io.emit('testDirectionCount', updatedDirectionArrayLength, direction, confessionKeyID);
 }
 
+/*
+Get lenth of voted on direction array after the modification took place (hence returnDocument: 'after'), return it*/
 async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {
-  console.log(modification, direction);
+  //console.log(modification, direction);
   const updatedDocument = await collection.findOneAndUpdate(
     { _id: +confessionKeyID },
     { [modification]: { [direction]: keyID }},
