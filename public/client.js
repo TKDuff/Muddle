@@ -10,6 +10,8 @@ const mapDiv = document.getElementById('brookfieldMap');
 const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
 
+/*When client connects, they receive all docuements already in collection
+For every document, an SVG Icon is created and put on the map using createMarker() function */
 socket.on('allPostsFromDatabase', posts => {
     posts.forEach((obj) => {
         console.log(obj._id, obj.Down.length, obj.Up.length);
@@ -55,8 +57,7 @@ const sendToServer = (position) => {
 
 // Listen for the 'newLocation' event from the server
 socket.on('newLocation', (newLocation) => {
-    //console.log('New location added:', newLocation);
-    createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id);
+    createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id, 0, 0);
 });
 
 /*After voting in a certain direction on a post, the modified length the direction array post is returned 
@@ -91,12 +92,15 @@ socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confess
   var gradientIndex;*/
 })
 
-
+/*Creates the Post to be displayed on the map.
+Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) {
     const marker = L.marker([lat, long], {icon: createDivIcon(keyID, downVoteCount, upVoteCount)});
     marker.addTo(map).bindPopup(confession).openPopup();
 }
 
+/*Each SVG is identified using the keyID, which is the user cookie
+The voteCounts (down/up) are used to specifiy which gradient should be used*/
 const createDivIcon = (keyID, downVoteCount, upVoteCount) => {
     return L.divIcon({
         className: 'SVG-Icon',

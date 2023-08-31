@@ -140,27 +140,6 @@ async function modifyVoteDirectionArray(modification, direction, confessionKeyID
 }
 
 
-/*
-After a user votes, this function is called. Takes in vote direction & what post was voted on.
-Gets size of array for the direction (direction) that was amended for the post that was voted on (confessionKeyID)
-Then calls emits it to all clients in order for them to change their colour. 
-
-async function getDirectionArrayLength(direction, confessionKeyID) {
-  console.log('sendUserDirectionArrayLength log');
-  //console.log(confessionKeyID)
-  
-  const result = await collection.aggregate([
-    { $match: { _id: +confessionKeyID } }, // Match the specific document
-    { $project: { upArrayLength: { $size: `$${direction}`}}}
-  ]).toArray();
-
-  return {
-    ArrayLength: result[0].upArrayLength,
-    confessionKeyID: confessionKeyID,
-    direction: direction
-  }  
-}
-*/
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
