@@ -117,17 +117,18 @@ async function voteOnMarker(markerKey) {
 
   const matchingDocument = await collection.findOne(query);
   let updatedDirectionArrayLength
+  let updatedOppositeDirectionArrayLength
   if(!matchingDocument){    //if both arrays don't contain User Cookie, add to target array, '$addToSet'
     updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
   } else if(matchingDocument[direction].includes(keyID)){     //if target array already contains User Cookie, remove it, '$pull'
     updatedDirectionArrayLength = await modifyVoteDirectionArray('$pull', direction, confessionKeyID ,keyID);
   } else if(matchingDocument[oppositeDirection].includes(keyID)){   //if opposite of target array contains U.C, remove it from there and add it to target array
-    await modifyVoteDirectionArray('$pull', oppositeDirection, confessionKeyID ,keyID);
+    updatedOppositeDirectionArrayLength = await modifyVoteDirectionArray('$pull', oppositeDirection, confessionKeyID ,keyID);
     updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
   }
 
   //console.log(updatedDirectionArrayLength);
-  io.emit('testDirectionCount', updatedDirectionArrayLength, direction, confessionKeyID);
+  io.emit('testDirectionCount', updatedDirectionArrayLength, updatedOppositeDirectionArrayLength ,direction, oppositeDirection ,confessionKeyID);
 }
 
 async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {

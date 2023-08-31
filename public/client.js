@@ -60,41 +60,34 @@ socket.on('newLocation', (newLocation) => {
     createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id, 0, 0);
 });
 
-/*After voting in a certain direction on a post, the modified length the direction array post is returned 
-This length is used to select the new direction gradient for the post*/
+/*After voting in a certain direction on a post, the new lengths the direction and opposite direction arrays for the document are returned 
+The lengths are used to choose a CSS gradient value from 0-10
+The function changeOneGradient() changes the up/down side gradient
+If the updatedOppositeDirectionArrayLength is not null, that means the opposite direction array was updated and thus a vote switch took place
+For vote switching the changeOneGradient() is called twice, once for the voted side (to increment) and again for the unvoted side (to decrement)*/
+
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
-socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confessionKeyID) => {
-    changePostColour(updatedDirectionArrayLength, direction, confessionKeyID)
-    var svgPost = $(`#svg${confessionKeyID}`);
-    let middleOffsetString = svgPost.find(`#Middle${confessionKeyID}`).attr('offset');
-    let middleOffsetValue = parseInt(middleOffsetString, 10);
-    var gradientIndex;
-
-    if(direction === 'Up'){
-        gradientIndex = `--up-gradient-${updatedDirectionArrayLength}`;
-        middleOffsetValue -= MIDDLE_OFFSET;
-      } else {
-        gradientIndex = `--down-gradient-${updatedDirectionArrayLength}`;
-        middleOffsetValue += MIDDLE_OFFSET;
-    }
-
-    //console.log('The gradient index is', gradientIndex, 'the updated count is ', updatedDirectionArrayLength);
-    
-    svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
-    //svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
-
-
-    /*
-    var svgPost = $(`#svg${data.confessionKeyID}`);
-    let middleOffsetString = svgPost.find(`#Middle${data.confessionKeyID}`).attr('offset');
-  let middleOffsetValue = parseInt(middleOffsetString, 10);
-  var gradientIndex;*/
+socket.on('testDirectionCount', (updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
+    console.log(updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, confessionKeyID)
+    if(updatedOppositeDirectionArrayLength === null){
+        changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID)
+    } else {
+        changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID)
+        changeOneGradient(updatedOppositeDirectionArrayLength, oppositeDirection, confessionKeyID)
+    };
 })
 
-function changePostColour (updatedDirectionArrayLength, direction, confessionKeyID){
-    console.log(updatedDirectionArrayLength, direction, confessionKeyID);
+function changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID) {
+    var svgPost = $(`#svg${confessionKeyID}`);
+    let middleOffsetValue = parseInt(svgPost.find(`#Middle${confessionKeyID}`).attr('offset'), 10); //parseing to remove % from offset value
+    middleOffsetValue = (direction === 'Up') ? middleOffsetValue-MIDDLE_OFFSET : middleOffsetValue+MIDDLE_OFFSET;
+    let gradientIndex = `--${direction}-gradient-${updatedDirectionArrayLength}`;
+    console.log('The gradient index is', gradientIndex, 'the updated count is ', updatedDirectionArrayLength);
+    svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
+    svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
 }
+
 /*Creates the Post to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) {
@@ -105,15 +98,16 @@ function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) 
 /*Each SVG is identified using the keyID, which is the user cookie
 The voteCounts (down/up) are used to specifiy which gradient should be used*/
 const createDivIcon = (keyID, downVoteCount, upVoteCount) => {
+    let offsetValue = ((downVoteCount - upVoteCount) * 5) + 50
     return L.divIcon({
         className: 'SVG-Icon',
         html: `<div id=${keyID}>
         <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200" width="120" height="120">
         <defs>
         <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" id="Down${keyID}" stop-color="var(--down-gradient-${downVoteCount})"/>
-        <stop offset="50%" id="Middle${keyID}" stop-color="rgb(255, 255, 100)"/>
-        <stop offset="100%" id="Up${keyID}" stop-color="var(--up-gradient-${upVoteCount})"/>
+        <stop offset="0%" id="Down${keyID}" stop-color="var(--Down-gradient-${downVoteCount})"/>
+        <stop offset="${offsetValue}%" id="Middle${keyID}" stop-color="rgb(255, 255, 100)"/>
+        <stop offset="100%" id="Up${keyID}" stop-color="var(--Up-gradient-${upVoteCount})"/>
         </linearGradient>
         </defs>
         <g>
