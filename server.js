@@ -127,8 +127,6 @@ async function voteOnMarker(markerKey) {
   io.emit('testDirectionCount', updatedDirectionArrayLength, direction, confessionKeyID);
 }
 
-/*
-Get lenth of voted on direction array after the modification took place (hence returnDocument: 'after'), return it*/
 async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {
   //console.log(modification, direction);
   const updatedDocument = await collection.findOneAndUpdate(
