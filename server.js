@@ -99,7 +99,10 @@ async function insertStringIntoLocationsCollection(message) {
     }
 }
 
-//voting on a marker is pushing the cookie I.D into either the up/down array depending on the vote
+/*voting on a marker is either pushing/pulling the cookie I.D to/from the up/down array depending on the vote 
+Upvote is adding to the array
+Downvote is pulling from the array
+"Switching" is when a user votes in the opposite direction on the same vote, so up to down and vice versa */
 async function voteOnMarker(markerKey) {
   const {direction, confessionKeyID ,keyID} = markerKey;
   const oppositeDirection = direction === 'Up' ? 'Down' : 'Up';

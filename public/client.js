@@ -65,7 +65,7 @@ This length is used to select the new direction gradient for the post*/
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
 socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confessionKeyID) => {
-    console.log(updatedDirectionArrayLength, direction, confessionKeyID);   
+    changePostColour(updatedDirectionArrayLength, direction, confessionKeyID)
     var svgPost = $(`#svg${confessionKeyID}`);
     let middleOffsetString = svgPost.find(`#Middle${confessionKeyID}`).attr('offset');
     let middleOffsetValue = parseInt(middleOffsetString, 10);
@@ -79,7 +79,7 @@ socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confess
         middleOffsetValue += MIDDLE_OFFSET;
     }
 
-    console.log('The gradient index is', gradientIndex, 'the updated count is ', updatedDirectionArrayLength);
+    //console.log('The gradient index is', gradientIndex, 'the updated count is ', updatedDirectionArrayLength);
     
     svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
     //svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
@@ -92,6 +92,9 @@ socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confess
   var gradientIndex;*/
 })
 
+function changePostColour (updatedDirectionArrayLength, direction, confessionKeyID){
+    console.log(updatedDirectionArrayLength, direction, confessionKeyID);
+}
 /*Creates the Post to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) {
