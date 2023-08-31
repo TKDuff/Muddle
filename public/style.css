@@ -1,30 +1,32 @@
 :root {
     --default-yellow: rgb(255, 255, 100);
 
-    --left-gradient-0: rgb(225, 255, 100);
-    --left-gradient-1: rgb(229.5, 255, 100);
-    --left-gradient-2: rgb(204, 255, 100);
-    --left-gradient-3: rgb(178.5, 255, 100);
-    --left-gradient-4: rgb(153, 255, 100);
-    --left-gradient-5: rgb(127.5, 255, 100);
-    --left-gradient-6: rgb(102, 255, 100);
-    --left-gradient-7: rgb(76.5, 255, 100);
-    --left-gradient-8: rgb(51, 255, 100);
-    --left-gradient-9: rgb(25.5, 255, 100);
-    --left-gradient-10: rgb(0, 255, 100);
-    /* ... Define the rest of the left gradient colors */
+    --up-gradient-0: rgb(255, 255, 100);
+    --up-gradient-1: rgb(229.5, 255, 100);
+    --up-gradient-2: rgb(204, 255, 100);
+    --up-gradient-3: rgb(178.5, 255, 100);
+    --up-gradient-4: rgb(153, 255, 100);
+    --up-gradient-5: rgb(127.5, 255, 100);
+    --up-gradient-6: rgb(102, 255, 100);
+    --up-gradient-7: rgb(76.5, 255, 100);
+    --up-gradient-8: rgb(51, 255, 100);
+    --up-gradient-9: rgb(25.5, 255, 100);
+    --up-gradient-10: rgb(0, 255, 100);
+    /*There was a weird glitch where the 0 gradients would be the colour of default yellow
+    but would compile to the --left-gradient-1 yellowish-green, to solve this you just copied and pasted
+    the default yellow RGB in the 0 gradients until the yellow was correct*/
     
-    --right-gradient-0: rgb(225, 255, 100);
-    --right-gradient-1: rgb(255, 229.5, 100);
-    --right-gradient-2: rgb(255, 204, 100);
-    --right-gradient-3: rgb(255,178.5, 100);
-    --right-gradient-4: rgb(255, 153, 100);
-    --right-gradient-5: rgb(255, 127.5, 100);
-    --right-gradient-6: rgb(255, 102, 100);
-    --right-gradient-7: rgb(255, 76.5, 100);
-    --right-gradient-8: rgb(255, 51, 100);
-    --right-gradient-9: rgb(255, 25.5, 100);
-    --right-gradient-10: rgb(255, 0, 100);
+    --down-gradient-0: rgb(255, 255, 100);
+    --down-gradient-1: rgb(255, 229.5, 100);
+    --down-gradient-2: rgb(255, 204, 100);
+    --down-gradient-3: rgb(255,178.5, 100);
+    --down-gradient-4: rgb(255, 153, 100);
+    --down-gradient-5: rgb(255, 127.5, 100);
+    --down-gradient-6: rgb(255, 102, 100);
+    --down-gradient-7: rgb(255, 76.5, 100);
+    --down-gradient-8: rgb(255, 51, 100);
+    --down-gradient-9: rgb(255, 25.5, 100);
+    --down-gradient-10: rgb(255, 0, 100);
 }
 
 #up {

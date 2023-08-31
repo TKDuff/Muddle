@@ -37,9 +37,9 @@ app.get('/', (req, res) => {
 io.on('connection', async (socket) => {
     console.log('A client connected');
     
-    // Emit the "locations" event to the client with the locations data
-    const locations = await collection.find({}).toArray();
-    socket.emit('locations', locations);
+    /*When client connects, emit all the posts already in the database to them to be drawn to the screen*/
+    const posts = await collection.find({}).toArray();
+    socket.emit('allPostsFromDatabase', posts);
     
     
     // Handle chat message event from the client

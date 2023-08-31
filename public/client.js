@@ -10,9 +10,10 @@ const mapDiv = document.getElementById('brookfieldMap');
 const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
 
-socket.on('locations', locations => {
-    locations.forEach((obj) => {
-        createMarker(obj.lat, obj.long, obj.confession, obj._id);
+socket.on('allPostsFromDatabase', posts => {
+    posts.forEach((obj) => {
+        console.log(obj._id, obj.Down.length, obj.Up.length);
+        createMarker(obj.lat, obj.long, obj.confession, obj._id, obj.Down.length, obj.Up.length);
     }); 
 })
 
@@ -54,7 +55,7 @@ const sendToServer = (position) => {
 
 // Listen for the 'newLocation' event from the server
 socket.on('newLocation', (newLocation) => {
-    console.log('New location added:', newLocation);
+    //console.log('New location added:', newLocation);
     createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id);
 });
 
@@ -70,10 +71,10 @@ socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confess
     var gradientIndex;
 
     if(direction === 'Up'){
-        gradientIndex = `--left-gradient-${updatedDirectionArrayLength}`;
+        gradientIndex = `--up-gradient-${updatedDirectionArrayLength}`;
         middleOffsetValue -= MIDDLE_OFFSET;
       } else {
-        gradientIndex = `--right-gradient-${updatedDirectionArrayLength}`;
+        gradientIndex = `--down-gradient-${updatedDirectionArrayLength}`;
         middleOffsetValue += MIDDLE_OFFSET;
     }
 
@@ -91,21 +92,21 @@ socket.on('testDirectionCount', (updatedDirectionArrayLength, direction, confess
 })
 
 
-function createMarker(lat, long, confession, keyID) {
-    const marker = L.marker([lat, long], {icon: createDivIcon(keyID)});
+function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) {
+    const marker = L.marker([lat, long], {icon: createDivIcon(keyID, downVoteCount, upVoteCount)});
     marker.addTo(map).bindPopup(confession).openPopup();
 }
 
-const createDivIcon = (keyID) => {
+const createDivIcon = (keyID, downVoteCount, upVoteCount) => {
     return L.divIcon({
         className: 'SVG-Icon',
         html: `<div id=${keyID}>
         <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200" width="120" height="120">
         <defs>
         <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" id="Down${keyID}" stop-color="var(--default-yellow)"/>
+        <stop offset="0%" id="Down${keyID}" stop-color="var(--down-gradient-${downVoteCount})"/>
         <stop offset="50%" id="Middle${keyID}" stop-color="rgb(255, 255, 100)"/>
-        <stop offset="100%" id="Up${keyID}" stop-color="var(--default-yellow)"/>
+        <stop offset="100%" id="Up${keyID}" stop-color="var(--up-gradient-${upVoteCount})"/>
         </linearGradient>
         </defs>
         <g>
