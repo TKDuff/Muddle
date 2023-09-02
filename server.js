@@ -44,6 +44,7 @@ io.on('connection', async (socket) => {
     
     // Handle chat message event from the client
     socket.on('confessionFromClient', (message) => {
+      console.log('hi');
         insertStringIntoLocationsCollection(message);
     });
 
