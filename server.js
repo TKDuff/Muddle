@@ -150,8 +150,8 @@ async function modifyVoteDirectionArray(modification, direction, confessionKeyID
     { [modification]: { [direction]: keyID }},
     { returnDocument: 'after' }
     );
-    console.log(updatedDocument, updatedDocument.value[direction].length, modification, direction);
-    return updatedDocument.value[direction].length;
+    console.log(updatedDocument, updatedDocument[direction].length, modification, direction);
+    return updatedDocument[direction].length;
 }
 
 
