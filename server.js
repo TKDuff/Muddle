@@ -2,8 +2,19 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
 const httpServer = require('http').createServer(app);
-const io = require('socket.io')(httpServer);
+const io = require('socket.io')(httpServer, {
+  cors: {
+    origin: "https://red-surf-7071.fly.dev",
+    methods: ["GET", "POST"],
+    transports: ['websocket'],
+    credentials: true
+  },
+  allowEIO3: true
+});
+
+
 const { v4: uuidv4 } = require('uuid');
+const port = process.env.PORT || 3000;
 
 
 const { MongoClient, MaxKey } = require('mongodb');
@@ -35,7 +46,7 @@ app.get('/', (req, res) => {
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
 io.on('connection', async (socket) => {
-    console.log('A client connected');
+    console.log('Client connected');
     
     /*When client connects, emit all the posts already in the database to them to be drawn to the screen*/
     const posts = await collection.find({}).toArray();
@@ -106,6 +117,7 @@ Downvote is pulling from the array
 "Switching" is when a user votes in the opposite direction on the same vote, so up to down and vice versa */
 async function voteOnMarker(markerKey) {
   const {direction, confessionKeyID ,keyID} = markerKey;
+  console.log('voting on', confessionKeyID);
   const oppositeDirection = direction === 'Up' ? 'Down' : 'Up';
 
   const query = {
@@ -133,12 +145,12 @@ async function voteOnMarker(markerKey) {
 }
 
 async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {
-  //console.log(modification, direction);
   const updatedDocument = await collection.findOneAndUpdate(
     { _id: +confessionKeyID },
     { [modification]: { [direction]: keyID }},
     { returnDocument: 'after' }
     );
+    console.log(updatedDocument, updatedDocument.value[direction].length, modification, direction);
     return updatedDocument.value[direction].length;
 }
 
@@ -146,8 +158,13 @@ async function modifyVoteDirectionArray(modification, direction, confessionKeyID
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
+app.use((err, req, res, next) => {
+  console.error('Global error handler:', err);
+  // Handle the error as needed, e.g., send an error response
+  res.status(400).json({ error: 'Internal server error' });
+});
 // Start the server
-httpServer.listen(3000, () => {
+httpServer.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });

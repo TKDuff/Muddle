@@ -7,12 +7,16 @@ tiles.addTo(map);
 const mapDiv = document.getElementById('brookfieldMap');
 
 // Connect to the server
-const socket = io('http://localhost:3000'); //the localhost address is not needed, will work without
+const socket = io('https://red-surf-7071.fly.dev/', {
+    transports: ['websocket'],
+    withCredentials: true
+  }); //the localhost address is not needed, will work without
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
 
 /*When client connects, they receive all docuements already in collection
 For every document, an SVG Icon is created and put on the map using createMarker() function */
 socket.on('allPostsFromDatabase', posts => {
+    console.log('Recevied all posts from mongoDB');
     posts.forEach((obj) => {
         console.log(obj._id, obj.Down.length, obj.Up.length);
         createMarker(obj.lat, obj.long, obj.confession, obj._id, obj.Down.length, obj.Up.length);
