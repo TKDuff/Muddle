@@ -128,6 +128,7 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount) => {
 };
 
 $(document).on('click', '.voteButton', function () {
+    console.log(this.id, $(this).closest('div').attr('id'), key);
     socket.emit('voteOnMarker', {direction: this.id, confessionKeyID: $(this).closest('div').attr('id'), keyID: key});
 });
 /*

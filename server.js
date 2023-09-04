@@ -11,19 +11,16 @@ const io = require('socket.io')(httpServer, {
   },
   allowEIO3: true
 });
-
+const socketEventHandlers = require('./socketEventHandler.js')
 
 const { v4: uuidv4 } = require('uuid');
 const port = process.env.PORT || 3000;
-
-
 const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
 
-// Create a change stream for the "Locations" collection
-const changeStream = collection.watch();
+socketEventHandlers(io, collection, uuidv4);
 app.use(cookieParser());
 
 
@@ -45,28 +42,8 @@ app.get('/', (req, res) => {
 });
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
-io.on('connection', async (socket) => {
-    console.log('Client be connected');
-    
-    /*When client connects, emit all the posts already in the database to them to be drawn to the screen*/
-    const posts = await collection.find({}).toArray();
-    socket.emit('allPostsFromDatabase', posts);
-    
-    
-    // Handle chat message event from the client
-    socket.on('confessionFromClient', (message) => {
-      insertPostIntoLocationsCollection(message);
-    });
-
-    socket.on('voteOnMarker', (markerKey) => {
-      voteOnMarker(markerKey);
-    });
-
-    socket.on('wipeDB', () => {
-      const result = collection.deleteMany({});
-    console.log(`${result.deletedCount} documents deleted`);
-    }) 
-    
+io.on('connection', async (socket) => { 
+  /*
     const LONG_DIFF = 0.008442649
     const LAT_DIFF = 0.00432114886
     const BASE_LAT = 53.36416607458011
@@ -95,59 +72,9 @@ io.on('connection', async (socket) => {
       };
 
       
-    })
+    })*/
 
 });
-
-// Insert strings into the "Locations" collection
-async function insertPostIntoLocationsCollection(message) {
-  const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
-  // Insert the string into the collection
-  messageVar._id = keyVar
-  await collection.insertOne(messageVar);
-  io.emit('newPost', messageVar);
-}
-
-/*voting on a marker is either pushing/pulling the cookie I.D to/from the up/down array depending on the vote 
-Upvote is adding to the array
-Downvote is pulling from the array
-"Switching" is when a user votes in the opposite direction on the same vote, so up to down and vice versa */
-async function voteOnMarker(markerKey) {
-  const {direction, confessionKeyID ,keyID} = markerKey;
-  console.log('voting on', confessionKeyID);
-  const oppositeDirection = direction === 'Up' ? 'Down' : 'Up';
-
-  const query = {
-    _id: confessionKeyID,
-    $or: [
-      { Up: keyID },   // Check if keyID exists in the 'up' array
-      { Down: keyID }  // Check if keyID exists in the 'down' array
-    ]
-  };
-
-  const matchingDocument = await collection.findOne(query);
-  let updatedDirectionArrayLength
-  let updatedOppositeDirectionArrayLength
-  if(!matchingDocument){    //if both arrays don't contain User Cookie, add to target array, '$addToSet'
-    updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
-  } else if(matchingDocument[direction].includes(keyID)){     //if target array already contains User Cookie, remove it, '$pull'
-    updatedDirectionArrayLength = await modifyVoteDirectionArray('$pull', direction, confessionKeyID ,keyID);
-  } else if(matchingDocument[oppositeDirection].includes(keyID)){   //if opposite of target array contains U.C, remove it from there and add it to target array
-    updatedOppositeDirectionArrayLength = await modifyVoteDirectionArray('$pull', oppositeDirection, confessionKeyID ,keyID);
-    updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
-  }
-
-  io.emit('newArrayLengths', updatedDirectionArrayLength, updatedOppositeDirectionArrayLength ,direction, oppositeDirection ,confessionKeyID);
-}
-
-async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {
-  const updatedDocument = await collection.findOneAndUpdate(
-    { _id: confessionKeyID },
-    { [modification]: { [direction]: keyID }},
-    { returnDocument: 'after' }
-    );
-    return updatedDocument[direction].length;
-}
 
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
