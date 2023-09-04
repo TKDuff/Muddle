@@ -109,8 +109,3 @@ async function modifyVoteDirectionArray(collection, modification, direction, con
   }
 
 module.exports = socketHandler
-
-
-
-/*as of now, the function to get the documents from the db and draw their SVGs when the browser connects is not here
-, you cannot upvote/downvote on refreshed screen*/
