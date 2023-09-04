@@ -59,9 +59,9 @@ const sendToServer = (position) => {
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
 } 
 
-// Listen for the 'newLocation' event from the server
-socket.on('newLocation', (newLocation) => {
-    createMarker(newLocation.lat, newLocation.long, newLocation.confession ,newLocation._id, 0, 0);
+// Listen for the 'newPost' event from the server
+socket.on('newPost', (Post) => {
+    createMarker(Post.lat, Post.long, Post.confession ,Post._id, 0, 0);
 });
 
 /*After voting in a certain direction on a post, the new lengths the direction and opposite direction arrays for the document are returned 
@@ -72,7 +72,7 @@ For vote switching the changeOneGradient() is called twice, once for the voted s
 
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
-socket.on('testDirectionCount', (updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
+socket.on('newArrayLengths', (updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
     console.log(updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, confessionKeyID)
     if(updatedOppositeDirectionArrayLength === null){
         changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID)

@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
 
 // Handle client connections, when client connect find all confessions in DB and post to client, to create markers
 io.on('connection', async (socket) => {
-    console.log('Client connected');
+    console.log('Client be connected');
     
     /*When client connects, emit all the posts already in the database to them to be drawn to the screen*/
     const posts = await collection.find({}).toArray();
@@ -55,8 +55,7 @@ io.on('connection', async (socket) => {
     
     // Handle chat message event from the client
     socket.on('confessionFromClient', (message) => {
-      console.log('hi');
-        insertStringIntoLocationsCollection(message);
+      insertPostIntoLocationsCollection(message);
     });
 
     socket.on('voteOnMarker', (markerKey) => {
@@ -76,13 +75,14 @@ io.on('connection', async (socket) => {
     socket.on('createFakePost', (count) => {
       let lat_row = BASE_LAT
       let long_row = BASE_LONG
+      let uuid = uuidv4();
 
       for(let i = 0; i < count; i++){
         const data = {
           time: i,
           lat: lat_row,
           long: long_row,
-          confession: `${i}`,
+          confession: uuid,
           Up: [],
           Down: []
         };
@@ -91,7 +91,7 @@ io.on('connection', async (socket) => {
           lat_row = BASE_LAT
         }
         lat_row += LAT_DIFF
-        insertStringIntoLocationsCollection({messageVar: data, keyVar: i});
+        insertPostIntoLocationsCollection({messageVar: data, keyVar: uuid});
       };
 
       
@@ -100,15 +100,12 @@ io.on('connection', async (socket) => {
 });
 
 // Insert strings into the "Locations" collection
-async function insertStringIntoLocationsCollection(message) {
+async function insertPostIntoLocationsCollection(message) {
   const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
-    try {
-      // Insert the string into the collection
-      messageVar._id = keyVar
-      const result = await collection.insertOne(messageVar);
-    } catch (error) {
-      console.error('Error inserting string into the collection:', error);
-    }
+  // Insert the string into the collection
+  messageVar._id = keyVar
+  await collection.insertOne(messageVar);
+  io.emit('newPost', messageVar);
 }
 
 /*voting on a marker is either pushing/pulling the cookie I.D to/from the up/down array depending on the vote 
@@ -121,7 +118,7 @@ async function voteOnMarker(markerKey) {
   const oppositeDirection = direction === 'Up' ? 'Down' : 'Up';
 
   const query = {
-    _id: +confessionKeyID,
+    _id: confessionKeyID,
     $or: [
       { Up: keyID },   // Check if keyID exists in the 'up' array
       { Down: keyID }  // Check if keyID exists in the 'down' array
@@ -140,17 +137,15 @@ async function voteOnMarker(markerKey) {
     updatedDirectionArrayLength = await modifyVoteDirectionArray('$addToSet', direction, confessionKeyID ,keyID);
   }
 
-  //console.log(updatedDirectionArrayLength);
-  io.emit('testDirectionCount', updatedDirectionArrayLength, updatedOppositeDirectionArrayLength ,direction, oppositeDirection ,confessionKeyID);
+  io.emit('newArrayLengths', updatedDirectionArrayLength, updatedOppositeDirectionArrayLength ,direction, oppositeDirection ,confessionKeyID);
 }
 
 async function modifyVoteDirectionArray(modification, direction, confessionKeyID ,keyID) {
   const updatedDocument = await collection.findOneAndUpdate(
-    { _id: +confessionKeyID },
+    { _id: confessionKeyID },
     { [modification]: { [direction]: keyID }},
     { returnDocument: 'after' }
     );
-    console.log(updatedDocument, updatedDocument[direction].length, modification, direction);
     return updatedDocument[direction].length;
 }
 
@@ -158,28 +153,10 @@ async function modifyVoteDirectionArray(modification, direction, confessionKeyID
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
-app.use((err, req, res, next) => {
-  console.error('Global error handler:', err);
-  // Handle the error as needed, e.g., send an error response
-  res.status(400).json({ error: 'Internal server error' });
-});
+
 // Start the server
 httpServer.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
 
-  
-// Listen for change events
-changeStream.on('change', (change) => {  
-  if (change.operationType === 'insert') {
-    const confession = change.fullDocument.confession
-    const key = change.fullDocument._id
-    console.log(confession, key);
-    // Emit the newLocation object to all connected clients
-    io.emit('newLocation', change.fullDocument);
-  }
-});
-
-
-/*The + infront of confessionID will have to be removed to allow for UUID cookies */
