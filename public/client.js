@@ -16,9 +16,7 @@ const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.
 /*When client connects, they receive all docuements already in collection
 For every document, an SVG Icon is created and put on the map using createMarker() function */
 socket.on('allPostsFromDatabase', posts => {
-    console.log('Recevied all posts from mongoDB');
     posts.forEach((obj) => {
-        console.log(obj._id, obj.Down.length, obj.Up.length);
         createMarker(obj.lat, obj.long, obj.confession, obj._id, obj.Down.length, obj.Up.length);
     }); 
 })
@@ -73,7 +71,6 @@ For vote switching the changeOneGradient() is called twice, once for the voted s
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
 socket.on('newArrayLengths', (updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
-    console.log(updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, confessionKeyID)
     if(updatedOppositeDirectionArrayLength === null){
         changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID)
     } else {
@@ -87,7 +84,6 @@ function changeOneGradient(updatedDirectionArrayLength, direction, confessionKey
     let middleOffsetValue = parseInt(svgPost.find(`#Middle${confessionKeyID}`).attr('offset'), 10); //parseing to remove % from offset value
     middleOffsetValue = (direction === 'Up') ? middleOffsetValue-MIDDLE_OFFSET : middleOffsetValue+MIDDLE_OFFSET;
     let gradientIndex = `--${direction}-gradient-${updatedDirectionArrayLength}`;
-    console.log('The gradient index is', gradientIndex, 'the updated count is ', updatedDirectionArrayLength);
     svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
     svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
 }
@@ -128,7 +124,6 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount) => {
 };
 
 $(document).on('click', '.voteButton', function () {
-    console.log(this.id, $(this).closest('div').attr('id'), key);
     socket.emit('voteOnMarker', {direction: this.id, confessionKeyID: $(this).closest('div').attr('id'), keyID: key});
 });
 /*

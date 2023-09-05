@@ -12,7 +12,6 @@ const io = require('socket.io')(httpServer, {
   allowEIO3: true
 });
 const socketEventHandlers = require('./socketEventHandler.js')
-
 const { v4: uuidv4 } = require('uuid');
 const port = process.env.PORT || 3000;
 const { MongoClient, MaxKey } = require('mongodb');
@@ -20,7 +19,15 @@ const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?ret
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
 
-socketEventHandlers(io, collection, uuidv4);
+//set these values for creating fake posts here, initialise once
+const fakePostLatLongValues = {
+  LONG_DIFF: 0.008442649,
+  LAT_DIFF: 0.00432114886,
+  BASE_LAT: 53.36416607458011,
+  BASE_LONG: -6.2923026417947545
+}
+
+socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues);
 app.use(cookieParser());
 
 
@@ -40,42 +47,6 @@ app.get('/', (req, res) => {
   } 
   res.sendFile(__dirname + '/public/index.html');
 });
-
-// Handle client connections, when client connect find all confessions in DB and post to client, to create markers
-io.on('connection', async (socket) => { 
-  /*
-    const LONG_DIFF = 0.008442649
-    const LAT_DIFF = 0.00432114886
-    const BASE_LAT = 53.36416607458011
-    const BASE_LONG = -6.2923026417947545
-
-    socket.on('createFakePost', (count) => {
-      let lat_row = BASE_LAT
-      let long_row = BASE_LONG
-      let uuid = uuidv4();
-
-      for(let i = 0; i < count; i++){
-        const data = {
-          time: i,
-          lat: lat_row,
-          long: long_row,
-          confession: uuid,
-          Up: [],
-          Down: []
-        };
-        if(i % 5 == 0){
-          long_row -= LONG_DIFF
-          lat_row = BASE_LAT
-        }
-        lat_row += LAT_DIFF
-        insertPostIntoLocationsCollection({messageVar: data, keyVar: uuid});
-      };
-
-      
-    })*/
-
-});
-
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file

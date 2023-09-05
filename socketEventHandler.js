@@ -1,15 +1,5 @@
-/*
-const LONG_DIFF = 0.008442649
-const LAT_DIFF = 0.00432114886
-const BASE_LAT = 53.36416607458011
-const BASE_LONG = -6.2923026417947545*/
-
-async function socketHandler(io, collection, uuidv4) {
+async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     io.on('connection', async (socket) => {
-        const LONG_DIFF = 0.008442649
-        const LAT_DIFF = 0.00432114886
-        const BASE_LAT = 53.36416607458011
-        const BASE_LONG = -6.2923026417947545
 
         console.log('Client Connected, printed via module');
         
@@ -20,7 +10,7 @@ async function socketHandler(io, collection, uuidv4) {
         
         // Handle chat message event from the client
     socket.on('confessionFromClient', (message) => {
-    insertPostIntoLocationsCollection(collection, message, io);
+    insertPostIntoLocationsCollection(message, collection, io);
     });
 
     socket.on('voteOnMarker', (markerKey) => {
@@ -33,9 +23,8 @@ async function socketHandler(io, collection, uuidv4) {
     });
 
     socket.on('createFakePost', (count) => {
-        console.log('Module file creating the fake posts');
-        let lat_row = BASE_LAT
-        let long_row = BASE_LONG
+        let lat_row = fakePostLatLongValues.BASE_LAT
+        let long_row = fakePostLatLongValues.BASE_LONG
   
         for(let i = 0; i < count; i++){
             let uuid = uuidv4();
@@ -48,11 +37,11 @@ async function socketHandler(io, collection, uuidv4) {
                 Down: []
             };
             if(i % 5 == 0){
-                long_row -= LONG_DIFF
-                lat_row = BASE_LAT
+                long_row -= fakePostLatLongValues.LONG_DIFF
+                lat_row = fakePostLatLongValues.BASE_LAT
             }
-            lat_row += LAT_DIFF
-            insertPostIntoLocationsCollection(collection, {messageVar: data, keyVar: uuid}, io);
+            lat_row += fakePostLatLongValues.LAT_DIFF
+            insertPostIntoLocationsCollection({messageVar: data, keyVar: uuid},collection, io);
         };
     });
 })
@@ -60,7 +49,7 @@ async function socketHandler(io, collection, uuidv4) {
 }
 
 // Insert strings into the "Locations" collection
-async function insertPostIntoLocationsCollection(collection, message, io) {
+async function insertPostIntoLocationsCollection(message, collection, io) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     // Insert the string into the collection
     messageVar._id = keyVar
