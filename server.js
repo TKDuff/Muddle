@@ -23,8 +23,8 @@ var collection = client.db('Muddle').collection('Locations');
 const fakePostLatLongValues = {
   LONG_DIFF: 0.008442649,
   LAT_DIFF: 0.00432114886,
-  BASE_LAT: 53.36416607458011,
-  BASE_LONG: -6.2923026417947545
+  BASE_LAT: 53.385574,
+  BASE_LONG: -6.598420
 }
 
 socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues);

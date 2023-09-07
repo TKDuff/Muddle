@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.366, -6.292], 15);
+const map = L.map('brookfieldMap').setView([53.3813,  -6.59185], 15);
 const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const tiles = L.tileLayer(tileUrl, { attribution });
@@ -44,12 +44,10 @@ const errorCallback = (position) => {
 
 //method that gets user location and sends it to the server
 const sendToServer = (position) => {
-    //be sure to set the cookie back to the document cookie 🧙‍♂️️👴️🚶️
-    //const key = Math.floor((Math.random() * 1000) + 1);//decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);
     const data = {
         time: Date.now(),
-        lat: parseFloat(position.coords.latitude) * (1 + (Math.random() * 0.000005)),
-        long: parseFloat(position.coords.longitude) * (1 + (Math.random() * 0.000005)),
+        lat: parseFloat(/*position.coords.latitude*/53.385574) * (1 + (Math.random() * 0.000005)),
+        long: parseFloat(/*position.coords.longitude*/-6.598420) * (1 + (Math.random() * 0.000005)),
         confession: document.getElementById("confessionBox").value,
         Up: [],
         Down: []
@@ -71,61 +69,78 @@ For vote switching the changeOneGradient() is called twice, once for the voted s
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
 socket.on('newArrayLengths', (updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
+    //middleOffsetValue = ((down - up) * 5) + 50
+    let middleOffsetValue = (direction === 'Up') ? updatedOppositeDirectionArrayLength-updatedDirectionArrayLength : updatedDirectionArrayLength-updatedOppositeDirectionArrayLength;
+    middleOffsetValue = (middleOffsetValue * 5) +50;
     if(updatedOppositeDirectionArrayLength === null){
-        changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID)
+        changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
     } else {
-        changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID)
-        changeOneGradient(updatedOppositeDirectionArrayLength, oppositeDirection, confessionKeyID)
+        changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
+        changeOneGradient(updatedOppositeDirectionArrayLength, oppositeDirection, middleOffsetValue, confessionKeyID)
     };
 })
 
-function changeOneGradient(updatedDirectionArrayLength, direction, confessionKeyID) {
+function changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID) {
     var svgPost = $(`#svg${confessionKeyID}`);
-    let middleOffsetValue = parseInt(svgPost.find(`#Middle${confessionKeyID}`).attr('offset'), 10); //parseing to remove % from offset value
-    middleOffsetValue = (direction === 'Up') ? middleOffsetValue-MIDDLE_OFFSET : middleOffsetValue+MIDDLE_OFFSET;
     let gradientIndex = `--${direction}-gradient-${updatedDirectionArrayLength}`;
     svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
     svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
+    console.log('side:', updatedDirectionArrayLength, 'gradient:', middleOffsetValue);
 }
 
 /*Creates the Post to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) {
-    const marker = L.marker([lat, long], {icon: createDivIcon(keyID, downVoteCount, upVoteCount)});
-    marker.addTo(map).bindPopup(confession).openPopup();
+    const marker = L.marker([lat, long], {icon: createDivIcon(keyID, downVoteCount, upVoteCount, confession)});
+    marker.addTo(map)/*.bindPopup(confession).openPopup()*/;
 }
 
 /*Each SVG is identified using the keyID, which is the user cookie
 The voteCounts (down/up) are used to specifiy which gradient should be used*/
-const createDivIcon = (keyID, downVoteCount, upVoteCount) => {
+const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
     let offsetValue = ((downVoteCount - upVoteCount) * 5) + 50
     return L.divIcon({
         className: 'SVG-Icon',
         html: `<div id=${keyID}>
-        <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200" width="120" height="120">
+        <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200">
         <defs>
         <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" id="Down${keyID}" stop-color="var(--Down-gradient-${downVoteCount})"/>
-        <stop offset="${offsetValue}%" id="Middle${keyID}" stop-color="rgb(255, 255, 100)"/>
+        <stop offset="${offsetValue}%" id="Middle${keyID}" stop-color="var(--default-yellow)"/>
         <stop offset="100%" id="Up${keyID}" stop-color="var(--Up-gradient-${upVoteCount})"/>
         </linearGradient>
         </defs>
-        <g>
-        <rect width="200" height="200" fill="url(#Gradient${keyID})" />
-        <foreignObject width="100%" height="100%">
-        <button class = "voteButton up" id="Up" >Upvote</button>
-        <button class = "voteButton down" id="Down" >Downvote</button>
-        </foreignObject>
+        <use href="#defaultGradientRect" fill="url(#Gradient${keyID})" />
+        <text x="100" y="50" alignment-baseline="central">${confession}</text>
+        <g id="Up">
+        <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
+        <path  id="upArrow" d="M325.606,229.393l-150.004-150C172.79,76.58,168.974,75,164.996,75c-3.979,0-7.794,1.581-10.607,4.394
+        l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
+        C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
         </g>
+
+        <g id="Down">
+        <rect x="0" y="170" width="100" height="30" fill-opacity="0" />
+        <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
+        c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
+        s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
+        </g>
+        
         </svg>
         </div>`,
         iconSize: [120, 120],
         iconAnchor: [0, 0]});
 };
-
-$(document).on('click', '.voteButton', function () {
-    socket.emit('voteOnMarker', {direction: this.id, confessionKeyID: $(this).closest('div').attr('id'), keyID: key});
+//<rect width="200" height="200" fill="url(#Gradient${keyID})" />
+$(document).on('click', 'g', function () {
+    console.log($(this).attr('id'), $(this).closest('svg').attr('id'), key);
+    //socket.emit('voteOnMarker', {direction: this.id, confessionKeyID: $(this).closest('div').attr('id'), keyID: key});
+    socket.emit('voteOnMarker', {direction: $(this).attr('id'), confessionKeyID: $(this).closest('svg').attr('id'), keyID: key});
 });
 /*
-big change, for now, the KeyId will be the time it was posed, due to jquery have a length limit on the id it returns when calling
-$(this).closest('div').attr('id'); */
+<foreignObject width="100%" height="100%">
+        <button class = "voteButton up" id="Up" >Upvote</button>
+        <button class = "voteButton down" id="Down" >Downvote</button>
+</foreignObject>
+290, 340
+*/

@@ -29,14 +29,47 @@
     --Down-gradient-10: rgb(255, 0, 100);
 }
 
-#up {
-    position: absolute;
-    top:  175px;
-    right: 0px;
+
+#upArrow {
+    fill: rgb(33, 202, 73);
+    transform: scale(0.1) translate(1600px, 1600px); 
+    transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
-#down {
-    position: absolute;
-    top:  175px;
-    left: 0px;
+#Up:hover #upArrow{
+    animation: fillChangeUpArrow 0.1s forwards;
 }
+
+@keyframes fillChangeUpArrow {
+    to { 
+      fill: rgb(72, 154, 72);
+    }
+}
+
+#downArrow {
+    fill: rgb(255, 117, 117);
+    transform: scale(0.1) translate(140px, 1600px); 
+    transform-origin: 0 0; /* or whatever point you want as the origin */
+}
+
+#Down:hover #downArrow{
+    animation: fillChangeDownArrow 0.1s forwards;
+}
+
+@keyframes fillChangeDownArrow {
+    to { 
+      fill: rgb(202, 33, 73);
+    }
+}
+
+.SVG-Icon {
+    width: 120px;
+    height: 120px;
+}
+
+text {
+    text-anchor: middle;
+    font-family: Arial, sans-serif;
+    font-size: 28px;
+    fill: rgb(0,0,155);;  /* The color of the text */
+  }
