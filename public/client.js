@@ -81,7 +81,7 @@ socket.on('newArrayLengths', (updatedDirectionArrayLength, updatedOppositeDirect
 })
 
 function changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID) {
-    var svgPost = $(`#svg${confessionKeyID}`);
+    var svgPost = $(`#${confessionKeyID}`);
     let gradientIndex = `--${direction}-gradient-${updatedDirectionArrayLength}`;
     svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
     svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
@@ -101,8 +101,8 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
     let offsetValue = ((downVoteCount - upVoteCount) * 5) + 50
     return L.divIcon({
         className: 'SVG-Icon',
-        html: `<div id=${keyID}>
-        <svg xmlns="http://www.w3.org/2000/svg" id="svg${keyID}" viewBox="0 0 200 200">
+        html: `<div>
+        <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" viewBox="0 0 200 200">
         <defs>
         <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
         <stop offset="0%" id="Down${keyID}" stop-color="var(--Down-gradient-${downVoteCount})"/>
@@ -131,16 +131,12 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
         iconSize: [120, 120],
         iconAnchor: [0, 0]});
 };
-//<rect width="200" height="200" fill="url(#Gradient${keyID})" />
+/**
+Jquery, listen for click on <g> tag which is used two group "up" & "down" votes
+Grouping is done via hidden rectangle(Two rectangles with ids "Up" and "Down") (ocapacity 0) with arrow (facing up or down) ontop
+On clikc, socket emit the group id (thus which dirction was voted), the SVG id (cookie of post) and the users cookie
+ */
 $(document).on('click', 'g', function () {
-    console.log($(this).attr('id'), $(this).closest('svg').attr('id'), key);
-    //socket.emit('voteOnMarker', {direction: this.id, confessionKeyID: $(this).closest('div').attr('id'), keyID: key});
     socket.emit('voteOnMarker', {direction: $(this).attr('id'), confessionKeyID: $(this).closest('svg').attr('id'), keyID: key});
 });
-/*
-<foreignObject width="100%" height="100%">
-        <button class = "voteButton up" id="Up" >Upvote</button>
-        <button class = "voteButton down" id="Down" >Downvote</button>
-</foreignObject>
-290, 340
-*/
+
