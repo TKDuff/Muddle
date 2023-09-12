@@ -2,7 +2,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
 const httpServer = require('http').createServer(app);
-const io = require('socket.io')(httpServer, {
+const io = require('socket.io')(httpServer
+  /*, { BE SURE TO REMOVE THE /* HERE
   cors: {
     origin: "https://red-surf-7071.fly.dev",
     methods: ["GET", "POST"],
@@ -10,10 +11,10 @@ const io = require('socket.io')(httpServer, {
     credentials: true
   },
   allowEIO3: true
-});
+}*/);
 const socketEventHandlers = require('./socketEventHandler.js')
 const { v4: uuidv4 } = require('uuid');
-const port = process.env.PORT || 3000;
+const port = /*process.env.PORT ||*/ 3000;              //REMOVE /* */ FROM HERE TO BE ON FLY.IO
 const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
@@ -21,10 +22,10 @@ var collection = client.db('Muddle').collection('Locations');
 
 //set these values for creating fake posts here, initialise once
 const fakePostLatLongValues = {
-  LONG_DIFF: 0.008442649,
-  LAT_DIFF: 0.00432114886,
-  BASE_LAT: 53.385574,
-  BASE_LONG: -6.598420
+  LONG_DIFF: 0.001202,
+    LAT_DIFF: 0.00054,
+    BASE_LAT: 53.383191,
+    BASE_LONG: -6.599381
 }
 
 socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues);
@@ -53,7 +54,7 @@ app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
 
 // Start the server
-httpServer.listen(port, '0.0.0.0', () => {
+httpServer.listen(port,  () => {    /*'0.0.0.0', ADD THIS BACK IN*/
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });

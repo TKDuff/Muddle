@@ -1,24 +1,32 @@
 //map setup
 const map = L.map('brookfieldMap').setView([53.3813,  -6.59185], 15);
-const attribution ='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const tiles = L.tileLayer(tileUrl, { attribution });
-tiles.addTo(map);
+L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
+    attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
+    maxZoom: 22
+
+}).addTo(map);
 const mapDiv = document.getElementById('brookfieldMap');
 
 // Connect to the server
-const socket = io('https://red-surf-7071.fly.dev/', {
+const socket = io('http://localhost:3000/', { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
+const postCacheMap = new Map();
 
 /*When client connects, they receive all docuements already in collection
-For every document, an SVG Icon is created and put on the map using createMarker() function */
-socket.on('allPostsFromDatabase', posts => {
-    posts.forEach((obj) => {
+For every document a new boolean object is added, "isCircle" which is used for renderding the SVGs
+then add the document to the map "postCacheMap", using the object key as the map key
+An SVG Icon is created and put on the map using createMarker() function */
+socket.on('allDocumentsFromDatabase', documents => {
+    documents.forEach((obj) => {
+        obj.isCircle = true;
+        postCacheMap.set(obj._id, obj)
         createMarker(obj.lat, obj.long, obj.confession, obj._id, obj.Down.length, obj.Up.length);
-    }); 
+    });
+
 })
 
 function postConfession() {
@@ -101,7 +109,7 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
     let offsetValue = ((downVoteCount - upVoteCount) * 5) + 50
     return L.divIcon({
         className: 'SVG-Icon',
-        html: `<div>
+        html: `<div class="SVG-Icon">
         <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" viewBox="0 0 200 200">
         <defs>
         <linearGradient id="Gradient${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -131,7 +139,7 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
         iconSize: [120, 120],
         iconAnchor: [0, 0]});
 };
-/**
+/*
 Jquery, listen for click on <g> tag which is used two group "up" & "down" votes
 Grouping is done via hidden rectangle(Two rectangles with ids "Up" and "Down") (ocapacity 0) with arrow (facing up or down) ontop
 On clikc, socket emit the group id (thus which dirction was voted), the SVG id (cookie of post) and the users cookie
@@ -140,3 +148,17 @@ $(document).on('click', 'g', function () {
     socket.emit('voteOnMarker', {direction: $(this).attr('id'), confessionKeyID: $(this).closest('svg').attr('id'), keyID: key});
 });
 
+/*
+map.on('zoomanim', function(e) {
+    console.log(e.zoom);
+    let currentZoom =  e.zoom//map.getZoom();
+    //max zoom level is 22
+    let scaleFactor = Math.pow(1.25, currentZoom - 22);
+    console.log(scaleFactor);
+    let svgIcons = document.querySelectorAll('.SVG-Icon');
+
+    svgIcons.forEach(icon => {
+        icon.style.transform = `scale(${scaleFactor})`;
+    });
+    
+})*/

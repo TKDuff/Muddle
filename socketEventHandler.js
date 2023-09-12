@@ -1,11 +1,8 @@
 async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     io.on('connection', async (socket) => {
-
-        console.log('Client Connected, printed via module');
-        
         /*When client connects, emit all the posts already in the database to them to be drawn to the screen*/
-        const posts = await collection.find({}).toArray();
-        socket.emit('allPostsFromDatabase', posts);
+        const documents = await collection.find({}).toArray();
+        socket.emit('allDocumentsFromDatabase', documents);
 
         
         // Handle chat message event from the client
