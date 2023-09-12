@@ -79,29 +79,29 @@ const sendToServer = (position) => {
 /*After voting in a certain direction on a post, the new lengths the direction and opposite direction arrays for the document are returned 
 The lengths are used to choose a CSS gradient value from 0-10
 The function changeOneGradient() changes the up/down side gradient
-If the updatedOppositeDirectionArrayLength is not null, that means the opposite direction array was updated and thus a vote switch took place
+If the OppositeDirectionArrayLength is not null, that means the opposite direction array was updated and thus a vote switch took place
 For vote switching the changeOneGradient() is called twice, once for the voted side (to increment) and again for the unvoted side (to decrement)*/
 
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
-socket.on('newArrayLengths', (updatedDirectionArrayLength, updatedOppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
-    //middleOffsetValue = ((down - up) * 5) + 50
-    let middleOffsetValue = (direction === 'Up') ? updatedOppositeDirectionArrayLength-updatedDirectionArrayLength : updatedDirectionArrayLength-updatedOppositeDirectionArrayLength;
+socket.on('newArrayLengths', (DirectionArrayLength, OppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
+
+    let middleOffsetValue = (direction === 'Up') ? OppositeDirectionArrayLength-DirectionArrayLength : DirectionArrayLength-OppositeDirectionArrayLength;
     middleOffsetValue = (middleOffsetValue * 5) +50;
-    if(updatedOppositeDirectionArrayLength === null){
-        changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
+    if(OppositeDirectionArrayLength === null){
+        changeOneGradient(DirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
     } else {
-        changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
-        changeOneGradient(updatedOppositeDirectionArrayLength, oppositeDirection, middleOffsetValue, confessionKeyID)
+        changeOneGradient(DirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
+        changeOneGradient(OppositeDirectionArrayLength, oppositeDirection, middleOffsetValue, confessionKeyID)
     };
 })
 
-function changeOneGradient(updatedDirectionArrayLength, direction, middleOffsetValue, confessionKeyID) {
+function changeOneGradient(DirectionArrayLength, direction, middleOffsetValue, confessionKeyID) {
     var svgPost = $(`#${confessionKeyID}`);
-    let gradientIndex = `--${direction}-gradient-${updatedDirectionArrayLength}`;
+    let gradientIndex = `--${direction}-gradient-${DirectionArrayLength}`;
     svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
     svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
-    console.log('side:', updatedDirectionArrayLength, 'gradient:', middleOffsetValue);
+    //console.log('side:', DirectionArrayLength, 'gradient:', middleOffsetValue);
 }
 
 /*Creates the Post to be displayed on the map.
