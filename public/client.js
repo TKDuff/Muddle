@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.3813,  -6.59185], 15);
+const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 20);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -76,32 +76,38 @@ const sendToServer = (position) => {
 } 
 
 
-/*After voting in a certain direction on a post, the new lengths the direction and opposite direction arrays for the document are returned 
-The lengths are used to choose a CSS gradient value from 0-10
-The function changeOneGradient() changes the up/down side gradient
-If the OppositeDirectionArrayLength is not null, that means the opposite direction array was updated and thus a vote switch took place
-For vote switching the changeOneGradient() is called twice, once for the voted side (to increment) and again for the unvoted side (to decrement)*/
-
+/*
+When a user votes on a value, this even is called
+action is either 1, -1 or null, direction is either 'up' or 'down', oppositeDirection is either null or the opposite, 
+confessionKeyID is the id of the post that was voted on
+*/
+socket.on('newArrayLengths', (action, direction, oppositeDirection , confessionKeyID) => {    
+    if(action){
+        amendpostCacheMapVoteValues(action, confessionKeyID, direction);
+    } else {
+        console.log('Switch');
+        amendpostCacheMapVoteValues(-1, confessionKeyID, oppositeDirection);
+        amendpostCacheMapVoteValues(1, confessionKeyID, direction);
+    }
+})
+/*amends the direction int values for the specific post object in postCacheMap map collection
+action is 1 or -1, thus it get the current value and adds action, then sets the value to be the inc/decremented value
+Then changeOneGradient() is called with the new value*/
+function amendpostCacheMapVoteValues (action, confessionKeyID, direction) {
+    let postDirectionValue = postCacheMap.get(confessionKeyID);
+    postDirectionValue[direction] += action;
+    postCacheMap.set(confessionKeyID, postDirectionValue);
+    changeOneGradient(postDirectionValue[direction], direction, confessionKeyID);
+}
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
-socket.on('newArrayLengths', (DirectionArrayLength, OppositeDirectionArrayLength, direction, oppositeDirection , confessionKeyID) => {
-
-    let middleOffsetValue = (direction === 'Up') ? OppositeDirectionArrayLength-DirectionArrayLength : DirectionArrayLength-OppositeDirectionArrayLength;
+function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
+    let middleOffsetValue = postCacheMap.get(confessionKeyID).Down - postCacheMap.get(confessionKeyID).Up
     middleOffsetValue = (middleOffsetValue * 5) +50;
-    if(OppositeDirectionArrayLength === null){
-        changeOneGradient(DirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
-    } else {
-        changeOneGradient(DirectionArrayLength, direction, middleOffsetValue, confessionKeyID)
-        changeOneGradient(OppositeDirectionArrayLength, oppositeDirection, middleOffsetValue, confessionKeyID)
-    };
-})
-
-function changeOneGradient(DirectionArrayLength, direction, middleOffsetValue, confessionKeyID) {
     var svgPost = $(`#${confessionKeyID}`);
     let gradientIndex = `--${direction}-gradient-${DirectionArrayLength}`;
     svgPost.find(`#${direction}${confessionKeyID}`).attr('stop-color', `var(${gradientIndex})`);
     svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
-    //console.log('side:', DirectionArrayLength, 'gradient:', middleOffsetValue);
 }
 
 /*Creates the Post to be displayed on the map.
@@ -156,7 +162,7 @@ $(document).on('click', 'g', function () {
     socket.emit('voteOnMarker', {direction: $(this).attr('id'), confessionKeyID: $(this).closest('svg').attr('id'), keyID: key});
 });
 
-/*
+
 map.on('zoomanim', function(e) {
     console.log(e.zoom);
     let currentZoom =  e.zoom//map.getZoom();
@@ -169,4 +175,4 @@ map.on('zoomanim', function(e) {
         icon.style.transform = `scale(${scaleFactor})`;
     });
     
-})*/
+})

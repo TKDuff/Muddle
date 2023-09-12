@@ -60,8 +60,7 @@ Downvote is pulling from the array
 "Switching" is when a user votes in the opposite direction on the same vote, so up to down and vice versa */
 async function voteOnMarker(collection, io, markerKey) {
     const {direction, confessionKeyID ,keyID} = markerKey;
-    const oppositeDirection = direction === 'Up' ? 'Down' : 'Up';
-  
+    let oppositeDirection;
     const query = {
       _id: confessionKeyID,
       $or: [
@@ -71,27 +70,27 @@ async function voteOnMarker(collection, io, markerKey) {
     };
   
     const matchingDocument = await collection.findOne(query);
-    let updatedDirectionArrayLength
-    let updatedOppositeDirectionArrayLength
+    let action;
     if(!matchingDocument){    //if both arrays don't contain User Cookie, add to target array, '$addToSet'
-      updatedDirectionArrayLength = await modifyVoteDirectionArray(collection, '$addToSet', direction, confessionKeyID ,keyID);
+      await modifyVoteDirectionArray(collection, '$addToSet', direction, confessionKeyID ,keyID);
+      action = 1//'add';
     } else if(matchingDocument[direction].includes(keyID)){     //if target array already contains User Cookie, remove it, '$pull'
-      updatedDirectionArrayLength = await modifyVoteDirectionArray(collection, '$pull', direction, confessionKeyID ,keyID);
-    } else if(matchingDocument[oppositeDirection].includes(keyID)){   //if opposite of target array contains U.C, remove it from there and add it to target array
-      updatedOppositeDirectionArrayLength = await modifyVoteDirectionArray(collection, '$pull', oppositeDirection, confessionKeyID ,keyID);
-      updatedDirectionArrayLength = await modifyVoteDirectionArray(collection, '$addToSet', direction, confessionKeyID ,keyID);
+      await modifyVoteDirectionArray(collection, '$pull', direction, confessionKeyID ,keyID);
+      action = -1//'remove'
+    } else{   //if opposite of target array contains U.C, remove it from there and add it to target array
+      oppositeDirection = direction === 'Up' ? 'Down' : 'Up';
+      await modifyVoteDirectionArray(collection, '$pull', oppositeDirection, confessionKeyID ,keyID);
+      await modifyVoteDirectionArray(collection, '$addToSet', direction, confessionKeyID ,keyID);
     }
     
-    io.emit('newArrayLengths', updatedDirectionArrayLength, updatedOppositeDirectionArrayLength ,direction, oppositeDirection ,confessionKeyID);
+    io.emit('newArrayLengths', action ,direction, oppositeDirection ,confessionKeyID);
 }
 
 async function modifyVoteDirectionArray(collection, modification, direction, confessionKeyID ,keyID) {
-    const updatedDocument = await collection.findOneAndUpdate(
+    await collection.updateOne(
       { _id: confessionKeyID },
-      { [modification]: { [direction]: keyID }},
-      { returnDocument: 'after' }
+      { [modification]: { [direction]: keyID }}
       );
-      return updatedDocument[direction].length;
-  }
+}
 
 module.exports = socketHandler
