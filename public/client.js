@@ -16,18 +16,30 @@ const socket = io('http://localhost:3000/', { //REMEBER TO ADD 'https://red-surf
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
 const postCacheMap = new Map();
 
-/*When client connects, they receive all docuements already in collection
-For every document a new boolean object is added, "isCircle" which is used for renderding the SVGs
-then add the document to the map "postCacheMap", using the object key as the map key
-An SVG Icon is created and put on the map using createMarker() function */
+/*When client connects, all docuements in the database are sent to the client
+when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
+In both cases, handePostData(), handles the data as follows */
 socket.on('allDocumentsFromDatabase', documents => {
-    documents.forEach((obj) => {
-        obj.isCircle = true;
-        postCacheMap.set(obj._id, obj)
-        createMarker(obj.lat, obj.long, obj.confession, obj._id, obj.Down.length, obj.Up.length);
-    });
-
+    documents.forEach(handlePostData); 
 })
+socket.on('newPost', (Post) => {
+    handlePostData(Post);
+});
+
+/*
+ * Handles the post data from the server:
+ * - Adds the "isCircle" boolean for SVG rendering.
+ * - Converts "Up" and "Down" arrays to ints, the values are their lengths.
+ * - Adds the post to the "postCacheMap".
+ * - Creates an SVG Icon on the map.
+ */
+function handlePostData(obj) {
+    obj.isCircle = true;
+    obj.Up = obj.Up.length 
+    obj.Down = obj.Down.length
+    postCacheMap.set(obj._id, obj)
+    createMarker(obj.lat, obj.long, obj.confession, obj._id, obj.Down, obj.Up);
+}
 
 function postConfession() {
     //get the users location
@@ -63,10 +75,6 @@ const sendToServer = (position) => {
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
 } 
 
-// Listen for the 'newPost' event from the server
-socket.on('newPost', (Post) => {
-    createMarker(Post.lat, Post.long, Post.confession ,Post._id, 0, 0);
-});
 
 /*After voting in a certain direction on a post, the new lengths the direction and opposite direction arrays for the document are returned 
 The lengths are used to choose a CSS gradient value from 0-10
