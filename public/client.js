@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 20);
+const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 17);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -9,7 +9,7 @@ L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey
 const mapDiv = document.getElementById('brookfieldMap');
 
 // Connect to the server
-const socket = io('http://localhost:3000/', { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io('https://red-surf-7071.fly.dev/', { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -80,12 +80,13 @@ const sendToServer = (position) => {
 When a user votes on a value, this even is called
 action is either 1, -1 or null, direction is either 'up' or 'down', oppositeDirection is either null or the opposite, 
 confessionKeyID is the id of the post that was voted on
+If action is null, that means switched vote, so call amendpostCacheMapVoteValues() twice,
+to decrement opposite direction int, then to increment target direction int
 */
 socket.on('newArrayLengths', (action, direction, oppositeDirection , confessionKeyID) => {    
     if(action){
         amendpostCacheMapVoteValues(action, confessionKeyID, direction);
     } else {
-        console.log('Switch');
         amendpostCacheMapVoteValues(-1, confessionKeyID, oppositeDirection);
         amendpostCacheMapVoteValues(1, confessionKeyID, direction);
     }
@@ -162,7 +163,7 @@ $(document).on('click', 'g', function () {
     socket.emit('voteOnMarker', {direction: $(this).attr('id'), confessionKeyID: $(this).closest('svg').attr('id'), keyID: key});
 });
 
-
+/*
 map.on('zoomanim', function(e) {
     console.log(e.zoom);
     let currentZoom =  e.zoom//map.getZoom();
@@ -174,5 +175,4 @@ map.on('zoomanim', function(e) {
     svgIcons.forEach(icon => {
         icon.style.transform = `scale(${scaleFactor})`;
     });
-    
-})
+})*/
