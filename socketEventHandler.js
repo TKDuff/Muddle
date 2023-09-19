@@ -82,7 +82,6 @@ async function voteOnMarker(collection, io, markerKey) {
       await modifyVoteDirectionArray(collection, '$pull', oppositeDirection, confessionKeyID ,keyID);
       await modifyVoteDirectionArray(collection, '$addToSet', direction, confessionKeyID ,keyID);
     }
-    
     io.emit('newArrayLengths', action ,direction, oppositeDirection ,confessionKeyID);
 }
 

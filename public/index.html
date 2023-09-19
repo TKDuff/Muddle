@@ -8,7 +8,7 @@
         <script src="client.js" type="text/javascript" defer>//defer used as html map must load before can make call to L.map in client.js</script> 
         <script src="node_modules/jquery/dist/jquery.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <style>#brookfieldMap { height: 800px; }</style>
+        <style>#brookfieldMap {width: 1800px; height: 800px; }</style>
     </head>
     
     <body>
@@ -42,32 +42,7 @@
               <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
                 <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
               </filter>
-      
-      
-              <linearGradient id="Gradient" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" id="Down1" stop-color="var(--Down-gradient-1)"/>
-                <stop offset="33.33%" id="Middle1" stop-color="yellow"/>
-                <stop offset="100%" id="Up1" stop-color="var(--Up-gradient-2)"/>
-                </linearGradient>
-      
-              <g id="rectangle">
-                <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient)"/>
-      
-                <g id="Up">
-                  <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
-                  <path  id="upArrow" d="M325.606,229.393l-150.004-150C172.79,76.58,168.974,75,164.996,75c-3.979,0-7.794,1.581-10.607,4.394
-                  l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
-                  C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
-                </g> 
-      
-                <g id="Down">
-                  <rect x="0" y="190" width="100" height="30" fill-opacity="0" />
-                  <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
-                  c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
-                  s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
-                </g>
-              </g>
-      
+            
               <circle id="circle" cx="12.5" cy="12.5" r="10" fill="yellow" filter="url(#f1)" />
             </defs>
           </svg>

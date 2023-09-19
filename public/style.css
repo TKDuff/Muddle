@@ -32,7 +32,7 @@
 
 #upArrow {
     fill: rgb(33, 202, 73);
-    transform: scale(0.1) translate(1600px, 1600px); 
+    transform: scale(0.1) translate(1600px, 1700px); 
     transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
@@ -48,7 +48,7 @@
 
 #downArrow {
     fill: rgb(255, 117, 117);
-    transform: scale(0.1) translate(140px, 1600px); 
+    transform: scale(0.1) translate(140px, 1700px); 
     transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
@@ -60,11 +60,6 @@
     to { 
       fill: rgb(202, 33, 73);
     }
-}
-
-.SVG-Icon {
-    width: 120px;
-    height: 120px;
 }
 
 text {
