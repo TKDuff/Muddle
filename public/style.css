@@ -65,9 +65,8 @@
     }
 }
 
-text {
-    text-anchor: middle;
-    font-family: Arial, sans-serif;
-    font-size: 28px;
-    fill: rgb(0,0,155);;  /* The color of the text */
-  }
+.svg-text-content {
+    font-family: Verdana,sans-serif;
+    font-size: 13.5px;
+    color: rgb(0, 0, 0);
+}

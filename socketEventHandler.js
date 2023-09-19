@@ -29,7 +29,9 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
                 time: i,
                 lat: lat_row,
                 long: long_row,
-                confession: uuid,
+                confession: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
+                Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
+                Integer placerat dignissim tellus. Cras sed augue diam. In eget magna nec.`,
                 Up: [],
                 Down: []
             };
