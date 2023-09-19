@@ -124,7 +124,7 @@ function createMarker(lat, long, keyID) {
     const marker = L.marker([lat, long], {icon: createCircleDivIcon(keyID)});
     svgMarkerGroup.addLayer(marker);
 }
-let globalscaleFactor = 1;
+
 const RECTICONSIZE = 200;
 const CIRCICONSIZE = 20;
 const CIRCICONANCHOR = CIRCICONSIZE/2;
@@ -137,7 +137,35 @@ const createCircleDivIcon = (keyID) => {
         iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
 };
 
+const maxZoomLevel = 19;
+let globalscaleFactor = 1;
+map.on('zoomanim', function(e) {
+    let currentZoom =  e.zoom//map.getZoom();
+    globalscaleFactor = Math.pow(1.3, currentZoom - maxZoomLevel);
 
+    svgMarkerGroup.eachLayer(function(marker) {
+        let icon = marker.getIcon();
+        let svgElement = $(marker._icon).find('.marker-svg');
+        svgElement.css('transform', `scale(${globalscaleFactor})`);
+
+        let isCircle = svgElement.hasClass('circle');
+        let iconSizeVal = isCircle ? CIRCICONSIZE : RECTICONSIZE;
+        let anchorValue = iconSizeVal/2;
+
+        let newSize = [iconSizeVal * globalscaleFactor, iconSizeVal * globalscaleFactor];
+        let newAnchor = [anchorValue * globalscaleFactor, anchorValue * globalscaleFactor];
+
+        icon.options.iconSize = newSize;
+        icon.options.iconAnchor = newAnchor;
+
+        if(isCircle) {
+            icon.options.html = createSVGTemplate(svgElement.attr('id'), 'circle', 25);
+        } else {
+            icon.options.html = createSVGTemplate(svgElement.attr('id'), 'rectangle', 200);
+        }
+        marker.setIcon(icon);
+});
+})
 
 let highestZIndex = 100;
 let test = 'blue';
@@ -176,7 +204,7 @@ function createSVGTemplate(keyID, shape, viewBox) {
     if(shape === 'rectangle'){
         //console.log(keyID, 'has', postCacheMap.get(keyID)['Up'], 'upvotes');
         return `<div class="SVG-Icon">
-                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg ${shape}" viewBox="0 0 ${viewBox} ${viewBox}">
+                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
                 <defs>
                 <linearGradient id="Gradient-${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
@@ -186,7 +214,7 @@ function createSVGTemplate(keyID, shape, viewBox) {
                 </defs>
                 <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="200" height="200">
-                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >Test with some text</div>
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
                 <g id="Up">
                   <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
