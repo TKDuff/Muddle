@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 17);
+const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 18);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -8,8 +8,11 @@ L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey
 }).addTo(map);
 const mapDiv = document.getElementById('brookfieldMap');
 
+const localIO = 'http://localhost:3000/';
+const flyIo = 'https://red-surf-7071.fly.dev/';
+
 // Connect to the server
-const socket = io('https://red-surf-7071.fly.dev/', { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -111,15 +114,15 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
     svgPost.find(`#Middle${confessionKeyID}`).attr('offset', `${middleOffsetValue}%`);
 }
 
-/*Creates the Post to be displayed on the map.
+/*Creates the post circle to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, confession, keyID, downVoteCount, upVoteCount) {
-    const marker = L.marker([lat, long], {icon: createDivIcon(keyID, downVoteCount, upVoteCount, confession)});
+    const marker = L.marker([lat, long], {icon: createCircleDivIcon(keyID)});
     marker.addTo(map)/*.bindPopup(confession).openPopup()*/;
 }
 
 /*Each SVG is identified using the keyID, which is the user cookie
-The voteCounts (down/up) are used to specifiy which gradient should be used*/
+The voteCounts (down/up) are used to specifiy which gradient should be used
 const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
     let offsetValue = ((downVoteCount - upVoteCount) * 5) + 50
     return L.divIcon({
@@ -153,7 +156,34 @@ const createDivIcon = (keyID, downVoteCount, upVoteCount, confession) => {
         </div>`,
         iconSize: [120, 120],
         iconAnchor: [0, 0]});
+};*/
+const CIRCLEICONSIZE = 30;
+
+const createCircleDivIcon = (keyID) => {
+    return L.divIcon({
+        className: 'SVG-Icon',
+        html: createSVGTemplate('circle', 30),
+        iconSize: [CIRCLEICONSIZE, CIRCLEICONSIZE],
+        iconAnchor: [15, 15]});
 };
+
+function createSVGTemplate(shape, viewBox) {
+    let svgText = ''
+    if(shape === 'rectangle'){
+        svgText = `<foreignObject x="0" y="0" width="200" height="200">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
+                Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
+                Integer placerat dignissim tellus. Cras sed augue diam. In eget magna nec.</div>
+                </foreignObject>`;
+    }
+    return `<div class="SVG-Icon">
+    <svg xmlns="http://www.w3.org/2000/svg" id="check" class="marker-svg ${shape}" viewBox="0 0 ${viewBox} ${viewBox}">
+    <use href="#${shape}" />
+    ${svgText}
+    </svg>
+    </div>`;
+}
+
 /*
 Jquery, listen for click on <g> tag which is used two group "up" & "down" votes
 Grouping is done via hidden rectangle(Two rectangles with ids "Up" and "Down") (ocapacity 0) with arrow (facing up or down) ontop
@@ -162,17 +192,3 @@ On clikc, socket emit the group id (thus which dirction was voted), the SVG id (
 $(document).on('click', 'g', function () {
     socket.emit('voteOnMarker', {direction: $(this).attr('id'), confessionKeyID: $(this).closest('svg').attr('id'), keyID: key});
 });
-
-/*
-map.on('zoomanim', function(e) {
-    console.log(e.zoom);
-    let currentZoom =  e.zoom//map.getZoom();
-    //max zoom level is 22
-    let scaleFactor = Math.pow(1.25, currentZoom - 22);
-    console.log(scaleFactor);
-    let svgIcons = document.querySelectorAll('.SVG-Icon');
-
-    svgIcons.forEach(icon => {
-        icon.style.transform = `scale(${scaleFactor})`;
-    });
-})*/

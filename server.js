@@ -4,7 +4,7 @@ const app = express();
 const httpServer = require('http').createServer(app);
 const io = require('socket.io')(httpServer, {
   cors: {
-    origin: "https://red-surf-7071.fly.dev",
+    origin: 'http://localhost:3000/',
     methods: ["GET", "POST"],
     transports: ['websocket'],
     credentials: true
@@ -13,7 +13,7 @@ const io = require('socket.io')(httpServer, {
 });
 const socketEventHandlers = require('./socketEventHandler.js')
 const { v4: uuidv4 } = require('uuid');
-const port = process.env.PORT || 3000;             //REMOVE /* */ FROM HERE TO BE ON FLY.IO
+const port = /*process.env.PORT ||*/ 3000;             //REMOVE /* */ FROM HERE TO BE ON FLY.IO
 const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
@@ -53,7 +53,7 @@ app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
 
 // Start the server
-httpServer.listen(port, '0.0.0.0',  () => {    /*'0.0.0.0', ADD THIS BACK IN*/
+httpServer.listen(port, () => {    /*'0.0.0.0', ADD THIS BACK IN*/
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
