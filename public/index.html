@@ -2,18 +2,17 @@
 <html>
     <head> 
         <title>Location</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
         <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
         <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
         <script src="client.js" type="text/javascript" defer>//defer used as html map must load before can make call to L.map in client.js</script> 
         <script src="node_modules/jquery/dist/jquery.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css">
-        <style>#brookfieldMap {width: 1800px; height: 800px; }</style>
     </head>
     
     <body>
-        <t1>Simple User Location</t1>
-        <div id="brookfieldMap"></div>
+        <div id="MaynoothMap"></div>
         <div id="commentBox">
             <textarea rows="4" cols="50" id="confessionBox"></textarea>  
             <br>

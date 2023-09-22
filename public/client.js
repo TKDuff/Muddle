@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 16);
+const map = L.map('MaynoothMap').setView([53.384271,  -6.600583], 16);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -12,7 +12,7 @@ const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -175,10 +175,10 @@ map.on('zoomend', function(e) {
     let bounds = map.getBounds();
     currentZoom = map.getZoom();
     console.log(previousZoom, map.getZoom());
-    if(currentZoom > previousZoom && currentZoom >= 19){
+    if(currentZoom > previousZoom && currentZoom >= 20){
         svgMarkerGroup.eachLayer(function(marker) {
         svgElement = $(marker._icon).find('.marker-svg');
-        if(bounds.contains(marker.getLatLng())) {
+        if(bounds.contains(marker.getLatLng()) && svgElement.hasClass('circle')) {
             updateIcon(marker, svgElement.attr('id'), 'rectangle', RECTICONSIZE, 200);
         }
     }) 

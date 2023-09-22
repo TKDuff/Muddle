@@ -53,7 +53,7 @@ app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
 
 // Start the server
-httpServer.listen(port, '0.0.0.0', () => {    /*ADD THIS BACK IN*/
+httpServer.listen(port,() => {    /*ADD THIS BACK IN '0.0.0.0',*/
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
