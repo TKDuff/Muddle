@@ -1,5 +1,5 @@
 //map setup
-const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 19);
+const map = L.map('brookfieldMap').setView([53.384271,  -6.600583], 16);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -125,6 +125,8 @@ function createMarker(lat, long, keyID) {
     svgMarkerGroup.addLayer(marker);
 }
 
+const maxZoomLevel = 22;
+let globalscaleFactor = 0.49327018427257213;
 const RECTICONSIZE = 200;
 const CIRCICONSIZE = 20;
 const CIRCICONANCHOR = CIRCICONSIZE/2;
@@ -133,19 +135,19 @@ const createCircleDivIcon = (keyID) => {
     return L.divIcon({
         className: 'SVG-Icon',
         html: createSVGTemplate(keyID, 'circle', 30),
-        iconSize: [CIRCICONSIZE, CIRCICONSIZE],
+        iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
         iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
 };
 
-const maxZoomLevel = 19;
-let globalscaleFactor = 1;
+let svgElement;
+
 map.on('zoomanim', function(e) {
     let currentZoom =  e.zoom//map.getZoom();
-    globalscaleFactor = Math.pow(1.3, currentZoom - maxZoomLevel);
+    globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
 
     svgMarkerGroup.eachLayer(function(marker) {
         let icon = marker.getIcon();
-        let svgElement = $(marker._icon).find('.marker-svg');
+        svgElement = $(marker._icon).find('.marker-svg');
         svgElement.css('transform', `scale(${globalscaleFactor})`);
 
         let isCircle = svgElement.hasClass('circle');
@@ -164,11 +166,27 @@ map.on('zoomanim', function(e) {
             icon.options.html = createSVGTemplate(svgElement.attr('id'), 'rectangle', 200);
         }
         marker.setIcon(icon);
-});
+    });
+})
+
+let previousZoom = 16;
+/*When zoom ends */
+map.on('zoomend', function(e) {
+    let bounds = map.getBounds();
+    currentZoom = map.getZoom();
+    console.log(previousZoom, map.getZoom());
+    if(currentZoom > previousZoom && currentZoom >= 19){
+        svgMarkerGroup.eachLayer(function(marker) {
+        svgElement = $(marker._icon).find('.marker-svg');
+        if(bounds.contains(marker.getLatLng())) {
+            updateIcon(marker, svgElement.attr('id'), 'rectangle', RECTICONSIZE, 200);
+        }
+    }) 
+    }
+    previousZoom = map.getZoom();
 })
 
 let highestZIndex = 100;
-let test = 'blue';
 svgMarkerGroup.on('click', function(e) {
     let closestElement = $(e.originalEvent.target).closest('g#Down, g#Up');
     const clickedMarker = e.layer;  // The marker instance that was clicked
@@ -186,8 +204,6 @@ svgMarkerGroup.on('click', function(e) {
     } else {
         updateIcon(clickedMarker, svgElement.attr('id') ,'circle', CIRCICONSIZE, 25);
     }
-
-    test = 'red';
 })
 
 function updateIcon(marker, key ,newShape, newSize, newViewBox) {
