@@ -1,5 +1,7 @@
 //map setup
-const map = L.map('MaynoothMap').setView([53.384271,  -6.600583], 16);
+const map = L.map('MaynoothMap', {
+    zoomControl: false
+}).setView([53.384271,  -6.600583], 16);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -134,7 +136,7 @@ const CIRCICONANCHOR = CIRCICONSIZE/2;
 const createCircleDivIcon = (keyID) => {
     return L.divIcon({
         className: 'SVG-Icon',
-        html: createSVGTemplate(keyID, 'circle', 30),
+        html: createSVGTemplate(keyID, 'circle', 25),
         iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
         iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
 };
