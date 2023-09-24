@@ -82,11 +82,59 @@ html, body {
 #MaynoothMap {
     width: 100%;
     height: 100%;
+    z-index: 1;
 }
 
+#postButton, #toggleButton, #infoButton {
+    fill: #7192ad;
+    width: 60px;
+    height: 60px; 
+    border: none;
+    position: fixed; 
+    margin: 0;
+    padding: 0;
+    bottom: 1.5%; 
+    z-index: 2;
+}
+
+  #postButton {
+    left: 5%; 
+  }
+  
+  #toggleButton {
+    left: 47%; 
+  }
+  
+  #infoButton {
+    right: 5%; 
+  }
+
+  @media (max-width: 768px) {
+
+    #postButton, #toggleButton, #infoButton {
+        bottom: 2%; 
+
+    }
+
+    #postButton {
+        left: 5%; 
+      }
+      
+      #toggleButton {
+        left: 43%; 
+      }
+      
+      #infoButton {
+        right: 5%; 
+      }
+}
+
+
+
+/*
 #commentBox, #deleteButton, #fakePostBox {
     position: fixed;
-    z-index: 1000; /* to make sure these elements are above the map */
+    z-index: 1000; 
     left: 2%;
 }
 
@@ -106,4 +154,4 @@ html, body {
 textarea {
     width: 100%; 
     font-size: 1em; 
-}
+}*/

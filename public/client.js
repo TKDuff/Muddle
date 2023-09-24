@@ -257,3 +257,8 @@ function createSVGTemplate(keyID, shape, viewBox) {
                 </div>`;
     }
 }
+
+
+$("#postButton").on('click', function() {
+    console.log('hi');
+})
