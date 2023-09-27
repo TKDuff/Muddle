@@ -48,6 +48,7 @@ function handlePostData(obj) {
 
 function postConfession() {
     //get the users location
+    console.log('yeah');
     navigator.geolocation.getCurrentPosition(sendToServer, errorCallback, {
         enableHighAccuracy: true,
         maximumAge: 5000
@@ -73,7 +74,7 @@ const sendToServer = (position) => {
         time: Date.now(),
         lat: parseFloat(/*position.coords.latitude*/53.385574) * (1 + (Math.random() * 0.000005)),
         long: parseFloat(/*position.coords.longitude*/-6.598420) * (1 + (Math.random() * 0.000005)),
-        confession: document.getElementById("confessionBox").value,
+        confession: $('#customInput').val(), 
         Up: [],
         Down: []
     };
@@ -259,6 +260,17 @@ function createSVGTemplate(keyID, shape, viewBox) {
 }
 
 
-$("#postButton").on('click', function() {
-    console.log('hi');
-})
+
+    // Handle showing the popup
+$("#postButton").click(() => $("#inputPopup").show());
+
+    // Handle hiding the popup
+$(".closePopup, #exitButton").on('click', function() {
+    $('#inputPopup').hide();
+});
+
+    // Handle posting and hiding the popup
+$('.post').on('click', function() {
+    postConfession();
+    $('#inputPopup').hide();
+});
