@@ -47,8 +47,6 @@ function handlePostData(obj) {
 }
 
 function postConfession() {
-    //get the users location
-    console.log('yeah');
     navigator.geolocation.getCurrentPosition(sendToServer, errorCallback, {
         enableHighAccuracy: true,
         maximumAge: 5000
@@ -272,5 +270,13 @@ $(".closePopup, #exitButton").on('click', function() {
     // Handle posting and hiding the popup
 $('.post').on('click', function() {
     postConfession();
+    //need handshake method here
     $('#inputPopup').hide();
 });
+
+/*Server side check for post
+-More than 10, less than 250
+-Not Spam
+-Not outside maynooth
+-Not contains slurs
+ */
