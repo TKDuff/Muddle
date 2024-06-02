@@ -1,7 +1,7 @@
 //map setup
 const map = L.map('MaynoothMap', {
     zoomControl: false
-}).setView([53.384271,  -6.600583], 16);
+}).setView([53.5366871,  -7.3576551], 16);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -18,7 +18,8 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
-const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]);//Math.floor((Math.random() * 1000) + 1); //You need to look into this key variable, is it better to init it here, like a global variable
+const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
+//const key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
 
@@ -28,6 +29,8 @@ In both cases, handePostData(), handles the data as follows */
 socket.on('allDocumentsFromDatabase', documents => {
     documents.forEach(handlePostData); 
 })
+
+
 socket.on('newPost', (Post) => {
     handlePostData(Post);
 });
@@ -66,12 +69,12 @@ const errorCallback = (position) => {
 }
 
 
-//method that gets user location and sends it to the server
+//########      Method that gets user location and sends it to the server     ##############################
 const sendToServer = (position) => {
     const data = {
         time: Date.now(),
-        lat: parseFloat(/*position.coords.latitude*/53.385574) * (1 + (Math.random() * 0.000005)),
-        long: parseFloat(/*position.coords.longitude*/-6.598420) * (1 + (Math.random() * 0.000005)),
+        lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,
+        long: parseFloat(position.coords.longitude/*-6.598420*/) /* * (1 + (Math.random() * 0.000005)) */,
         confession: $('#customInput').val(), 
         Up: [],
         Down: []

@@ -56,6 +56,7 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     io.emit('newPost', messageVar);
   }
 
+
 /*voting on a marker is either pushing/pulling the cookie I.D to/from the up/down array depending on the vote 
 Upvote is adding to the array
 Downvote is pulling from the array

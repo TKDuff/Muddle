@@ -2,9 +2,13 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
 const httpServer = require('http').createServer(app);
+const FLYIO = 'https://red-surf-7071.fly.dev/';
+const LOCALIO = 'http://localhost:3000/'
+
+
 const io = require('socket.io')(httpServer, {
   cors: {
-    origin: 'http://localhost:3000/',
+    origin: LOCALIO,//'http://localhost:3000/',
     methods: ["GET", "POST"],
     transports: ['websocket'],
     credentials: true
@@ -21,10 +25,10 @@ var collection = client.db('Muddle').collection('Locations');
 
 //set these values for creating fake posts here, initialise once
 const fakePostLatLongValues = {
-  LONG_DIFF: 0.001202,
+  LONG_DIFF: 0.000200,
     LAT_DIFF: 0.00054,
-    BASE_LAT: 53.383191,
-    BASE_LONG: -6.599381
+    BASE_LAT: 53.5366871,
+    BASE_LONG: -7.3576551
 }
 
 socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues);
@@ -53,7 +57,7 @@ app.use(express.static('public'))   //display html file in public file
 app.use('/node_modules', express.static('node_modules'));
 
 // Start the server
-httpServer.listen(port,() => {    /*ADD THIS BACK IN '0.0.0.0',*/
+httpServer.listen(port, '0.0.0.0',() => {    /*ADD THIS BACK IN '0.0.0.0',*/
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });

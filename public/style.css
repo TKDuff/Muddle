@@ -81,7 +81,7 @@ html, body {
 
 #MaynoothMap {
     width: 100%;
-    height: 100%;
+    height: 85%;
     z-index: 1;
 }
 
@@ -168,6 +168,21 @@ html, body {
 
 
 
+
+
+#commentBox, #deleteButton, #fakePostBox {
+    position: fixed;
+    z-index: 1000; 
+}
+
+#fakePostBox {
+    left: 20%;
+    bottom: 5%;
+}
+
+#deleteButton {
+    left: 25%;
+}
 /*
 #inputPopup {
     position: fixed;
@@ -177,23 +192,9 @@ html, body {
     z-index: 3; 
 }
 
-#commentBox, #deleteButton, #fakePostBox {
-    position: fixed;
-    z-index: 1000; 
-    left: 2%;
-}
-
 #commentBox {
     width: 50%;
     bottom: 13%;
-}
-
-#deleteButton {
-    bottom: 10%;
-}
-
-#fakePostBox {
-    bottom: 5%;
 }
 
 textarea {
