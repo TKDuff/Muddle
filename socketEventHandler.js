@@ -27,8 +27,10 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
             let uuid = uuidv4();
             const data = {
                 time: i,
-                lat: lat_row,
-                long: long_row,
+                location: {
+                  type: "Point",
+                  coordinates: [long_row, lat_row ]
+                },
                 confession: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
                 Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
                 Integer placerat dignissim tellus. Cras sed augue diam. In eget magna nec.`,
@@ -51,6 +53,7 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 async function insertPostIntoLocationsCollection(message, collection, io) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     // Insert the string into the collection
+    console.log(keyVar);
     messageVar._id = keyVar
     await collection.insertOne(messageVar);
     io.emit('newPost', messageVar);

@@ -21,3 +21,9 @@ Don't pre-optimise
 
 So overlapping check on the server side, simple mongoDB query. Have a load of helper functions. 
 Big thing, you need to change the lat/long fields from doubles to geojson types. 
+
+GPT: Deployment and Scaling: In real-life applications, especially in production environments, you might handle database migrations and index creations separately from your application code, often using dedicated scripts or during the CI/CD pipeline. This helps in managing different stages of deployment, including development, testing, and production, without mixing deployment logic with application logic.
+
+Currently each post circle diameter is around '0.4653' metres, so radius is 0.23265 meters
+Need to re-affirm this is for phone primarily, trying to get location on mobile device is hard and wrong
+So primarily for phones

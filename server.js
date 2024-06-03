@@ -39,7 +39,7 @@ async function connectToDatabase() {
     try {
         await client.connect();
         collection = client.db('Muddle').collection('Locations');
-        console.log('Connected to the database');
+        await collection.createIndex({"location": "2dsphere"});
     } catch (error) {
         console.error('Error connecting to the database:', error);
     }

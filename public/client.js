@@ -18,8 +18,8 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
-const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
-//const key = Math.floor((Math.random() * 1000) + 1);
+//const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
+let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
 
@@ -46,7 +46,7 @@ function handlePostData(obj) {
     obj.Up = obj.Up.length 
     obj.Down = obj.Down.length
     postCacheMap.set(obj._id, obj)
-    createMarker(obj.lat, obj.long, obj._id/*, obj.confession, obj.Down, obj.Up*/);
+    createMarker(obj.location.coordinates[1], obj.location.coordinates[0], obj._id/*, obj.confession, obj.Down, obj.Up*/);
 }
 
 function postConfession() {
@@ -71,15 +71,26 @@ const errorCallback = (position) => {
 
 //########      Method that gets user location and sends it to the server     ##############################
 const sendToServer = (position) => {
+    //console.log("lat" + position.coords.latitude.toFixed(6) + " long " + position.coords.longitude.toFI);
     const data = {
         time: Date.now(),
-        lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,
-        long: parseFloat(position.coords.longitude/*-6.598420*/) /* * (1 + (Math.random() * 0.000005)) */,
+        location: {
+            type: "Point",
+            coordinates: [
+                parseFloat(position.coords.longitude),  // longitude first
+                parseFloat(position.coords.latitude)   // latitude second
+            ]
+        },
+        // lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,
+        // long: parseFloat(position.coords.longitude/*-6.598420*/) /* * (1 + (Math.random() * 0.000005)) */,
         confession: $('#customInput').val(), 
         Up: [],
         Down: []
     };
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
+    console.log(key);
+    key++;
+    console.log(key);
 } 
 
 
@@ -125,6 +136,7 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
 /*Creates the post circle to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, keyID) {
+    console.log("New post lat & long is " + lat + " " + long);
     const marker = L.marker([lat, long], {icon: createCircleDivIcon(keyID)});
     svgMarkerGroup.addLayer(marker);
 }
@@ -142,6 +154,13 @@ const createCircleDivIcon = (keyID) => {
         iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
         iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
 };
+
+map.on('click', function(e) {
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+    console.log("Latitude: " + lat + ", Longitude: " + lng);
+});
+
 
 let svgElement;
 
