@@ -15,8 +15,7 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     });
 
     socket.on('wipeDB', () => {
-        const result = collection.deleteMany({});
-        console.log(`${result.deletedCount} documents deleted`);
+      collection.deleteMany({});
     });
 
     socket.on('createFakePost', (count) => {
@@ -70,7 +69,6 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     */
     const RecursiveDepth = 3;
     const stepDistance = 0.00001
-    console.log("Check" + location.coordinates[1] + " " + location.coordinates[0]);
 
     const isOverlapping = await checkOverlap(location, collection);
     if(!isOverlapping) {
@@ -85,11 +83,9 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
         type: "Point",
         coordinates: [newLongitude, newLatitude]
     };
-    console.log("Overlap:", isOverlapping, "\n Recursive call");
     
     return await findNonOverlappingLocation(newLocation, collection, depth + 1);
   } else {
-    console.log("Max recursive depth met")
     const fakePoint = {
       type: "Point",
       coordinates: [-7.35761046409607, 53.53674824756847]

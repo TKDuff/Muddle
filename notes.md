@@ -27,3 +27,12 @@ GPT: Deployment and Scaling: In real-life applications, especially in production
 Currently each post circle diameter is around '0.4653' metres, so radius is 0.23265 meters
 Need to re-affirm this is for phone primarily, trying to get location on mobile device is hard and wrong
 So primarily for phones
+
+## 07-06-2024
+To check if two posts overlap, create a new post, find the lat long on the edge of the circle
+THen in client.js manually set the lat/long of the new posts created to that lat/long,
+Don't use the 'parseFloat(position.coords' in the 'SendtoServer' function
+
+Use these for ease
+long, lat
+-7.35761046409607,53.53674824756847
