@@ -55,17 +55,40 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     // Insert the string into the collection
     console.log(keyVar);
     messageVar._id = keyVar
-    isOverlapping(messageVar.location, collection)
+    messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
     await collection.insertOne(messageVar);
     io.emit('newPost', messageVar);
   }
+  
+  
+  async function findNonOverlappingLocation(location, collection) {
+    const stepDistance = 0.00002
+    console.log("Check" + location.coordinates[1] + " " + location.coordinates[0]);
 
-  async function isOverlapping(location, collection) {
-    //const radius = 0.23265; // Half of your circle's diameter, in meters
+    const isOverlapping = await checkOverlap(location, collection);
+    if(!isOverlapping) {
+      console.log("Not overlapping");
+      return location
+    } else {
+      const angle = Math.random() * 2 * Math.PI;
+      const newLatitude = location.coordinates[1] + stepDistance * Math.sin(angle);
+      const newLongitude = location.coordinates[0] + stepDistance * Math.cos(angle);
+      
+      const newLocation = {
+        type: "Point",
+        coordinates: [newLongitude, newLatitude]
+    };
+    console.log("Overlap:", isOverlapping, "\n Recursive call");
+    
+    return await findNonOverlappingLocation(newLocation, collection);
+  }
+  
+}
+
+
+  async function checkOverlap(location, collection) {
     const radius = 0.33265;
     const radiusInRadians = radius / 6371; // Convert radius in meters to radians
-
-
 
         const existingPosts = await collection.find({
             location: {
@@ -79,7 +102,7 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
             }
         }).toArray();
 
-        console.log(existingPosts.length > 0);
+        return existingPosts.length > 0;
 }
 
 
