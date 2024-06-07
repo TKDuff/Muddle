@@ -61,15 +61,22 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
   }
   
   
-  async function findNonOverlappingLocation(location, collection) {
-    const stepDistance = 0.00002
+  async function findNonOverlappingLocation(location, collection, depth = 0) {
+    /*Baic function for now, nothing special, will improve later when post GUIs finished
+    Uses mongoDB built in 2dSpere index, has a special query 'maxDistance', to find all posts within distance
+    Find all posts with distance of new post (.3 metres), if exist then overlap, move new post to different lat/long
+    Recursive, so keep doing so until not overlapping
+    Has a depth of 3, to ensure no infinite loops, cost money, on 3rd check will put post in Mullingar
+    */
+    const RecursiveDepth = 3;
+    const stepDistance = 0.00001
     console.log("Check" + location.coordinates[1] + " " + location.coordinates[0]);
 
     const isOverlapping = await checkOverlap(location, collection);
     if(!isOverlapping) {
       console.log("Not overlapping");
       return location
-    } else {
+    } else if (depth < RecursiveDepth) {
       const angle = Math.random() * 2 * Math.PI;
       const newLatitude = location.coordinates[1] + stepDistance * Math.sin(angle);
       const newLongitude = location.coordinates[0] + stepDistance * Math.cos(angle);
@@ -80,7 +87,14 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     };
     console.log("Overlap:", isOverlapping, "\n Recursive call");
     
-    return await findNonOverlappingLocation(newLocation, collection);
+    return await findNonOverlappingLocation(newLocation, collection, depth + 1);
+  } else {
+    console.log("Max recursive depth met")
+    const fakePoint = {
+      type: "Point",
+      coordinates: [-7.35761046409607, 53.53674824756847]
+    }
+    return fakePoint
   }
   
 }
