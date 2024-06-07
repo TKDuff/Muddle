@@ -77,8 +77,10 @@ const sendToServer = (position) => {
         location: {
             type: "Point",
             coordinates: [
-                parseFloat(position.coords.longitude),  // longitude first
-                parseFloat(position.coords.latitude)   // latitude second
+                -7.35761046409607,
+                53.53674824756847
+                // parseFloat(position.coords.longitude),  // longitude first
+                // parseFloat(position.coords.latitude)   // latitude second
             ]
         },
         // lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,

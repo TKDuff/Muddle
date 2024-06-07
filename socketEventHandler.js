@@ -55,9 +55,32 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     // Insert the string into the collection
     console.log(keyVar);
     messageVar._id = keyVar
+    isOverlapping(messageVar.location, collection)
     await collection.insertOne(messageVar);
     io.emit('newPost', messageVar);
   }
+
+  async function isOverlapping(location, collection) {
+    //const radius = 0.23265; // Half of your circle's diameter, in meters
+    const radius = 0.33265;
+    const radiusInRadians = radius / 6371; // Convert radius in meters to radians
+
+
+
+        const existingPosts = await collection.find({
+            location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [location.coordinates[0], location.coordinates[1]]
+                    },
+                    $maxDistance: radiusInRadians
+                }
+            }
+        }).toArray();
+
+        console.log(existingPosts.length > 0);
+}
 
 
 /*voting on a marker is either pushing/pulling the cookie I.D to/from the up/down array depending on the vote 
