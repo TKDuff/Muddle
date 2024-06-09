@@ -36,3 +36,7 @@ Don't use the 'parseFloat(position.coords' in the 'SendtoServer' function
 Use these for ease
 long, lat
 -7.35761046409607,53.53674824756847
+
+## 9-6-2024
+Question: Do you understand the markers are initially circles, but when clicked on expand into rectangles? and when rectangles are clicked to go back to default circles? A key thing is when virtual scroll is enabled, the circles on the map cannot be clicked and expanded out into rectangles, so only the virtual scroll has the rectangles, until it is back 100% map again (no v.s)
+

@@ -28,6 +28,7 @@ when a new post is added to the mongoDB database, its mongoDB document data is s
 In both cases, handePostData(), handles the data as follows */
 socket.on('allDocumentsFromDatabase', documents => {
     documents.forEach(handlePostData); 
+    initClusterize();
 })
 
 
@@ -47,6 +48,7 @@ function handlePostData(obj) {
     obj.Down = obj.Down.length
     postCacheMap.set(obj._id, obj)
     createMarker(obj.location.coordinates[1], obj.location.coordinates[0], obj._id/*, obj.confession, obj.Down, obj.Up*/);
+
 }
 
 function postConfession() {
@@ -307,6 +309,34 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
         isMapFullScreen = true; // Update the state
     }    
   });
+  
+  let clusterize = null;  // Holds the Clusterize instance
+  function initClusterize() {
+    console.log("Init Cluster");
+    let data = prepareClusterizeData();
+    clusterize = new Clusterize({
+        rows: data,
+        scrollId: 'feedContainer',
+        contentId: 'clusterize-content'
+    });
+}
+
+function prepareClusterizeData() {
+    console.log("Creating cluster data")
+    let postData = [];
+    postCacheMap.forEach((value, key) => {
+        let postHTML = `
+            <div id="post-${key}" class="post-item">
+                <svg width="100" height="100">
+                    <rect fill="BLUE" width="100%" height="100%"></rect>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Here is text</text>
+                </svg>
+            </div>
+        `;
+        postData.push(postHTML);
+    });
+    return postData;
+}
 
 /*Server side check for post
 -More than 10, less than 250
