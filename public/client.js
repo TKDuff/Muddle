@@ -18,8 +18,8 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
-//const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
-let key = Math.floor((Math.random() * 1000) + 1);
+const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
+//let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
 
@@ -88,9 +88,9 @@ const sendToServer = (position) => {
         Down: []
     };
     socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
-    console.log(key);
-    key++;
-    console.log(key);
+    // console.log(key);
+    // key++;
+    // console.log(key);
 } 
 
 
@@ -137,7 +137,7 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, keyID) {
     console.log("New post lat & long is " + lat + " " + long);
-    const marker = L.marker([lat, long], {icon: createCircleDivIcon(keyID)});
+    const marker = L.marker([lat, long], {icon: createMarkerSVGIcon(keyID)});
     svgMarkerGroup.addLayer(marker);
 }
 
@@ -147,7 +147,7 @@ const RECTICONSIZE = 200;
 const CIRCICONSIZE = 20;
 const CIRCICONANCHOR = CIRCICONSIZE/2;
 
-const createCircleDivIcon = (keyID) => {
+const createMarkerSVGIcon = (keyID) => {
     return L.divIcon({
         className: 'SVG-Icon',
         html: createSVGTemplate(keyID, 'circle', 25),
@@ -235,7 +235,14 @@ function updateIcon(marker, key ,newShape, newSize, newViewBox) {
 function createSVGTemplate(keyID, shape, viewBox) {
     if(shape === 'rectangle'){
         //console.log(keyID, 'has', postCacheMap.get(keyID)['Up'], 'upvotes');
-        return `<div class="SVG-Icon">
+        return createRectangleSVG(keyID, viewBox);
+    } else {
+        return createCircleSVG(keyID, viewBox);
+    }
+}
+
+function createRectangleSVG(keyID, viewBox) {
+    return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
                 <defs>
                 <linearGradient id="Gradient-${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -263,31 +270,43 @@ function createSVGTemplate(keyID, shape, viewBox) {
                 </g>
                 </svg>
                 </div>`
-    } else {
-        return `<div class="SVG-Icon">
+}
+
+function createCircleSVG(keyID, viewBox) {
+    return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle" viewBox="0 0 ${viewBox} ${viewBox}">
                 <use href="#circle" />
                 </svg>
-                </div>`;
-    }
+                </div>`
 }
 
-
-
-    // Handle showing the popup
-$("#postButton").click(() => $("#inputPopup").show());
-
+$('#buttonsContainer').on('click', '#postButton', function() {
+    $('#inputPopup').show();
+  });
     // Handle hiding the popup
 $(".closePopup, #exitButton").on('click', function() {
     $('#inputPopup').hide();
 });
-
-    // Handle posting and hiding the popup
+// Handle posting and hiding the popup
 $('.post').on('click', function() {
     postConfession();
     //need handshake method here
     $('#inputPopup').hide();
 });
+
+let isMapFullScreen = true;
+
+$('#buttonsContainer').on('click', '#feedButton', function() {
+    if (isMapFullScreen) {
+        $('#MaynoothMap').css('height', '50%');
+        $('#feedContainer').css('height', '50%');
+        isMapFullScreen = false; // Update the state
+    } else {
+        $('#MaynoothMap').css('height', '100%');
+        $('#feedContainer').css('height', '0%');
+        isMapFullScreen = true; // Update the state
+    }    
+  });
 
 /*Server side check for post
 -More than 10, less than 250

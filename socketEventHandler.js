@@ -72,7 +72,6 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
 
     const isOverlapping = await checkOverlap(location, collection);
     if(!isOverlapping) {
-      console.log("Not overlapping");
       return location
     } else if (depth < RecursiveDepth) {
       const angle = Math.random() * 2 * Math.PI;
