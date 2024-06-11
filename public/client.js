@@ -27,14 +27,26 @@ let svgMarkerGroup = L.featureGroup().addTo(map);
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
 In both cases, handePostData(), handles the data as follows */
 socket.on('allDocumentsFromDatabase', documents => {
-    documents.forEach(handlePostData); 
-    initClusterize();
+    //documents.forEach(handlePostData); 
+    //initClusterize();
+
+    let postData = [];
+
+    documents.forEach(document => {
+        document.Up = document.Up.length;
+        document.Down = document.Down.length;
+        postCacheMap.set(document._id, document);
+
+        createMarker(document.location.coordinates[1], document.location.coordinates[0], document._id);
+
+        let postHTML = createRectangleSVG(document._id, 400);
+        postData.push(postHTML);
+    });
+
+    initClusterize(postData);
+
 })
 
-
-socket.on('newPost', (Post) => {
-    handlePostData(Post);
-});
 
 /*
  * Handles the post data from the server:
@@ -56,6 +68,10 @@ function postConfession() {
         maximumAge: 5000
     });
 }
+
+socket.on('newPost', (Post) => {
+    handlePostData(Post);
+});
 
 function wipeDB() {
     socket.emit('wipeDB');
@@ -327,10 +343,10 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
   
   
   let clusterize = null;  // Holds the Clusterize instance
-  function initClusterize() {
-    let data = prepareClusterizeData();
+  function initClusterize(postData) {
+    //let data = prepareClusterizeData();
     clusterize = new Clusterize({
-        rows: data,
+        rows: postData,
         scrollId: 'feedContainer',
         contentId: 'clusterize-content'
     });
