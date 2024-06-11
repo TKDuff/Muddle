@@ -167,9 +167,6 @@ html, body {
 }
 
 
-
-
-
 #deleteButton, #fakePostBox {
     position: fixed;
     z-index: 1000; 
@@ -182,16 +179,14 @@ html, body {
 #deleteButton {
     left: 25%;
 }
-/*
-#inputPopup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 3; 
+
+
+#feedContainer {
+    height: 0; /* initially hidden */
+    overflow-y: auto; /* ensures scrollability */
 }
 
-textarea {
-    width: 100%; 
-    font-size: 1em; 
-}*/
+.clusterize-content {
+    height: 100%;
+    width: 100%; /* ensures full width */
+}

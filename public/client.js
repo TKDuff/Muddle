@@ -48,7 +48,6 @@ function handlePostData(obj) {
     obj.Down = obj.Down.length
     postCacheMap.set(obj._id, obj)
     createMarker(obj.location.coordinates[1], obj.location.coordinates[0], obj._id/*, obj.confession, obj.Down, obj.Up*/);
-
 }
 
 function postConfession() {
@@ -138,7 +137,6 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
 /*Creates the post circle to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
 function createMarker(lat, long, keyID) {
-    console.log("New post lat & long is " + lat + " " + long);
     const marker = L.marker([lat, long], {icon: createMarkerSVGIcon(keyID)});
     svgMarkerGroup.addLayer(marker);
 }
@@ -205,13 +203,16 @@ map.on('zoomend', function(e) {
 })
 
 let highestZIndex = 100;
+
+//Event listener for markers on map, vote on post and switch between circle/rectangle upon click marker
 svgMarkerGroup.on('click', function(e) {
     let closestElement = $(e.originalEvent.target).closest('g#Down, g#Up');
     const clickedMarker = e.layer;  // The marker instance that was clicked
     const svgElement = $(clickedMarker._icon).find('svg');
 
     if (closestElement.length) {
-        socket.emit('voteOnMarker', {direction: closestElement.attr('id'), confessionKeyID: svgElement.attr('id'), keyID: key});
+        //socket.emit('voteOnMarker', {direction: closestElement.attr('id'), confessionKeyID: svgElement.attr('id'), keyID: key});
+        handleVote(svgElement, closestElement.attr('id'));
         return;
     }
 
@@ -224,7 +225,21 @@ svgMarkerGroup.on('click', function(e) {
     }
 })
 
+// Event listener for the virtual scroll
+$('#clusterize-content').on('click', 'g#Up, g#Down', function(e) {
+    let svgElement = $(this).closest('svg');
+    handleVote(svgElement, this.id);
+});
+
+//Helprer function to handle vote
+function handleVote(svgElement, voteType) {
+    let confessionID = svgElement.attr('id');
+    socket.emit('voteOnMarker', {direction: voteType, confessionKeyID: confessionID, keyID: key});
+}
+
+
 function updateIcon(marker, key ,newShape, newSize, newViewBox) {
+    console.log("updateIcon");
     newSize *= globalscaleFactor;
     let Anchor = newSize/2;
     let icon = marker.getIcon();
@@ -245,7 +260,7 @@ function createSVGTemplate(keyID, shape, viewBox) {
 
 function createRectangleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
-                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
+                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}" >
                 <defs>
                 <linearGradient id="Gradient-${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
@@ -310,9 +325,9 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
     }    
   });
   
+  
   let clusterize = null;  // Holds the Clusterize instance
   function initClusterize() {
-    console.log("Init Cluster");
     let data = prepareClusterizeData();
     clusterize = new Clusterize({
         rows: data,
@@ -322,17 +337,9 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
 }
 
 function prepareClusterizeData() {
-    console.log("Creating cluster data")
     let postData = [];
     postCacheMap.forEach((value, key) => {
-        let postHTML = `
-            <div id="post-${key}" class="post-item">
-                <svg width="100" height="100">
-                    <rect fill="BLUE" width="100%" height="100%"></rect>
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">Here is text</text>
-                </svg>
-            </div>
-        `;
+        let postHTML = createRectangleSVG(key, 400)
         postData.push(postHTML);
     });
     return postData;

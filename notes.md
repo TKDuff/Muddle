@@ -40,3 +40,23 @@ long, lat
 ## 9-6-2024
 Question: Do you understand the markers are initially circles, but when clicked on expand into rectangles? and when rectangles are clicked to go back to default circles? A key thing is when virtual scroll is enabled, the circles on the map cannot be clicked and expanded out into rectangles, so only the virtual scroll has the rectangles, until it is back 100% map again (no v.s)
 
+You are going to store the post SVGs in the cache map, thus both the virtual scroll and the markers get their String SVG from the same area
+However, if you want the V.S post to differ to the marker posts, then you can differ them from each other simpler
+
+Here what GPT says
+"Dynamic Modification for Context
+When you need to use the SVG, modify it according to where it's being used. For example, if the virtual scroll requires a different attribute, can dynamically when generating the HTML for the virtual scroll.
+
+function getVirtualScrollSVG(keyID, postData) {
+    // Assume the base SVG is valid and make a modification
+    let svgString = postData.baseSVG;
+    // Modify the SVG string by adding or changing details specific to the virtual scroll
+    return svgString.replace('</svg>', '<circle cx="100" cy="100" r="10" fill="red"></circle></svg>');
+}
+"
+**Simply**
+postCahceMap stores metadata about post and the SVG html string itself
+Marker and Virtual Scroll posts will both reference the associate SVG string in cache, thus same region in memory
+Two different areas, marker and V.S post using 1 part of memory, halfing the memory
+
+As of now, each SVG string is bound to the marker, now the marker will reference the associated cache SVG string
