@@ -26,25 +26,29 @@ let svgMarkerGroup = L.featureGroup().addTo(map);
 /*When client connects, all docuements in the database are sent to the client
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
 In both cases, handePostData(), handles the data as follows */
-socket.on('allDocumentsFromDatabase', documents => {
-    //documents.forEach(handlePostData); 
+socket.on('allDocumentsFromDatabase', documents => { 
     //initClusterize();
 
     let postData = [];
 
     documents.forEach(document => {
         document.Up = document.Up.length;
-        document.Down = document.Down.length;
+        document.Down = document.Down.length;       
         postCacheMap.set(document._id, document);
 
-        createMarker(document.location.coordinates[1], document.location.coordinates[0], document._id);
+        const storedDocument = postCacheMap.get(document._id);
 
-        let postHTML = createRectangleSVG(document._id, 400);
-        postData.push(postHTML);
+
+        let svgString = createRectangleSVG(document._id, 400); //Only one copy of the string in memory, both feed container and marker post hold reference to this single memory location for SVG string
+        storedDocument.svg = svgString;
+
+        createMarker(document.location.coordinates[1], document.location.coordinates[0], document._id);
+        /*You are passing the current documents svg string by reference here, not by value. This is key, as the postData holds a reference to the svg field of the current postCacheMap element. It does not have
+        a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
+        postData.push(document.svg); 
     });
 
     initClusterize(postData);
-
 })
 
 
@@ -135,6 +139,9 @@ function amendpostCacheMapVoteValues (action, confessionKeyID, direction) {
     postCacheMap.set(confessionKeyID, postDirectionValue);
     changeOneGradient(postDirectionValue[direction], direction, confessionKeyID);
 }
+
+
+
 const MIDDLE = 50
 const MIDDLE_OFFSET = 5
 function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
@@ -344,21 +351,11 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
   
   let clusterize = null;  // Holds the Clusterize instance
   function initClusterize(postData) {
-    //let data = prepareClusterizeData();
     clusterize = new Clusterize({
         rows: postData,
         scrollId: 'feedContainer',
         contentId: 'clusterize-content'
     });
-}
-
-function prepareClusterizeData() {
-    let postData = [];
-    postCacheMap.forEach((value, key) => {
-        let postHTML = createRectangleSVG(key, 400)
-        postData.push(postHTML);
-    });
-    return postData;
 }
 
 /*Server side check for post
