@@ -346,8 +346,11 @@ function initIntersectionObserver() {
 
     observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
+            const markerSvg = document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`);
             if (entry.isIntersecting) {
-                console.log(`Currently viewing element ID: ${entry.target.id}`);  // Check if ID is being logged correctly
+                markerSvg.classList.add('darken-svg');
+            }else {
+                markerSvg.classList.remove('darken-svg');
             }
         });
     }, options);
@@ -416,13 +419,4 @@ function disconnectObserver() {
 -More than 10, less than 250
 -Not Spam
 -Not outside maynooth
--Not contains slurs
-
-
-BE SURE TO CLEAN UP
-function cleanup() {
-    observer.disconnect();  // Disconnect all observers
-    clusterize.destroy();  // Properly destroy clusterize instance
-}
-
- */
+-Not contains slurs*/
