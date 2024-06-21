@@ -23,33 +23,26 @@ const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
 
+
+let postData = [];
 /*When client connects, all docuements in the database are sent to the client
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
 In both cases, handePostData(), handles the data as follows */
 socket.on('allDocumentsFromDatabase', documents => { 
-    //initClusterize();
-    documents.sort((a, b) => b.time - a.time);
-    let postData = [];
-
+    documents.sort((a, b) => b.time - a.time);      //Can remove the sort
     documents.forEach(document => {
-        document.Up = document.Up.length;
-        document.Down = document.Down.length;       
-        postCacheMap.set(document._id, document);
-
-        const storedDocument = postCacheMap.get(document._id);
-
-
-        let svgString = createRectangleSVG(document._id, 400); //Only one copy of the string in memory, both feed container and marker post hold reference to this single memory location for SVG string
-        storedDocument.svg = svgString;
-
-        createMarker(document.location.coordinates[1], document.location.coordinates[0], document._id);
         /*You are passing the current documents svg string by reference here, not by value. This is key, as the postData holds a reference to the svg field of the current postCacheMap element. It does not have
         a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
-        postData.push(document.svg); 
+        createPost(document);
     });
 
     initClusterize(postData);
 })
+
+socket.on('newPost', (Post) => {
+    createPost(Post)
+    clusterize.update(postData);
+});
 
 
 /*
@@ -58,12 +51,19 @@ socket.on('allDocumentsFromDatabase', documents => {
  * - Converts "Up" and "Down" arrays to ints, the values are their lengths.
  * - Adds the post to the "postCacheMap".
  * - Creates an SVG Icon on the map.
+ * - Adds SVG to postData array, which is used by virtual scroll feed
  */
-function handlePostData(obj) {
-    obj.Up = obj.Up.length 
-    obj.Down = obj.Down.length
-    postCacheMap.set(obj._id, obj)
-    createMarker(obj.location.coordinates[1], obj.location.coordinates[0], obj._id/*, obj.confession, obj.Down, obj.Up*/);
+function createPost(Post) {
+    Post.Up = Post.Up.length;
+    Post.Down = Post.Down.length;
+    postCacheMap.set(Post._id, Post);
+
+    const storedDocument = postCacheMap.get(Post._id);
+    let svgString = createRectangleSVG(Post._id, 400);
+    storedDocument.svg = svgString;
+
+    createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
+    postData.push(Post.svg);
 }
 
 function postConfession() {
@@ -73,9 +73,7 @@ function postConfession() {
     });
 }
 
-socket.on('newPost', (Post) => {
-    handlePostData(Post);
-});
+
 
 function wipeDB() {
     socket.emit('wipeDB');
@@ -282,7 +280,7 @@ function createSVGTemplate(keyID, shape, viewBox) {
 
 function createRectangleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
-                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}" >
+                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
                 <defs>
                 <linearGradient id="Gradient-${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
@@ -332,88 +330,6 @@ $('.post').on('click', function() {
     //need handshake method here
     $('#inputPopup').hide();
 });
-
-let isMapFullScreen = true;
-let clusterize = null;  // Holds the Clusterize instance
-let observer;
-
-function initIntersectionObserver() {
-    //config for interaction observer
-    const options = {
-        root: document.getElementById('feedContainer'), //element relative to which the visibility of the SVGs is checked, container with ID 'feedContainer'
-        threshold: 0.5  // Adjust based on when you consider the SVG "in view"
-    };
-
-    observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const markerSvg = document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`);
-            if (entry.isIntersecting) {
-                markerSvg.classList.add('darken-svg');
-            }else {
-                markerSvg.classList.remove('darken-svg');
-            }
-        });
-    }, options);
-}
-
-
-/*attaches the Intersection Observer to all SVG elements in the feed container
-Use the attribute 'data-observed' to only select SVGs within this container that have not been previously observed */
-function observeSVGs() {
-    const feedContainer = document.getElementById('feedContainer');
-    // Select only SVGs within this container that have not been previously observed
-    const svgs = feedContainer.querySelectorAll('.SVG-Icon svg');
-    svgs.forEach(svg => {
-        observer.observe(svg);  
-        svg.setAttribute('data-observed', 'true'); // Mark as observed
-    });
-}
-
-$('#buttonsContainer').on('click', '#feedButton', function() {
-    if (isMapFullScreen) {
-        $('#MaynoothMap').css('height', '50%');
-        $('#feedContainer').css('height', '50%');
-        initIntersectionObserver();
-        isMapFullScreen = false; // Update the state
-    } else {
-        $('#MaynoothMap').css('height', '100%');
-        $('#feedContainer').css('height', '0%');
-        isMapFullScreen = true; // Update the state
-    }    
-  });
-  
-  
-
-  function initClusterize(postData) {
-    initIntersectionObserver();
-    clusterize = new Clusterize({
-        rows: postData,
-        scrollId: 'feedContainer',
-        contentId: 'clusterize-content',
-        rows_in_block: 2,
-        blocks_in_cluster: 2,
-        callbacks: {
-            clusterChanged: observeSVGs
-        }
-    });
-    observeSVGs();
-}
-
-/*When SVG goes off screen, be sure to un-observe, so no longer hold reference to it */
-function disconnectObserver() {
-    const feedContainer = document.getElementById('feedContainer');
-    const observedSVGs = feedOverlayContainer.querySelectorAll('svg[data-observed="true"]');
-    observedSVGs.forEach(svg => {
-        observer.unobserve(svg);
-        svg.removeAttribute('data-observed'); // Clean up attribute
-    });
-
-    /*
-    document.querySelectorAll('svg').forEach(svg => {
-        observer.unobserve(svg);
-    });*/
-}
-
 
 /*Server side check for post
 -More than 10, less than 250
