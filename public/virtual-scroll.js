@@ -2,7 +2,7 @@ let mapIsFullScreen = true;
 let clusterize = null;  // Holds the Clusterize instance
 let observer;
 let observedVSmarkerSvg = null;
-let observedVSmarkerSvgID = null;
+let observedVSmarkerSvgID = null;   //id used by 'handleZoomAnim' to know which circle should retain the dark shading
 
 $('#buttonsContainer').on('click', '#feedButton', function() {
     if (mapIsFullScreen) { //map is currently full screen, so switch it to half screen, turn off the event listener
@@ -38,15 +38,17 @@ const options = {
     threshold: 0.5  // Adjust based on when you consider the SVG "in view"
 };
 
+/*Actually obtains the id of the current SVG post viewed in the Virtual Scrool feed (the row)
+observedVSmarkerSvgID - store of the viewed SVG id
+Upon vieing an SVG, the corresponding map marker icon is shaded*/
 observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        observedVSmarkerSvg = document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`);
         if (entry.isIntersecting) {
-            console.log("Currently viewing", entry.target.id);
-            observedVSmarkerSvgID = entry.target.id;
-            observedVSmarkerSvg.classList.add('darken-svg');
+            //console.log("Currently viewing", entry.target.id); //this happens twice on some for some reason
+            observedVSmarkerSvgID = entry.target.id; //only if observed
+            document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.add('darken-svg');
         }else {
-            observedVSmarkerSvg.classList.remove('darken-svg');
+            document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.remove('darken-svg');
         }
     });
 }, options);
