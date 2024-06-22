@@ -2,6 +2,7 @@ let mapIsFullScreen = true;
 let clusterize = null;  // Holds the Clusterize instance
 let observer;
 let observedVSmarkerSvg = null;
+let observedVSmarkerSvgID = null;
 
 $('#buttonsContainer').on('click', '#feedButton', function() {
     if (mapIsFullScreen) { //map is currently full screen, so switch it to half screen, turn off the event listener
@@ -42,7 +43,7 @@ observer = new IntersectionObserver((entries) => {
         observedVSmarkerSvg = document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`);
         if (entry.isIntersecting) {
             console.log("Currently viewing", entry.target.id);
-            console.log(observedVSmarkerSvg);
+            observedVSmarkerSvgID = entry.target.id;
             observedVSmarkerSvg.classList.add('darken-svg');
         }else {
             observedVSmarkerSvg.classList.remove('darken-svg');

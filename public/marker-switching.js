@@ -36,10 +36,14 @@ function handleZoomAnim(e) {
 
         icon.options.iconSize = newSize;
         icon.options.iconAnchor = newAnchor;
+        console.log(observedVSmarkerSvgID == svgElement.attr('id'));
 
-        if(isCircle) {
-            icon.options.html = createSVGTemplate(svgElement.attr('id'), 'circle', 25);
-        } else {
+        if(!mapIsFullScreen && svgElement.attr('id') === observedVSmarkerSvgID) {
+            icon.options.html = createCircleSVG(svgElement.attr('id'), 25, "darken-svg");
+        } else if (isCircle) {
+            icon.options.html = createCircleSVG(svgElement.attr('id'), 25);//createSVGTemplate(svgElement.attr('id'), 'circle', 25);
+            console.log("yeahsssss", svgElement.attr('id'));
+        }else {
             icon.options.html = createSVGTemplate(svgElement.attr('id'), 'rectangle', 200);
         }
         marker.setIcon(icon);

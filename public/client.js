@@ -158,9 +158,9 @@ function createRectangleSVG(keyID, viewBox) {
                 </div>`
 }
 //problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
-function createCircleSVG(keyID, viewBox) {
+function createCircleSVG(keyID, viewBox, darken = "") {
     return `<div class="SVG-Icon">
-                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle" viewBox="0 0 ${viewBox} ${viewBox}">
+                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle ${darken}" viewBox="0 0 ${viewBox} ${viewBox}">
                 <use href="#circle" />
                 </svg>
                 </div>`
