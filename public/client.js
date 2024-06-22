@@ -35,7 +35,6 @@ socket.on('allDocumentsFromDatabase', documents => {
         a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
         createPost(document);
     });
-
     initClusterize(postData);
 })
 
@@ -73,8 +72,6 @@ function postConfession() {
     });
 }
 
-
-
 function wipeDB() {
     socket.emit('wipeDB');
 }
@@ -109,50 +106,8 @@ const sendToServer = (position) => {
     // console.log(key);
     // key++;
     // console.log(key);
-} 
-
-
-/*
-When a user votes on a value, this even is called
-action is either 1, -1 or null, direction is either 'up' or 'down', oppositeDirection is either null or the opposite, 
-confessionKeyID is the id of the post that was voted on
-If action is null, that means switched vote, so call amendpostCacheMapVoteValues() twice,
-to decrement opposite direction int, then to increment target direction int
-*/
-socket.on('newArrayLengths', (action, direction, oppositeDirection , confessionKeyID) => {
-    if(action){
-        amendpostCacheMapVoteValues(action, confessionKeyID, direction);
-    } else {
-        amendpostCacheMapVoteValues(-1, confessionKeyID, oppositeDirection);
-        amendpostCacheMapVoteValues(1, confessionKeyID, direction);
-    }
-})
-/*amends the direction int values for the specific post object in postCacheMap map collection
-action is 1 or -1, thus it get the current value and adds action, then sets the value to be the inc/decremented value
-Then changeOneGradient() is called with the new value*/
-function amendpostCacheMapVoteValues (action, confessionKeyID, direction) {
-    let postDirectionValue = postCacheMap.get(confessionKeyID);
-    postDirectionValue[direction] += action;
-    postCacheMap.set(confessionKeyID, postDirectionValue);
-    changeOneGradient(postDirectionValue[direction], direction, confessionKeyID);
 }
 
-
-
-const MIDDLE = 50
-const MIDDLE_OFFSET = 5
-function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
-    let middleOffsetValue = postCacheMap.get(confessionKeyID).Down - postCacheMap.get(confessionKeyID).Up
-    middleOffsetValue = (middleOffsetValue * 5) +50;
-
-    var svgPost = $(`#${confessionKeyID}`);
-    let gradientIndex = `--${direction}-gradient-${DirectionArrayLength}`;
-
-
-    console.log(svgPost, gradientIndex , DirectionArrayLength, direction, confessionKeyID);
-    svgPost.find(`linearGradient#Gradient-${confessionKeyID} stop#${direction}`).attr('stop-color', `var(${gradientIndex})`);
-    svgPost.find(`linearGradient#Gradient stop#Middle`).attr('offset', `${middleOffsetValue}%`);
-}
 
 /*Creates the post circle to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
@@ -161,122 +116,16 @@ function createMarker(lat, long, keyID) {
     svgMarkerGroup.addLayer(marker);
 }
 
-const maxZoomLevel = 22;
 let globalscaleFactor = 0.49327018427257213;
-const RECTICONSIZE = 200;
-const CIRCICONSIZE = 20;
-const CIRCICONANCHOR = CIRCICONSIZE/2;
 
 const createMarkerSVGIcon = (keyID) => {
     return L.divIcon({
         className: 'SVG-Icon',
-        html: createSVGTemplate(keyID, 'circle', 25),
+        html:       createCircleSVG(keyID, 25),
         iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
         iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
 };
 
-let svgElement;
-
-map.on('zoomanim', function(e) {
-    let currentZoom =  e.zoom//map.getZoom();
-    globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
-
-    svgMarkerGroup.eachLayer(function(marker) {
-        let icon = marker.getIcon();
-        svgElement = $(marker._icon).find('.marker-svg');
-        svgElement.css('transform', `scale(${globalscaleFactor})`);
-
-        let isCircle = svgElement.hasClass('circle');
-        let iconSizeVal = isCircle ? CIRCICONSIZE : RECTICONSIZE;
-        let anchorValue = iconSizeVal/2;
-
-        let newSize = [iconSizeVal * globalscaleFactor, iconSizeVal * globalscaleFactor];
-        let newAnchor = [anchorValue * globalscaleFactor, anchorValue * globalscaleFactor];
-
-        icon.options.iconSize = newSize;
-        icon.options.iconAnchor = newAnchor;
-
-        if(isCircle) {
-            icon.options.html = createSVGTemplate(svgElement.attr('id'), 'circle', 25);
-        } else {
-            icon.options.html = createSVGTemplate(svgElement.attr('id'), 'rectangle', 200);
-        }
-        marker.setIcon(icon);
-    });
-})
-
-let previousZoom = 16;
-/*When zoom ends */
-map.on('zoomend', function(e) {
-    let bounds = map.getBounds();
-    currentZoom = map.getZoom();
-    console.log(previousZoom, map.getZoom());
-    if(currentZoom > previousZoom && currentZoom >= 20){
-        svgMarkerGroup.eachLayer(function(marker) {
-        svgElement = $(marker._icon).find('.marker-svg');
-        if(bounds.contains(marker.getLatLng()) && svgElement.hasClass('circle')) {
-            updateIcon(marker, svgElement.attr('id'), 'rectangle', RECTICONSIZE, 200);
-        }
-    }) 
-    }
-    previousZoom = map.getZoom();
-})
-
-let highestZIndex = 100;
-
-//Event listener for markers on map, vote on post and switch between circle/rectangle upon click marker
-svgMarkerGroup.on('click', function(e) {
-    let closestElement = $(e.originalEvent.target).closest('g#Down, g#Up');
-    const clickedMarker = e.layer;  // The marker instance that was clicked
-    const svgElement = $(clickedMarker._icon).find('svg');
-
-    if (closestElement.length) {
-        //socket.emit('voteOnMarker', {direction: closestElement.attr('id'), confessionKeyID: svgElement.attr('id'), keyID: key});
-        handleVote(svgElement, closestElement.attr('id'));
-        return;
-    }
-
-    if (svgElement.hasClass('circle')) {
-        highestZIndex += 100
-        clickedMarker.setZIndexOffset(highestZIndex);
-        updateIcon(clickedMarker, svgElement.attr('id') ,'rectangle', RECTICONSIZE, 200);
-    } else {
-        updateIcon(clickedMarker, svgElement.attr('id') ,'circle', CIRCICONSIZE, 25);
-    }
-})
-
-// Event listener for the virtual scroll
-$('#clusterize-content').on('click', 'g#Up, g#Down', function(e) {
-    let svgElement = $(this).closest('svg');
-    handleVote(svgElement, this.id);
-});
-
-//Helprer function to handle vote
-function handleVote(svgElement, voteType) {
-    let confessionID = svgElement.attr('id');
-    socket.emit('voteOnMarker', {direction: voteType, confessionKeyID: confessionID, keyID: key});
-}
-
-
-function updateIcon(marker, key ,newShape, newSize, newViewBox) {
-    console.log("updateIcon");
-    newSize *= globalscaleFactor;
-    let Anchor = newSize/2;
-    let icon = marker.getIcon();
-    icon.options.iconSize = [newSize, newSize];
-    icon.options.iconAnchor = [Anchor, Anchor]
-    icon.options.html = createSVGTemplate(key, newShape, newViewBox);
-    marker.setIcon(icon);
-}
-
-function createSVGTemplate(keyID, shape, viewBox) {
-    if(shape === 'rectangle'){
-        //console.log(keyID, 'has', postCacheMap.get(keyID)['Up'], 'upvotes');
-        return createRectangleSVG(keyID, viewBox);
-    } else {
-        return createCircleSVG(keyID, viewBox);
-    }
-}
 
 function createRectangleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
@@ -290,7 +139,7 @@ function createRectangleSVG(keyID, viewBox) {
                 </defs>
                 <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="200" height="200">
-                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}, ${postCacheMap.get(keyID)['time']}</div>
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${keyID}, ${postCacheMap.get(keyID)['time']}</div>
                 </foreignObject>
                 <g id="Up">
                   <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
@@ -308,7 +157,7 @@ function createRectangleSVG(keyID, viewBox) {
                 </svg>
                 </div>`
 }
-
+//problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
 function createCircleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle" viewBox="0 0 ${viewBox} ${viewBox}">
@@ -319,11 +168,14 @@ function createCircleSVG(keyID, viewBox) {
 
 $('#buttonsContainer').on('click', '#postButton', function() {
     $('#inputPopup').show();
-  });
+});
+
+
     // Handle hiding the popup
 $(".closePopup, #exitButton").on('click', function() {
     $('#inputPopup').hide();
 });
+
 // Handle posting and hiding the popup
 $('.post').on('click', function() {
     postConfession();

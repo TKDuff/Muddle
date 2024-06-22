@@ -52,7 +52,6 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 async function insertPostIntoLocationsCollection(message, collection, io) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     // Insert the string into the collection
-    console.log(keyVar);
     messageVar._id = keyVar
     messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
     await collection.insertOne(messageVar);

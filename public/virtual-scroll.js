@@ -1,18 +1,33 @@
-let isMapFullScreen = true;
+let mapIsFullScreen = true;
 let clusterize = null;  // Holds the Clusterize instance
 let observer;
+let observedVSmarkerSvg = null;
 
 $('#buttonsContainer').on('click', '#feedButton', function() {
-    if (isMapFullScreen) {
+    if (mapIsFullScreen) { //map is currently full screen, so switch it to half screen, turn off the event listener
+        switchAllRectanglesToCircles();
+
         $('#MaynoothMap').css('height', '50%');
         $('#feedContainer').css('height', '50%');
-        initIntersectionObserver();
-        isMapFullScreen = false; // Update the state
-    } else {
+
+        svgMarkerGroup.off('click', markerIconSVGSwitch);
+        map.off('zoomend', handleZoomEnd);
+
+        mapIsFullScreen = false; // Update the state
+    } else {    
+        /*if map is half screen (V.S) then switch is back to full screen and turn on event listener
+        Don't need listeners...
+        1) Upon clicking a marker don't need switch between circle and rectangle
+        2) Upon zooming in past zoom 20, don't need to switch from circle to rectangle
+        */
         $('#MaynoothMap').css('height', '100%');
         $('#feedContainer').css('height', '0%');
-        isMapFullScreen = true; // Update the state
-    }    
+
+        svgMarkerGroup.on('click', markerIconSVGSwitch);    
+        map.on('zoomend', handleZoomEnd);
+
+        mapIsFullScreen = true; // Update the state
+    }  
 });
 
 function initIntersectionObserver() {
@@ -24,11 +39,13 @@ const options = {
 
 observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-        const markerSvg = document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`);
+        observedVSmarkerSvg = document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`);
         if (entry.isIntersecting) {
-            markerSvg.classList.add('darken-svg');
+            console.log("Currently viewing", entry.target.id);
+            console.log(observedVSmarkerSvg);
+            observedVSmarkerSvg.classList.add('darken-svg');
         }else {
-            markerSvg.classList.remove('darken-svg');
+            observedVSmarkerSvg.classList.remove('darken-svg');
         }
     });
 }, options);
