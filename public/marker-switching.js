@@ -37,7 +37,8 @@ function handleZoomAnim(e) {
         icon.options.iconSize = newSize;
         icon.options.iconAnchor = newAnchor;
 
-        /*First branch is special condition
+        /*
+        First branch is special condition
         IF in virtual scroll mode (!mapIsFullScreen) and the current marker icon id is equal to the current id of the SVG post viewed in the virtual scroll (the row)
         THEN set the html to be the circle icon, but pass the 'darken-svg' parameter, which is applies that CSS class to the SVG, thus shading the circle
         
@@ -103,10 +104,3 @@ function switchAllRectanglesToCircles () {
         } 
     });
 };
-
-
-function adjustBrightness(zoomLevel) {
-    let baseBrightness = 70;  // Base percentage for the brightness filter
-    let adjustedBrightness = baseBrightness / Math.pow(1.125, zoomLevel - maxZoomLevel);
-    return Math.min(Math.max(adjustedBrightness, 50), 100);  // Clamp the value to a reasonable range
-}

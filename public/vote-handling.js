@@ -66,13 +66,14 @@ function markerIconSVGSwitch (e) {
     }
 }
 
+$('#clusterize-content').on('click', '.marker-svg', function(e) {
+    let closestUpOrDown = $(e.target).closest('g#Up, g#Down');
 
-
-
-// Event listener for the virtual scroll
-$('#clusterize-content').on('click', 'g#Up, g#Down', function(e) {
-    let svgElement = $(this).closest('svg');
-    handleVote(svgElement, this.id);
+    if (closestUpOrDown.length) {
+        handleVote($(this), closestUpOrDown.attr('id'));
+    } else {
+        panToCorrespondingMarker($(this));
+    }
 });
 
 //Helprer function to handle vote

@@ -92,3 +92,10 @@ function disconnectObserver() {
         svg.removeAttribute('data-observed'); // Clean up attribute
     });
 }
+
+function panToCorrespondingMapMarker(svgElement) {
+    let postID = svgElement.attr('id');
+    console.log("Pan to ", postID);
+    let bounds = map.getBounds();
+
+}
