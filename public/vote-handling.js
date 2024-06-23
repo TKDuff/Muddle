@@ -72,7 +72,7 @@ $('#clusterize-content').on('click', '.marker-svg', function(e) {
     if (closestUpOrDown.length) {
         handleVote($(this), closestUpOrDown.attr('id'));
     } else {
-        panToCorrespondingMarker($(this));
+        panToCorrespondingMapMarker($(this));
     }
 });
 

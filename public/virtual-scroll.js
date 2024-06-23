@@ -14,6 +14,7 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
         svgMarkerGroup.off('click', markerIconSVGSwitch);
         map.off('zoomend', handleZoomEnd);
 
+        map.invalidateSize({pan: false});   //Updates map to reflect change in container size (map truly now half the screen), pan false prevents the map from automatically panning when its size is invalidated
         mapIsFullScreen = false; // Update the state
     } else {    
         /*if map is half screen (V.S) then switch is back to full screen and turn on event listener
@@ -27,6 +28,7 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
         svgMarkerGroup.on('click', markerIconSVGSwitch);    
         map.on('zoomend', handleZoomEnd);
 
+        map.invalidateSize({pan: false});
         mapIsFullScreen = true; // Update the state
     }  
 });
@@ -93,9 +95,17 @@ function disconnectObserver() {
     });
 }
 
-function panToCorrespondingMapMarker(svgElement) {
-    let postID = svgElement.attr('id');
-    console.log("Pan to ", postID);
-    let bounds = map.getBounds();
 
+/*In V.S mode, if observed SVG not withing map viewing bounds, if click on text then pan to the corresponding circle marker on the map
+Receives id of clicked V.S SVG post, get the corresponding internal leaflet id
+Use internal leaflet id to get actual markers lat/long
+If marker lat/long out of bounds, pan to it
+ */
+function panToCorrespondingMapMarker(svgElement) {
+    let marker = svgMarkerGroup.getLayer(postCacheMap.get(svgElement.attr('id')).leafletID);
+    let markerLatLng = marker.getLatLng();
+    
+    if (!map.getBounds().contains(markerLatLng)) {
+        map.panTo(markerLatLng);
+    }
 }

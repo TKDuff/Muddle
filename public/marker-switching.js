@@ -46,7 +46,7 @@ function handleZoomAnim(e) {
         This condition check if the current marker element is the corresponding currently viewed V.S post, if so, it updates the html and includes the CSS shading class in the html
         */
 
-        if(!mapIsFullScreen && svgElement.attr('id') === observedVSmarkerSvgID) {
+        if(!mapIsFullScreen && svgElement.attr('id') === observedVSmarkerSvgID) {   //could use the postCacheMap leafletID field to make this O(1), no need to check on each iteration. No big difference if done
             icon.options.html = createCircleSVG(svgElement.attr('id'), 25, "darken-svg");
         } else if (isCircle) {
             icon.options.html = createCircleSVG(svgElement.attr('id'), 25);//createSVGTemplate(svgElement.attr('id'), 'circle', 25);
@@ -55,7 +55,7 @@ function handleZoomAnim(e) {
         }
         marker.setIcon(icon);
     });
-
+    
 };
 
 

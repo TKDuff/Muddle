@@ -60,8 +60,8 @@ function createPost(Post) {
     const storedDocument = postCacheMap.get(Post._id);
     let svgString = createRectangleSVG(Post._id, 400);
     storedDocument.svg = svgString;
-
-    createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
+    //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
+    storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
     postData.push(Post.svg);
 }
 
@@ -114,6 +114,7 @@ Takes in the lat/long co-ords, confession which is the user text, keyID which is
 function createMarker(lat, long, keyID) {
     const marker = L.marker([lat, long], {icon: createMarkerSVGIcon(keyID)});
     svgMarkerGroup.addLayer(marker);
+    return L.stamp(marker); //returns the internal ID of the leaflet marker
 }
 
 let globalscaleFactor = 0.49327018427257213;
