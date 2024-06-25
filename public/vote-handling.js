@@ -31,25 +31,12 @@ const MIDDLE_OFFSET = 5
 function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
     let middleOffsetValue = postCacheMap.get(confessionKeyID).Down - postCacheMap.get(confessionKeyID).Up
     middleOffsetValue = (middleOffsetValue * 5) +50;
-
-    /* var svgPost = $(`#${confessionKeyID}`);
-    let gradientIndex = `--${direction}-gradient-${DirectionArrayLength}`;
-
-
-    console.log(svgPost);
-    svgPost.find(`linearGradient#Gradient-${confessionKeyID} stop#${direction}`).attr('stop-color', `var(${gradientIndex})`);
-    svgPost.find(`linearGradient#Gradient stop#Middle`).attr('offset', `${middleOffsetValue}%`); */
-
+    
     const defs = document.getElementById('global-defs');
     let gradient = defs.querySelector(`#Gradient-${confessionKeyID}`);
 
     let stop = gradient.querySelector(`stop#${direction}`);
     stop.setAttribute('stop-color', `var(--${direction}-gradient-${DirectionArrayLength})`);
-
-    let middle = gradient.querySelector(`stop#Middle`);
-    console.log(middle);
-    middle.setAttribute('offset', `${middleOffsetValue}%`);
-    console.log(middle);
 }
 
 

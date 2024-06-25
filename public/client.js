@@ -56,7 +56,7 @@ function createPost(Post) {
     Post.Down = Post.Down.length;
     postCacheMap.set(Post._id, Post);
 
-    createCentralGradientDef(Post._id);
+    createCentralGradientDef(Post._id); //create single linear gradient, add it to the static dom, will be hidden but the id will be shared among all SVGs for that post (map circle, rectangle and V.S post)
     console.log(Post._id);
     
 
@@ -130,6 +130,29 @@ const createMarkerSVGIcon = (keyID) => {
         iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
 };
 
+function createCentralGradientDef(keyID) {
+    /*
+    Creates central defenition of all gradients used by each SVG
+    Single post has three SVGs
+    1) Map circle marker
+    2) Map rectangle marker
+    3) V.S post
+
+    Instead of giving each of these having their own linearGradient, a single linearGradient is defined in the dom and hidden upon loading, each SVG for a posts references this single linear gradient
+    So if N posts, instead of N*3 linear gradients, all 3 SVGs share the single linear gradient ID
+    Changing this single linear gradient (the 'changeOneGradient()' function) is reflected in all SVGs using it, no need for extra code
+    */
+    const defs = document.getElementById('global-defs');
+
+    let gradientMarkup = `
+            <linearGradient id="Gradient-${keyID}" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
+                <stop offset="50%" id="Middle" stop-color="yellow"/>
+                <stop offset="100%" id="Up" stop-color="var(--Up-gradient-${postCacheMap.get(keyID)['Up']})"/>
+            </linearGradient>
+        `;
+    defs.innerHTML += gradientMarkup; 
+}
 
 function createRectangleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
@@ -192,18 +215,3 @@ $('.post').on('click', function() {
 -Not Spam
 -Not outside maynooth
 -Not contains slurs*/
-
-
-function createCentralGradientDef(keyID) {
-    console.log("Creating post");
-    const defs = document.getElementById('global-defs');
-
-    let gradientMarkup = `
-            <linearGradient id="Gradient-${keyID}" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
-                <stop offset="50%" id="Middle" stop-color="yellow"/>
-                <stop offset="100%" id="Up" stop-color="var(--Up-gradient-${postCacheMap.get(keyID)['Up']})"/>
-            </linearGradient>
-        `;
-    defs.innerHTML += gradientMarkup; 
-}
