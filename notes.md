@@ -60,3 +60,22 @@ Marker and Virtual Scroll posts will both reference the associate SVG string in 
 Two different areas, marker and V.S post using 1 part of memory, halfing the memory
 
 As of now, each SVG string is bound to the marker, now the marker will reference the associated cache SVG string
+
+## 24-6-2024
+You are going to go with a central def for all the linear gradients 
+As of now have a single linear gradient is used by 3 seperate SVGs
+1) Map rectangle
+2) Map circle
+3) V.S post
+
+Was thinking of giving each of them their own linearGradient in the SVG string, thus that is 3 times the linear gradient
+So is 10 posts, that is 10*3 = 30 linear gradients
+The V.S, Map circle and rectangle is added/removed from the dom dynamicically, thus eaach of their linear gradients is not stable on the dom, have to be re-added
+
+Simply better to have a central defenition containing all the linearGradients in one place that is created upon page load. 
+A single post references a single linearGradient defenition in the 3 different locations
+So upon page load, create all the linearGradients and hide them, each has an id, then 1,2 and 3 just references the single ID that is not removed at any stage
+
+A change to the linear gradient is reflected in each, better than giving each their own l.g and having to write javascript to change each upon changing one
+
+What about laoding times? You thougt, well either way the linear gradients will have to be loaded, and better load N amount of l.g at the start instead of N*3 linear gradients (and extra code to reflect changes)

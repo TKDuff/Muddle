@@ -23,7 +23,6 @@ const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
 
-
 let postData = [];
 /*When client connects, all docuements in the database are sent to the client
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
@@ -56,6 +55,10 @@ function createPost(Post) {
     Post.Up = Post.Up.length;
     Post.Down = Post.Down.length;
     postCacheMap.set(Post._id, Post);
+
+    createCentralGradientDef(Post._id);
+    console.log(Post._id);
+    
 
     const storedDocument = postCacheMap.get(Post._id);
     let svgString = createRectangleSVG(Post._id, 400);
@@ -131,13 +134,6 @@ const createMarkerSVGIcon = (keyID) => {
 function createRectangleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
-                <defs>
-                <linearGradient id="Gradient-${keyID}" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
-                <stop offset="33.33%" id="Middle" stop-color="yellow"/>
-                <stop offset="100%" id="Up" stop-color="var(--Up-gradient-${postCacheMap.get(keyID)['Up']})"/>
-                </linearGradient>
-                </defs>
                 <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="200" height="200">
                     <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${keyID}, ${postCacheMap.get(keyID)['time']}</div>
@@ -158,13 +154,20 @@ function createRectangleSVG(keyID, viewBox) {
                 </svg>
                 </div>`
 }
+
+
 //problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
 function createCircleSVG(keyID, viewBox, darken = "") {
     return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle ${darken}" viewBox="0 0 ${viewBox} ${viewBox}">
-                <use href="#circle" />
+                    <defs>
+                        <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
+                        </filter>    
+                    </defs>
+                    <circle cx="12.5" cy="12.5" r="10" fill="url(#Gradient-${keyID})" filter="url(#f1)" />
                 </svg>
-                </div>`
+            </div>`
 }
 
 $('#buttonsContainer').on('click', '#postButton', function() {
@@ -189,3 +192,18 @@ $('.post').on('click', function() {
 -Not Spam
 -Not outside maynooth
 -Not contains slurs*/
+
+
+function createCentralGradientDef(keyID) {
+    console.log("Creating post");
+    const defs = document.getElementById('global-defs');
+
+    let gradientMarkup = `
+            <linearGradient id="Gradient-${keyID}" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
+                <stop offset="50%" id="Middle" stop-color="yellow"/>
+                <stop offset="100%" id="Up" stop-color="var(--Up-gradient-${postCacheMap.get(keyID)['Up']})"/>
+            </linearGradient>
+        `;
+    defs.innerHTML += gradientMarkup; 
+}
