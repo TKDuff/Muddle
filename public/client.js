@@ -8,13 +8,26 @@ L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey
     maxZoom: 22
 
 }).addTo(map);
+
+var southWest = L.latLng(53.512570, -7.391644);
+var northEast = L.latLng(53.552589, -7.328690);
+
+var bounds = L.latLngBounds(southWest, northEast);
+
+map.setMaxBounds(bounds);
+map.fitBounds(bounds);
+
+map.on('drag', function() {
+    map.panInsideBounds(bounds, { animate: false });
+});
+
 const mapDiv = document.getElementById('brookfieldMap');
 
 const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -43,29 +56,28 @@ socket.on('newPost', (Post) => {
 });
 
 
-/*
- * Handles the post data from the server:
- * - Adds the "isCircle" boolean for SVG rendering.
- * - Converts "Up" and "Down" arrays to ints, the values are their lengths.
- * - Adds the post to the "postCacheMap".
- * - Creates an SVG Icon on the map.
- * - Adds SVG to postData array, which is used by virtual scroll feed
- */
 function createPost(Post) {
+    /*
+    * Handles the post data from the server:
+    * - Adds the "isCircle" boolean for SVG rendering.
+    * - Converts "Up" and "Down" arrays to ints, the values are their lengths.
+    * - Adds the post to the "postCacheMap".
+    * - Creates an SVG Icon on the map.
+    * - Adds SVG to postData array, which is used by virtual scroll feed
+    */
     Post.Up = Post.Up.length;
     Post.Down = Post.Down.length;
     postCacheMap.set(Post._id, Post);
 
     createCentralGradientDef(Post._id); //create single linear gradient, add it to the static dom, will be hidden but the id will be shared among all SVGs for that post (map circle, rectangle and V.S post)
-    console.log(Post._id);
     
 
     const storedDocument = postCacheMap.get(Post._id);
-    let svgString = createRectangleSVG(Post._id, 400);
-    storedDocument.svg = svgString;
+    let svgString = createVSRectangleSVG(Post._id, 400);
+
     //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
     storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
-    postData.push(Post.svg);
+    postData.push(svgString);
 }
 
 function postConfession() {
@@ -178,6 +190,29 @@ function createRectangleSVG(keyID, viewBox) {
                 </div>`
 }
 
+function createVSRectangleSVG(keyID, viewBox) {
+    return `<div class="SVG-Icon">
+                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
+                <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
+                <foreignObject x="0" y="0" width="200" height="200">
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
+                </foreignObject>
+                <g id="Up">
+                  <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
+                  <path  id="upArrow" d="M325.606,229.393l-150.004-150C172.79,76.58,168.974,75,164.996,75c-3.979,0-7.794,1.581-10.607,4.394
+                  l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
+                  C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
+                </g> 
+      
+                <g id="Down">
+                  <rect x="0" y="170" width="100" height="30" fill-opacity="0" />
+                  <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
+                  c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
+                  s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
+                </g>
+                </svg>
+                </div>`
+}
 
 //problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
 function createCircleSVG(keyID, viewBox, darken = "") {

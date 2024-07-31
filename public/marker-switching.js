@@ -19,6 +19,7 @@ let svgElement;
 
 function handleZoomAnim(e) {
     let currentZoom =  e.zoom//map.getZoom();
+    console.log(currentZoom);
     globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
 
     svgMarkerGroup.eachLayer(function(marker) {

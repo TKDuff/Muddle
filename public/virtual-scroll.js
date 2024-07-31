@@ -8,8 +8,8 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
     if (mapIsFullScreen) { //map is currently full screen, so switch it to half screen, turn off the event listener
         switchAllRectanglesToCircles();
 
-        $('#MaynoothMap').css('height', '50%');
-        $('#feedContainer').css('height', '50%');
+        $('#MaynoothMap').css('height', '65%');
+        $('#feedContainer').css('height', '35%');
 
         svgMarkerGroup.off('click', markerIconSVGSwitch);
         map.off('zoomend', handleZoomEnd);
