@@ -1,11 +1,12 @@
 //map setup
 const map = L.map('MaynoothMap', {
     zoomControl: false
-}).setView([53.5366871,  -7.3576551], 16);
+}).setView([53.5366871,  -7.3576551], 13);
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
-    maxZoom: 22
+    maxZoom: 22,
+    minZoom: 13
 
 }).addTo(map);
 
@@ -15,7 +16,8 @@ var northEast = L.latLng(53.552589, -7.328690);
 var bounds = L.latLngBounds(southWest, northEast);
 
 map.setMaxBounds(bounds);
-map.fitBounds(bounds);
+map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
+
 
 map.on('drag', function() {
     map.panInsideBounds(bounds, { animate: false });
@@ -132,14 +134,18 @@ function createMarker(lat, long, keyID) {
     return L.stamp(marker); //returns the internal ID of the leaflet marker
 }
 
-let globalscaleFactor = 0.49327018427257213;
+
+let globalscaleFactor = 0.3464394161146186//0.49327018427257213;
 
 const createMarkerSVGIcon = (keyID) => {
+    console.log("Client GSF: ", globalscaleFactor);
+    console.log("Icon Size", (CIRCICONSIZE*globalscaleFactor));
+    console.log("Icon Anchor", CIRCICONANCHOR*globalscaleFactor)
     return L.divIcon({
         className: 'SVG-Icon',
         html:       createCircleSVG(keyID, 25),
         iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
-        iconAnchor: [CIRCICONANCHOR, CIRCICONANCHOR]});
+        iconAnchor: [CIRCICONANCHOR*globalscaleFactor, CIRCICONANCHOR*globalscaleFactor]});
 };
 
 function createCentralGradientDef(keyID) {
