@@ -1,7 +1,7 @@
 //map setup
 const map = L.map('MaynoothMap', {
     zoomControl: false
-}).setView([53.5366871,  -7.3576551], 13);
+}).setView([53.5366871,  -7.3576551], 13);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
@@ -134,17 +134,21 @@ function createMarker(lat, long, keyID) {
     return L.stamp(marker); //returns the internal ID of the leaflet marker
 }
 
+/*
+globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
+Expression for GSF is above, decided the max bounds zoom will be the launch zoom, that being level 13. 
+So (13-22)^1.25 is 0.3464394161146186
+If change the starting view height, will have change hardcoded value (why not make it dynamic? No point in computing something that can be hardcoded)
+See the method 'handleZoomAnim(e)' for extra on this, they a tied together. 
+*/
+let globalscaleFactor = 0.3464394161146186
 
-let globalscaleFactor = 0.3464394161146186//0.49327018427257213;
-
-const createMarkerSVGIcon = (keyID) => {
-    console.log("Client GSF: ", globalscaleFactor);
-    console.log("Icon Size", (CIRCICONSIZE*globalscaleFactor));
-    console.log("Icon Anchor", CIRCICONANCHOR*globalscaleFactor)
+const createMarkerSVGIcon = (keyID) => {  
     return L.divIcon({
         className: 'SVG-Icon',
         html:       createCircleSVG(keyID, 25),
         iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
+        //TODO: Look into whether CIRCICONANCHOR is needed, is just the iconsize divided by 2, only used in 2 areas of the code, hard to keep track
         iconAnchor: [CIRCICONANCHOR*globalscaleFactor, CIRCICONANCHOR*globalscaleFactor]});
 };
 

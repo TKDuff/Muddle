@@ -26,7 +26,6 @@ Circle SVG size: 25
 function handleZoomAnim(e) {
     let currentZoom =  e.zoom//map.getZoom();
     
-    
     globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
     
     svgMarkerGroup.eachLayer(function(marker) {
@@ -44,15 +43,6 @@ function handleZoomAnim(e) {
 
         icon.options.iconSize = newSize;
         icon.options.iconAnchor = newAnchor;
-
-
-        if (currentZoom == 13) {
-            console.log("Zoom  ", currentZoom);
-            console.log("Zoom GSF: ", globalscaleFactor);
-            console.log("Upon ZOOM new size", newSize, "\nNew Anchor", newAnchor);
-            console.log("Anchor", CIRCICONANCHOR, "\n anchor Value,", anchorValue);
-        }
-        
         /*
         First branch is special condition
         IF in virtual scroll mode (!mapIsFullScreen) and the current marker icon id is equal to the current id of the SVG post viewed in the virtual scroll (the row)
