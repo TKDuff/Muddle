@@ -51,14 +51,31 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 // Insert strings into the "Locations" collection
 async function insertPostIntoLocationsCollection(message, collection, io) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
-    // Insert the string into the collection
+    
+    if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database and return an error to the user to let them know
+      io.emit('postError', { error: "Post location is out of bounds." });
+      return;
+    }
+    
     messageVar._id = keyVar
     messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
     await collection.insertOne(messageVar);
     io.emit('newPost', messageVar);
   }
   
+
+const southWest = { lat: 53.512570, lng: -7.391644 };
+const northEast = { lat: 53.552589, lng: -7.328690 };
+
+function checkWithinBounds(point) {
+  return (
+      point.coordinates[1] >= southWest.lat && point.coordinates[1] <= northEast.lat &&
+      point.coordinates[0] >= southWest.lng && point.coordinates[0] <= northEast.lng
+  );
+}
   
+
+
   async function findNonOverlappingLocation(location, collection, depth = 0) {
     /*Baic function for now, nothing special, will improve later when post GUIs finished
     Uses mongoDB built in 2dSpere index, has a special query 'maxDistance', to find all posts within distance
@@ -92,8 +109,6 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
   }
   
 }
-
-
   async function checkOverlap(location, collection) {
     const radius = 0.33265;
     const radiusInRadians = radius / 6371; // Convert radius in meters to radians

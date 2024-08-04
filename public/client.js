@@ -5,9 +5,7 @@ const map = L.map('MaynoothMap', {
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
-    maxZoom: 22,
-    minZoom: 13
-
+    maxZoom: 22
 }).addTo(map);
 
 var southWest = L.latLng(53.512570, -7.391644);
@@ -15,13 +13,13 @@ var northEast = L.latLng(53.552589, -7.328690);
 
 var bounds = L.latLngBounds(southWest, northEast);
 
-map.setMaxBounds(bounds);
-map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
+//map.setMaxBounds(bounds);
+//map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
 
 
-map.on('drag', function() {
-    map.panInsideBounds(bounds, { animate: false });
-});
+// map.on('drag', function() {
+//     map.panInsideBounds(bounds, { animate: false });
+// });
 
 const mapDiv = document.getElementById('brookfieldMap');
 
@@ -29,7 +27,7 @@ const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -55,6 +53,11 @@ socket.on('allDocumentsFromDatabase', documents => {
 socket.on('newPost', (Post) => {
     createPost(Post)
     clusterize.update(postData);
+});
+
+socket.on('postError', (error) => {
+    console.error("Error received:", error.error); // Log the error or handle it accordingly
+    alert(error.error); // Display an alert to the user, or you could update the UI differently
 });
 
 
