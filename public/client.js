@@ -5,6 +5,7 @@ const map = L.map('MaynoothMap', {
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
+    minZoom: 13,
     maxZoom: 22
 }).addTo(map);
 
@@ -13,13 +14,13 @@ var northEast = L.latLng(53.552589, -7.328690);
 
 var bounds = L.latLngBounds(southWest, northEast);
 
-//map.setMaxBounds(bounds);
-//map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
+map.setMaxBounds(bounds);
+map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
 
 
-// map.on('drag', function() {
-//     map.panInsideBounds(bounds, { animate: false });
-// });
+map.on('drag', function() {
+    map.panInsideBounds(bounds, { animate: false });
+});
 
 const mapDiv = document.getElementById('brookfieldMap');
 

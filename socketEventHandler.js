@@ -52,8 +52,8 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 async function insertPostIntoLocationsCollection(message, collection, io) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     
-    if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database and return an error to the user to let them know
-      io.emit('postError', { error: "Post location is out of bounds." });
+    if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know
+      io.emit('postError', { error: "Post location is out of bounds.\nShould this be a popup SVG\nShould the option to post not be visible when out of bounds(See git)" });
       return;
     }
     
