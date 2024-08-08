@@ -1,3 +1,6 @@
+const southWest = { lat: 53.512570, lng: -7.391644 };
+const northEast = { lat: 53.552589, lng: -7.328690 };
+
 async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     io.on('connection', async (socket) => {
         /*When client connects, emit all the posts already in the database to them to be drawn to the screen*/
@@ -18,34 +21,56 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
       collection.deleteMany({});
     });
 
-    socket.on('createFakePost', (count) => {
-        let lat_row = fakePostLatLongValues.BASE_LAT
-        let long_row = fakePostLatLongValues.BASE_LONG
-  
-        for(let i = 0; i < count; i++){
-            let uuid = uuidv4();
-            const data = {
-                time: i,
-                location: {
-                  type: "Point",
-                  coordinates: [long_row, lat_row ]
-                },
-                confession: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
-                Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
-                Integer placerat dignissim tellus. Cras sed augue diam. In eget magna nec.`,
-                Up: [],
-                Down: []
-            };
-            if(i % 5 == 0){
-                long_row -= fakePostLatLongValues.LONG_DIFF
-                lat_row = fakePostLatLongValues.BASE_LAT
-            }
-            lat_row += fakePostLatLongValues.LAT_DIFF
-            insertPostIntoLocationsCollection({messageVar: data, keyVar: uuid},collection, io);
+    socket.on('createUniformFakePost', (count) => {
+      let lat_row = fakePostLatLongValues.BASE_LAT
+      let long_row = fakePostLatLongValues.BASE_LONG
+      
+      for(let i = 0; i < count; i++){
+        let uuid = uuidv4();
+        const data = {
+          time: i,
+          location: {
+            type: "Point",
+            coordinates: [long_row, lat_row ]
+          },
+          confession: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
+          Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
+          Integer placerat dignissim tellus. Cras sed augue diam. In eget magna nec.`,
+          Up: [],
+          Down: []
         };
+        if(i % 5 == 0){
+          long_row -= fakePostLatLongValues.LONG_DIFF
+          lat_row = fakePostLatLongValues.BASE_LAT
+        }
+        lat_row += fakePostLatLongValues.LAT_DIFF
+        insertPostIntoLocationsCollection({messageVar: data, keyVar: uuid},collection, io);
+      };
     });
-})
+    
+    socket.on('createRandomFakePost', (count) => {
+      for (let i = 0; i < count; i++) {
+        let uuid = uuidv4();
+        const data = {
+            time: i,
+            location: {
+                type: "Point",
+                coordinates: [
+                    getRandomInRange(southWest.lng, northEast.lng, 6),
+                    getRandomInRange(southWest.lat, northEast.lat, 6)
+                ]
+            },
+            confession: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
+            Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
+            Integer placerat dignissim tellus. Cras sed augue diam. In eget magna nec.`,
+            Up: [],
+            Down: []
+        };
+        insertPostIntoLocationsCollection({ messageVar: data, keyVar: uuid }, collection, io);
+    };
+  });
 
+})
 }
 
 // Insert strings into the "Locations" collection
@@ -62,10 +87,7 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     await collection.insertOne(messageVar);
     io.emit('newPost', messageVar);
   }
-  
 
-const southWest = { lat: 53.512570, lng: -7.391644 };
-const northEast = { lat: 53.552589, lng: -7.328690 };
 
 function checkWithinBounds(point) {
   return (
@@ -109,6 +131,7 @@ function checkWithinBounds(point) {
   }
   
 }
+
   async function checkOverlap(location, collection) {
     const radius = 0.33265;
     const radiusInRadians = radius / 6371; // Convert radius in meters to radians
@@ -168,3 +191,11 @@ async function modifyVoteDirectionArray(collection, modification, direction, con
 }
 
 module.exports = socketHandler
+
+
+
+/*To be removed */
+function getRandomInRange(from, to, fixed) {
+  return (Math.random() * (to - from) + from).toFixed(fixed) * 1;
+  // .toFixed() returns string, so ' * 1' is a quick way to convert it back to a number
+}

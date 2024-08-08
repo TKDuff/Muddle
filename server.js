@@ -26,9 +26,10 @@ var collection = client.db('Muddle').collection('Locations');
 //set these values for creating fake posts here, initialise once
 const fakePostLatLongValues = {
   LONG_DIFF: 0.000200,
-    LAT_DIFF: 0.00054,
-    BASE_LAT: 53.5366871,
-    BASE_LONG: -7.3576551
+  LAT_DIFF: 0.00054,
+  BASE_LAT: 53.5366871,
+  BASE_LONG: -7.3576551
+
 }
 
 socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues);

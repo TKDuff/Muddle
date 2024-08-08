@@ -6,7 +6,7 @@
   Implemented by switching off the 'handleZoomEnd' and 'markerIconSVGSwitch' even functions
   'handleZoomAnim' is always on  */
 map.on('zoomanim', handleZoomAnim);
-map.on('zoomend', handleZoomEnd);
+//map.on('zoomend', handleZoomEnd);
 svgMarkerGroup.on('click', markerIconSVGSwitch);
 
 const maxZoomLevel = 22;
@@ -24,16 +24,18 @@ Circle SVG size: 25
  */
 
 function handleZoomAnim(e) {
+    let startTime = performance.now();
     let currentZoom =  e.zoom//map.getZoom();
     
     globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
+
     
     svgMarkerGroup.eachLayer(function(marker) {
         let icon = marker.getIcon();
         svgElement = $(marker._icon).find('.marker-svg');
         svgElement.css('transform', `scale(${globalscaleFactor})`);  
         
-
+        /*Why is done computed for each icon? Just need to compute it once, then apply to each as necessary (depending on circle or rectangle), will make more efficient */
         let isCircle = svgElement.hasClass('circle');
         let iconSizeVal = isCircle ? CIRCICONSIZE : RECTICONSIZE;
         let anchorValue = iconSizeVal/2;
@@ -61,7 +63,10 @@ function handleZoomAnim(e) {
         }
         marker.setIcon(icon);
     });
-    
+    let endTime = performance.now();
+    //console.log('Time taken:', (endTime - startTime).toFixed(4), 'ms');
+    document.getElementById('timeDisplay').textContent = `Time taken: ${(endTime - startTime).toFixed(4)} ms`;
+
 };
 
 

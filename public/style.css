@@ -167,12 +167,12 @@ html, body {
 }
 
 
-#deleteButton, #fakePostBox {
+#deleteButton, #fakePostBox, #timeTaken {
     position: fixed;
     z-index: 1000; 
 }
 
-#fakePostBox {
+#fakePostBox, #timeTaken {
     left: 32%;
 }
 

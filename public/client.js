@@ -97,8 +97,12 @@ function wipeDB() {
     socket.emit('wipeDB');
 }
 
-function createFakePost() {
-    socket.emit('createFakePost', document.getElementById("fakePostCommentBox").value)
+function createUniformFakePost() {
+    socket.emit('createUniformFakePost', document.getElementById("fakePostCommentBox").value)
+}
+
+function createRandomFakePost() {
+    socket.emit('createRandomFakePost', document.getElementById("fakePostCommentBox").value)
 }
 
 const errorCallback = (position) => {

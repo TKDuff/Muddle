@@ -26,12 +26,18 @@
         </div>
 
         <div id="MaynoothMap">
+          <div id ="timeTaken">
+            <br>
+            <br>
+            <p id="timeDisplay">Time taken: 0 ms</p>
+            </div>
           <div id="deleteButton">
             <br>
             <button id="wipe" onclick="wipeDB()">Wipe database</button>
           </div>
           <div id="fakePostBox">
-            <button id="create" onclick="createFakePost()">Create</button> 
+            <button id="uniform" onclick="createUniformFakePost()">uniform</button> 
+            <button id="random" onclick="createRandomFakePost()">random</button> 
             <textarea rows="1" cols="10" id="fakePostCommentBox"></textarea>    
           </div>
         </div>
