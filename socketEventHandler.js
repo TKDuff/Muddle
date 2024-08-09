@@ -190,7 +190,7 @@ async function modifyVoteDirectionArray(collection, modification, direction, con
       );
 }
 
-module.exports = socketHandler
+module.exports = socketHandler //This exports the function 'socketHandler' above to server.js, in which it is stored as 'socketHandler' and invoked with the 4 parms
 
 
 

@@ -1,13 +1,19 @@
+let startTime = 0;
+
 //map setup
 const map = L.map('MaynoothMap', {
-    zoomControl: false
-}).setView([53.5366871,  -7.3576551], 13);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
+    zoomControl: false})
+    .setView([53.5366871,  -7.3576551], 13);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
+    
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
     minZoom: 13,
     maxZoom: 22
-}).addTo(map);
+}).addTo(map).on('load', function() {
+    startTime = performance.now();
+});
+
 
 var southWest = L.latLng(53.512570, -7.391644);
 var northEast = L.latLng(53.552589, -7.328690);
@@ -48,6 +54,7 @@ socket.on('allDocumentsFromDatabase', documents => {
         a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
         createPost(document);
     });
+    document.getElementById('zoomTime').textContent = `Time taken: ${(performance.now() - startTime)} ms`;
     initClusterize(postData);
 })
 

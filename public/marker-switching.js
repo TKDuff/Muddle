@@ -53,16 +53,6 @@ function handleZoomAnim(e) {
             icon.options.iconAnchor = rectangleAnchor;
         }
         
-        /*Why is done computed for each icon? Just need to compute it once, then apply to each as necessary (depending on circle or rectangle), will make more efficient 
-        let isCircle = svgElement.hasClass('circle');
-        let iconSizeVal = isCircle ? CIRCICONSIZE : RECTICONSIZE;
-        let anchorValue = iconSizeVal/2;
-
-        let newSize = [iconSizeVal * globalscaleFactor, iconSizeVal * globalscaleFactor];
-        let newAnchor = [anchorValue * globalscaleFactor, anchorValue * globalscaleFactor];
-
-        icon.options.iconSize = newSize;
-        icon.options.iconAnchor = newAnchor;*/
         /*
         First branch is special condition
         IF in virtual scroll mode (!mapIsFullScreen) and the current marker icon id is equal to the current id of the SVG post viewed in the virtual scroll (the row)
@@ -82,9 +72,9 @@ function handleZoomAnim(e) {
         
         marker.setIcon(icon);
     });
+    //TODO: Remove these
     let endTime = performance.now();
-    //console.log('Time taken:', (endTime - startTime).toFixed(4), 'ms');
-    document.getElementById('timeDisplay').textContent = `Time taken: ${(endTime - startTime).toFixed(4)} ms`;
+    document.getElementById('zoomTime').textContent = `Time taken: ${(endTime - startTime).toFixed(4)} ms`;
 
 };
 

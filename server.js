@@ -15,7 +15,7 @@ const io = require('socket.io')(httpServer, {
   },
   allowEIO3: true
 });
-const socketEventHandlers = require('./socketEventHandler.js')
+const socketEventHandlers = require('./socketEventHandler.js') //import the socketHandler function (from the seerver.js file). Simply the function 'socketEventHandlers' is an alias for the funct
 const { v4: uuidv4 } = require('uuid');
 const port = process.env.PORT || 3000;             //REMOVE /* */ FROM HERE TO BE ON FLY.IO
 const { MongoClient, MaxKey } = require('mongodb');
@@ -32,7 +32,7 @@ const fakePostLatLongValues = {
 
 }
 
-socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues);
+socketEventHandlers(io, collection, uuidv4, fakePostLatLongValues); //Invoke the socketHandler function with the now obtained arguments
 app.use(cookieParser());
 
 
