@@ -59,6 +59,7 @@ function markerIconSVGSwitch (e) {
         highestZIndex += 100
         clickedMarker.setZIndexOffset(highestZIndex);
         updateIcon(clickedMarker, svgElement.attr('id') ,'rectangle', RECTICONSIZE, 200);
+        pushViewedPostID(svgElement.attr('id'))
     } else {
         updateIcon(clickedMarker, svgElement.attr('id') ,'circle', CIRCICONSIZE, 25);
     }

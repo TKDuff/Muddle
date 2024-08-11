@@ -47,8 +47,22 @@ let svgMarkerGroup = L.featureGroup().addTo(map);
 //let userPosts = localStorage.getItem('userPosts');  //Upon launch get the array stored in browser local storage of all the posts the user created
 let userPosts = JSON.parse(localStorage.getItem('userPosts') || 'null');    //This stores the IDs of the posts created by the client, if the array is not in local storage it is null
 
+let viewedPostStorage = localStorage.getItem('viewedPosts');
+let viewedPostSet;
+
+
+// Check if 'viewedPosts' exists in localStorage and initialize if not
+if (viewedPostStorage === null) {
+    viewedPostSet = new Set();
+    localStorage.setItem('viewedPosts', JSON.stringify([...viewedPostSet]));
+} else {
+    viewedPostSet = new Set(JSON.parse(viewedPostStorage));  // Parse the existing value into the global variable
+}
 
 let postData = [];
+
+
+
 /*When client connects, all docuements in the database are sent to the client
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
 In both cases, handePostData(), handles the data as follows */
@@ -317,11 +331,6 @@ $('.post').on('click', function() {
     $('#inputPopup').hide();
 });
 
-/*Server side check for post
--More than 10, less than 250
--Not Spam
--Not outside maynooth
--Not contains slurs*/
 
 // Function to format timestamp to a 24-hour time format
 function format24HourTime(timestamp) {
@@ -329,4 +338,9 @@ function format24HourTime(timestamp) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
+}
+
+function pushViewedPostID(postID) {
+    viewedPostSet.add(postID);  // Attempt to add the postID to the set
+    localStorage.setItem('viewedPosts', JSON.stringify([...viewedPostSet]));    // Convert the Set to an array and save it back to localStorage
 }

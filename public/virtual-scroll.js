@@ -48,6 +48,7 @@ observer = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             //console.log("Currently viewing", entry.target.id); //this happens twice on some for some reason
             observedVSmarkerSvgID = entry.target.id; //only if observed
+            pushViewedPostID(observedVSmarkerSvgID);
             document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.add('darken-svg');
         }else {
             document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.remove('darken-svg');
