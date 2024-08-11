@@ -38,10 +38,15 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
+
+
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
 //let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
+//let userPosts = localStorage.getItem('userPosts');  //Upon launch get the array stored in browser local storage of all the posts the user created
+let userPosts = JSON.parse(localStorage.getItem('userPosts') || 'null');
+
 
 let postData = [];
 /*When client connects, all docuements in the database are sent to the client
@@ -119,6 +124,22 @@ const errorCallback = (position) => {
 
 //########      Method that gets user location and sends it to the server     ##############################
 const sendToServer = (position) => {
+    let keyValue;
+
+    if (userPosts === null) {
+        keyValue = `${key}-0`;
+        localStorage.setItem('userPosts', JSON.stringify([keyValue]))
+        userPosts = JSON.parse(localStorage.getItem('userPosts'));
+    } else {
+        let lastElement = userPosts.slice(-1)[0];
+        let numberAfterHyphen = lastElement.substring(lastElement.lastIndexOf('-') + 1);
+
+        keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`;
+        userPosts.push(keyValue);
+        localStorage.setItem('userPosts', JSON.stringify(userPosts));
+    }
+
+
     const data = {
         time: Date.now(),
         location: {
@@ -134,7 +155,8 @@ const sendToServer = (position) => {
         Up: [],
         Down: []
     };
-    socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
+
+    socket.emit('confessionFromClient', {messageVar: data, keyVar: keyValue});
     // console.log(key);
     // key++;
     // console.log(key);
