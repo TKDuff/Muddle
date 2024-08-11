@@ -45,7 +45,7 @@ const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
 //let userPosts = localStorage.getItem('userPosts');  //Upon launch get the array stored in browser local storage of all the posts the user created
-let userPosts = JSON.parse(localStorage.getItem('userPosts') || 'null');
+let userPosts = JSON.parse(localStorage.getItem('userPosts') || 'null');    //This stores the IDs of the posts created by the client, if the array is not in local storage it is null
 
 
 let postData = [];
@@ -124,21 +124,29 @@ const errorCallback = (position) => {
 
 //########      Method that gets user location and sends it to the server     ##############################
 const sendToServer = (position) => {
-    let keyValue;
+    let keyValue;   // <user cookie>-<number of posts created by user>
 
-    if (userPosts === null) {
-        keyValue = `${key}-0`;
-        localStorage.setItem('userPosts', JSON.stringify([keyValue]))
-        userPosts = JSON.parse(localStorage.getItem('userPosts'));
-    } else {
-        let lastElement = userPosts.slice(-1)[0];
-        let numberAfterHyphen = lastElement.substring(lastElement.lastIndexOf('-') + 1);
+    if (userPosts === null) {       //if not array in local storage called 'userPosts' (user hasn't created a post)
+        keyValue = `${key}-0`;      //append 0 to their cookie
+        localStorage.setItem('userPosts', JSON.stringify([keyValue]))   //create the userPost array and append the keyValue, that is the first post they create
+        userPosts = JSON.parse(localStorage.getItem('userPosts'));      //update the userPosts variable, to remember they created a post
+    } else {        //if the 'userPost' array already exists (already created posts)
+        let lastElement = userPosts.slice(-1)[0];       //get the last posted items ID
+        
+        //Check if the wait period since the last post has expired; if not, alert the user and halt further execution.
+        const postCheck = checkNewPostCreatedAfterTimeWindow(lastElement);
+        if (!postCheck.canPost) {
+            const nextPostTimeFormatted = format24HourTime(postCheck.nextPostTime);
+            alert(`You can post again at: ${nextPostTimeFormatted}`);               //TODO: Make alert actual popup, along with other alerts
+            return;
+        }
 
-        keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`;
+        let numberAfterHyphen = lastElement.substring(lastElement.lastIndexOf('-') + 1);    //get the number after the hyphon of the ID (this is the number of posts so far by that user)
+
+        keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`; //increment the number of posts so far by one and append to the user cookie (this is they new post ID)
         userPosts.push(keyValue);
-        localStorage.setItem('userPosts', JSON.stringify(userPosts));
+        localStorage.setItem('userPosts', JSON.stringify(userPosts));   //push the new keyValue (user cookie + incremented number of post by user)
     }
-
 
     const data = {
         time: Date.now(),
@@ -212,6 +220,23 @@ function createCentralGradientDef(keyID) {
         `;
     defs.innerHTML += gradientMarkup; 
 }
+
+
+const THIRTY_SECONDS_MS = 30 * 1000;    //TODO: can remove this, for testing
+const THREE_HOURS_MS = 3 * 60 * 60 * 1000; //3 hours in milliseconds, TODO: change this value to set the time between user posts, could be 24
+/*Check if new post to be created was made after set time period since the last post. Checking if new posts was made after the blocked posting period  */
+function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
+    const timeSinceLastPost = Date.now() - postCacheMap.get(lastPostKey)['time'];
+
+    if (timeSinceLastPost > THIRTY_SECONDS_MS) {
+        return { canPost: true };
+    } else {
+        const remainingTime = THIRTY_SECONDS_MS - timeSinceLastPost;
+        const nextPostTime = Date.now() + remainingTime; // When they can post next
+        return { canPost: false, remainingTime, nextPostTime };
+    }
+}
+
 
 function createRectangleSVG(keyID, viewBox) {
     return `<div class="SVG-Icon">
@@ -297,3 +322,11 @@ $('.post').on('click', function() {
 -Not Spam
 -Not outside maynooth
 -Not contains slurs*/
+
+// Function to format timestamp to a 24-hour time format
+function format24HourTime(timestamp) {
+    const date = new Date(timestamp);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
