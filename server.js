@@ -8,7 +8,7 @@ const LOCALIO = 'http://localhost:3000/'
 
 const io = require('socket.io')(httpServer, {
   cors: {
-    origin: FLYIO,//'http://localhost:3000/',
+    origin: LOCALIO,//'http://localhost:3000/',
     methods: ["GET", "POST"],
     transports: ['websocket'],
     credentials: true
@@ -17,6 +17,8 @@ const io = require('socket.io')(httpServer, {
 });
 const socketEventHandlers = require('./socketEventHandler.js') //import the socketHandler function (from the seerver.js file). Simply the function 'socketEventHandlers' is an alias for the funct
 const { v4: uuidv4 } = require('uuid');
+
+
 const port = process.env.PORT || 3000;             //REMOVE /* */ FROM HERE TO BE ON FLY.IO
 const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
@@ -62,4 +64,4 @@ httpServer.listen(port, '0.0.0.0',() => {    /*ADD THIS BACK IN '0.0.0.0',*/
     console.log(`Server is running on port 3000`);
     connectToDatabase();    // Call the connectToDatabase function to establish the connection
   });
-
+  
