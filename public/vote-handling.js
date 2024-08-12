@@ -36,7 +36,7 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
     let gradient = defs.querySelector(`#Gradient-${confessionKeyID}`);
 
     let stop = gradient.querySelector(`stop#${direction}`);
-    stop.setAttribute('stop-color', `var(--${direction}-gradient-${DirectionArrayLength})`);
+    stop.setAttribute('stop-color', `var(--viewed-${direction}-gradient-${DirectionArrayLength})`);
 }
 
 

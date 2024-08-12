@@ -34,7 +34,7 @@ const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -101,7 +101,12 @@ function createPost(Post) {
     Post.Down = Post.Down.length;
     postCacheMap.set(Post._id, Post);
 
-    createCentralGradientDef(Post._id); //create single linear gradient, add it to the static dom, will be hidden but the id will be shared among all SVGs for that post (map circle, rectangle and V.S post)
+    //create single linear gradient, add it to the static dom, will be hidden but the id will be shared among all SVGs for that post (map circle, rectangle and V.S post)
+    if (!viewedPostSet.has(Post._id)) {
+        createCentralGradientDef(Post._id, "unviewed-default", "unviewed"); //if not viewed before make it white TODO: Change this to yellow
+    } else {
+        createCentralGradientDef(Post._id); //if viewed, by default made yellow TODO: Change to white
+    }
     
 
     const storedDocument = postCacheMap.get(Post._id);
@@ -211,7 +216,7 @@ const createMarkerSVGIcon = (keyID) => {
         iconAnchor: [CIRCICONANCHOR*globalscaleFactor, CIRCICONANCHOR*globalscaleFactor]});
 };
 
-function createCentralGradientDef(keyID) {
+function createCentralGradientDef(keyID, middleColour = 'viewed-default', viewed = "viewed") {
     /*
     Creates central defenition of all gradients used by each SVG
     Single post has three SVGs
@@ -227,9 +232,9 @@ function createCentralGradientDef(keyID) {
 
     let gradientMarkup = `
             <linearGradient id="Gradient-${keyID}" gradientUnits="objectBoundingBox" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" id="Down" stop-color="var(--Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
-                <stop offset="50%" id="Middle" stop-color="yellow"/>
-                <stop offset="100%" id="Up" stop-color="var(--Up-gradient-${postCacheMap.get(keyID)['Up']})"/>
+                <stop offset="0%" id="Down" stop-color="var(--${viewed}-Down-gradient-${postCacheMap.get(keyID)['Down']})"/>
+                <stop offset="50%" id="Middle" stop-color="var(--${middleColour}"/>
+                <stop offset="100%" id="Up" stop-color="var(--${viewed}-Up-gradient-${postCacheMap.get(keyID)['Up']})"/>
             </linearGradient>
         `;
     defs.innerHTML += gradientMarkup; 
@@ -340,7 +345,20 @@ function format24HourTime(timestamp) {
     return `${hours}:${minutes}`;
 }
 
+/*
+Add post ID to the local storage viewedPosts array as store of viewed posts
+Change colour of corresponding gradient from white to yellow (from unviewed to viewed CSS variable) TODO: Should be yellow to white, down the line
+ */
 function pushViewedPostID(postID) {
     viewedPostSet.add(postID);  // Attempt to add the postID to the set
     localStorage.setItem('viewedPosts', JSON.stringify([...viewedPostSet]));    // Convert the Set to an array and save it back to localStorage
+
+    let gradient = document.getElementById("Gradient-" + postID);
+    let stops = gradient.querySelectorAll('stop');
+    
+    stops[0].setAttribute('stop-color', stops[0].getAttribute('stop-color').replace('unviewed', 'viewed'));
+    stops[1].setAttribute('stop-color', stops[1].getAttribute('stop-color').replace('unviewed', 'viewed'));
+    stops[2].setAttribute('stop-color', stops[2].getAttribute('stop-color').replace('unviewed', 'viewed'));
+
+
 }
