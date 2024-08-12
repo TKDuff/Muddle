@@ -125,6 +125,8 @@ function postConfession() {
 }
 
 function wipeDB() {
+    localStorage.removeItem('viewedPosts');
+    localStorage.removeItem('userPosts');
     socket.emit('wipeDB');
 }
 
