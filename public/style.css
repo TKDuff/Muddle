@@ -1,34 +1,3 @@
-/* :root {
-    --default-yellow: rgb(255, 255, 100);
-
-    --Up-gradient-0: rgb(255, 255, 100);
-    --Up-gradient-1: rgb(229.5, 255, 100);
-    --Up-gradient-2: rgb(204, 255, 100);
-    --Up-gradient-3: rgb(178.5, 255, 100);
-    --Up-gradient-4: rgb(153, 255, 100);
-    --Up-gradient-5: rgb(127.5, 255, 100);
-    --Up-gradient-6: rgb(102, 255, 100);
-    --Up-gradient-7: rgb(76.5, 255, 100);
-    --Up-gradient-8: rgb(51, 255, 100);
-    --Up-gradient-9: rgb(25.5, 255, 100);
-    --Up-gradient-10: rgb(0, 255, 100);
-    /*There was a weird glitch where the 0 gradients would be the colour of default yellow
-    but would compile to the --left-gradient-1 yellowish-green, to solve this you just copied and pasted
-    the default yellow RGB in the 0 gradients until the yellow was correct*/
-    
-    /*
-    --Viewed-Down-gradient-0: rgb(255, 255, 100);
-    --Down-gradient-1: rgb(255, 229.5, 100);
-    --Down-gradient-2: rgb(255, 204, 100);
-    --Down-gradient-3: rgb(255,178.5, 100);
-    --Down-gradient-4: rgb(255, 153, 100);
-    --Down-gradient-5: rgb(255, 127.5, 100);
-    --Down-gradient-6: rgb(255, 102, 100);
-    --Down-gradient-7: rgb(255, 76.5, 100);
-    --Down-gradient-8: rgb(255, 51, 100);
-    --Down-gradient-9: rgb(255, 25.5, 100);
-    --Down-gradient-10: rgb(255, 0, 100);
-} */
 
 :root {
     --unviewed-default: rgb(255, 255, 100);
@@ -83,7 +52,7 @@
 
 #upArrow {
     fill: rgb(33, 202, 73);
-    transform: scale(0.1) translate(1600px, 1700px); 
+    transform: scale(0.1) translate(3500px, 1900px); 
     transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
@@ -99,7 +68,7 @@
 
 #downArrow {
     fill: rgb(255, 117, 117);
-    transform: scale(0.1) translate(140px, 1700px); 
+    transform: scale(0.1) translate(140px, 1900px); 
     transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
@@ -114,9 +83,16 @@
 }
 
 .svg-text-content {
-    font-family: Verdana,sans-serif;
-    font-size: 13.5px;
-    color: rgb(0, 0, 0);
+    font-family:'Roboto', sans-serif;
+    font-size: 20px;
+    font-weight: 500; 
+}
+
+.svg-bottom-text {
+    font-family: Arial, sans-serif; /* Specify the font-family */
+    font-size: 16px; /* Set the size of the text */
+    /*font-weight: bold;  Make the text bold */
+    fill: rgb(116, 116, 116);
 }
 
 html, body {
@@ -241,4 +217,8 @@ html, body {
 
 .darken-svg {
     filter: brightness(70%);
+}
+
+.non-user-post-svg {
+    display: inline;
 }

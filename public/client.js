@@ -61,8 +61,6 @@ if (viewedPostStorage === null) {
 
 let postData = [];
 
-
-
 /*When client connects, all docuements in the database are sent to the client
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
 In both cases, handePostData(), handles the data as follows */
@@ -284,21 +282,22 @@ function createRectangleSVG(keyID, viewBox) {
 }
 
 function createVSRectangleSVG(keyID, viewBox) {
-    return `<div class="SVG-Icon">
-                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
-                <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
-                <foreignObject x="0" y="0" width="200" height="200">
+    return `<div class="SVG-Icon non-user-post-svg">
+                <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 400 250">
+                <rect x="0" y="0" width="400" height="230" rx="10" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
+                <foreignObject x="0" y="0" width="400" height="230">
                     <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
+                <text x="200" y="215" class="svg-bottom-text" text-anchor="middle">${format24HourTime(postCacheMap.get(keyID)['time'])}</text>
                 <g id="Up">
-                  <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
+                  <rect x="200" y="200" width="200" height="30" fill-opacity="0" />
                   <path  id="upArrow" d="M325.606,229.393l-150.004-150C172.79,76.58,168.974,75,164.996,75c-3.979,0-7.794,1.581-10.607,4.394
                   l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
                   C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
                 </g> 
       
                 <g id="Down">
-                  <rect x="0" y="170" width="100" height="30" fill-opacity="0" />
+                  <rect x="0" y="200" width="200" height="30" fill-opacity="0" />
                   <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
                   c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
@@ -361,6 +360,4 @@ function pushViewedPostID(postID) {
     stops[0].setAttribute('stop-color', stops[0].getAttribute('stop-color').replace('unviewed', 'viewed'));
     stops[1].setAttribute('stop-color', stops[1].getAttribute('stop-color').replace('unviewed', 'viewed'));
     stops[2].setAttribute('stop-color', stops[2].getAttribute('stop-color').replace('unviewed', 'viewed'));
-
-
 }

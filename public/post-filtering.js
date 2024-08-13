@@ -1,0 +1,37 @@
+$('#buttonsContainer').on('click', '#toggleButton', function() {
+    console.log("Toggling visibility");
+    toggleSVGVisibility();
+});
+
+function toggleSVGVisibility() {
+    const stylesheet = document.styleSheets[1];
+    const cssRule = stylesheet.cssRules[27]; 
+    cssRule.style.display = (cssRule.style.display === 'none' ? 'inline' : 'none'); //if currently none, set to inline, otherwise sets it to none
+}
+
+/* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)
+toggleSVGVisibility();
+function toggleSVGVisibility() {
+    
+    const stylesheets = document.styleSheets;
+    const cssClass = 'non-user-post-svg';
+    const svgContainer = document.querySelector('.SVG-Icon'); 
+
+    
+    for (let i = 0; i < stylesheets.length; i++) {  // stylesheets array-like object that holds all the stylesheets loaded on a webpage
+
+        /*stylesheet has a collection of rules, consist of a selector (classes) and declarations (properties of class)
+        const rules = stylesheets[i].cssRules || stylesheets[i].rules;  
+
+        //when iterate over rules, checking each rules selector text, in this case finding the matching class selector '.non-user-post-svg'
+        for (let j = 0; j < rules.length; j++) {
+            if (rules[j].selectorText === '.non-user-post-svg') {   //so if current rule is 'non-user-post-svg' then print the stylesheet number (1) and rule number (27)
+                console.log("The i is",i, " the j is ", j)
+                console.log(rules[j].style.display);
+                break; // Stop the loop once we make the change
+            }
+        }
+        //The index 27 means that within the specific stylesheet at index 1 in the document.styleSheets array, the rule for .non-user-post-svg is the 28th rule (because indexing starts at 0).
+        //Knowing the exact location of the rule allows you to directly manipulate its properties, such as changing display from inline to none, without needing to iterate through all rules again
+    }
+}*/

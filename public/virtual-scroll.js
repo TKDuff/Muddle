@@ -100,13 +100,11 @@ function disconnectObserver() {
 /*In V.S mode, if observed SVG not withing map viewing bounds, if click on text then pan to the corresponding circle marker on the map
 Receives id of clicked V.S SVG post, get the corresponding internal leaflet id
 Use internal leaflet id to get actual markers lat/long
-If marker lat/long out of bounds, pan to it
+Pan to marker, ensuring center of screen and zoom at level 16 to read
  */
 function panToCorrespondingMapMarker(svgElement) {
     let marker = svgMarkerGroup.getLayer(postCacheMap.get(svgElement.attr('id')).leafletID);
     let markerLatLng = marker.getLatLng();
-    
-    if (!map.getBounds().contains(markerLatLng)) {
-        map.panTo(markerLatLng);
-    }
+    handleZoomAnim(16)
+    map.setView(markerLatLng, 16, { animate: true });
 }

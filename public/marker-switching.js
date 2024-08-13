@@ -5,7 +5,12 @@
   Thus, in V.S mode, the switch from circle to rectangle event does not happen
   Implemented by switching off the 'handleZoomEnd' and 'markerIconSVGSwitch' even functions
   'handleZoomAnim' is always on  */
-map.on('zoomanim', handleZoomAnim);
+//map.on('zoomanim', handleZoomAnim);
+
+map.on('zoomanim', function(e) {
+    handleZoomAnim(e.zoom);
+});
+
 map.on('zoomend', handleZoomEnd);
 svgMarkerGroup.on('click', markerIconSVGSwitch);
 
@@ -23,10 +28,10 @@ anchor: 10
 Circle SVG size: 25
  */
 
-function handleZoomAnim(e) {
+function handleZoomAnim(currentZoom) {
     let startTime = performance.now();
-    let currentZoom =  e.zoom//map.getZoom();
     
+    console.log(currentZoom)
     globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
 
     //Pre-compute the size of both circles/rectangles based on zoom GSF
