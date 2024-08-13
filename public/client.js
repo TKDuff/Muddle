@@ -282,7 +282,12 @@ function createRectangleSVG(keyID, viewBox) {
 }
 
 function createVSRectangleSVG(keyID, viewBox) {
-    return `<div class="SVG-Icon non-user-post-svg">
+    /* if postID not inside 'userPosts' array, then its not a user post, and can be hidden by the user 'non-user-post-svg'
+    If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js*/
+    const classAttribute = userPosts.includes(keyID) ? "SVG-Icon" : "SVG-Icon non-user-post-svg";   
+
+
+    return `<div class="${classAttribute}">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 400 250">
                 <rect x="0" y="0" width="400" height="230" rx="10" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="400" height="230">
