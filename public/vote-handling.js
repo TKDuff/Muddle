@@ -5,12 +5,23 @@ confessionKeyID is the id of the post that was voted on
 If action is null, that means switched vote, so call amendpostCacheMapVoteValues() twice,
 to decrement opposite direction int, then to increment target direction int
 */
+
+let changedVoteValue;
 socket.on('newArrayLengths', (action, direction, oppositeDirection , confessionKeyID) => {
     if(action){
-        amendpostCacheMapVoteValues(action, confessionKeyID, direction);
+        changedVoteValue = amendpostCacheMapVoteValues(action, confessionKeyID, direction);
     } else {
         amendpostCacheMapVoteValues(-1, confessionKeyID, oppositeDirection);
-        amendpostCacheMapVoteValues(1, confessionKeyID, direction);
+        changedVoteValue = amendpostCacheMapVoteValues(1, confessionKeyID, direction);
+    }
+
+    /*This may be the most innefficent part of the program
+    Every time a vote happens above, this checks if the voted on post ID is contained in the 'userPosts' array, since using array is O(N) TODO: Change array to set
+    Could make socket emit to specific client who's post was voted on (io.to(socket.id).emit('hello',) but socket doesn't correspond client ID to user connection, would have to implement map
+    So for every vote, there is a useless check 99% of the time
+     */
+    if ( userPosts.has(confessionKeyID) ) {
+        voteNotificationStyling(action, direction, oppositeDirection , confessionKeyID, changedVoteValue);
     }
 })
 
@@ -23,6 +34,8 @@ function amendpostCacheMapVoteValues (action, confessionKeyID, direction) {
     postDirectionValue[direction] += action;
     postCacheMap.set(confessionKeyID, postDirectionValue);
     changeOneGradient(postDirectionValue[direction], direction, confessionKeyID);
+
+    return postDirectionValue[direction];
 }
 
 
@@ -79,4 +92,20 @@ $('#clusterize-content').on('click', '.marker-svg', function(e) {
 function handleVote(svgElement, voteType) {
     let confessionID = svgElement.attr('id');
     socket.emit('voteOnMarker', {direction: voteType, confessionKeyID: confessionID, keyID: key});
+}
+
+
+function voteNotificationStyling(action, direction, oppositeDirection , KeyID, changedVoteValue) {
+    let currentEntry = userPosts.get(KeyID);
+    currentEntry[direction] = changedVoteValue;
+    userPosts.set(KeyID, currentEntry);
+
+    if (oppositeDirection !== null) { //if switch vote, ensures the corresponding local storage elements Up and Down fields swap values appropriatly
+        currentEntry[oppositeDirection] = currentEntry[oppositeDirection]-1;
+        userPosts.set(KeyID, currentEntry);
+    }
+    
+    
+    localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
+
 }

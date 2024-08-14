@@ -1,15 +1,15 @@
 $('#buttonsContainer').on('click', '#toggleButton', function() {
-    console.log("Toggling visibility");
-    toggleSVGVisibility();
+    toggleSVGVisibility(1, 27);
 });
 
-function toggleSVGVisibility() {
-    const stylesheet = document.styleSheets[1];
-    const cssRule = stylesheet.cssRules[27]; 
+function toggleSVGVisibility(i, j) {
+    const stylesheet = document.styleSheets[i];
+    const cssRule = stylesheet.cssRules[j]; 
     cssRule.style.display = (cssRule.style.display === 'none' ? 'inline' : 'none'); //if currently none, set to inline, otherwise sets it to none
 }
 
-/* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)
+/* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)*/
+/*
 toggleSVGVisibility();
 function toggleSVGVisibility() {
     
@@ -20,12 +20,12 @@ function toggleSVGVisibility() {
     
     for (let i = 0; i < stylesheets.length; i++) {  // stylesheets array-like object that holds all the stylesheets loaded on a webpage
 
-        /*stylesheet has a collection of rules, consist of a selector (classes) and declarations (properties of class)
+        //stylesheet has a collection of rules, consist of a selector (classes) and declarations (properties of class)
         const rules = stylesheets[i].cssRules || stylesheets[i].rules;  
 
         //when iterate over rules, checking each rules selector text, in this case finding the matching class selector '.non-user-post-svg'
         for (let j = 0; j < rules.length; j++) {
-            if (rules[j].selectorText === '.non-user-post-svg') {   //so if current rule is 'non-user-post-svg' then print the stylesheet number (1) and rule number (27)
+            if (rules[j].selectorText === '.notification-circle-icon') {   //so if current rule is 'non-user-post-svg' then print the stylesheet number (1) and rule number (27)
                 console.log("The i is",i, " the j is ", j)
                 console.log(rules[j].style.display);
                 break; // Stop the loop once we make the change

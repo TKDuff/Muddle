@@ -44,12 +44,20 @@ const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.
 //let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
-//let userPosts = localStorage.getItem('userPosts');  //Upon launch get the array stored in browser local storage of all the posts the user created
+
+
 let userPosts = JSON.parse(localStorage.getItem('userPosts') || 'null');    //This stores the IDs of the posts created by the client, if the array is not in local storage it is null
+
+if (userPosts === null) {       //if not array in local storage called 'userPosts' (user hasn't created a post)
+    userPosts = new Map();             //initialize as an empty array for userPosts
+    localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));  // Store the empty array in localStorage
+} else {
+    userPosts = new Map(userPosts);
+}
+
 
 let viewedPostStorage = localStorage.getItem('viewedPosts');
 let viewedPostSet;
-
 
 // Check if 'viewedPosts' exists in localStorage and initialize if not
 if (viewedPostStorage === null) {
@@ -98,6 +106,10 @@ function createPost(Post) {
     Post.Up = Post.Up.length;
     Post.Down = Post.Down.length;
     postCacheMap.set(Post._id, Post);
+    
+    if (userPosts.has(Post._id)) {
+        localStorageVoteNotification(Post._id, Post.Up, Post.Down )
+    }
 
     //create single linear gradient, add it to the static dom, will be hidden but the id will be shared among all SVGs for that post (map circle, rectangle and V.S post)
     if (!viewedPostSet.has(Post._id)) {
@@ -122,6 +134,7 @@ function postConfession() {
     });
 }
 
+//Doesn't wipe other clients local storage arrays, need to do that manually
 function wipeDB() {
     localStorage.removeItem('viewedPosts');
     localStorage.removeItem('userPosts');
@@ -145,26 +158,31 @@ const errorCallback = (position) => {
 const sendToServer = (position) => {
     let keyValue;   // <user cookie>-<number of posts created by user>
 
-    if (userPosts === null) {       //if not array in local storage called 'userPosts' (user hasn't created a post)
+    //fixme - create userPosts should be automatic if not exising, not dependant on calling this function
+    if (userPosts.size === 0) {       //if not array in local storage called 'userPosts' (user hasn't created a post)
         keyValue = `${key}-0`;      //append 0 to their cookie
-        localStorage.setItem('userPosts', JSON.stringify([keyValue]))   //create the userPost array and append the keyValue, that is the first post they create
-        userPosts = JSON.parse(localStorage.getItem('userPosts'));      //update the userPosts variable, to remember they created a post
-    } else {        //if the 'userPost' array already exists (already created posts)
-        let lastElement = userPosts.slice(-1)[0];       //get the last posted items ID
+        userPosts.set(keyValue,  { Up: 0, Down: 0 } )
+        localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
+    } else {        //if the 'userPost' array already exists (already created posts)   
+        const keys = Array.from(userPosts.keys());
+        const lastElementKey = keys.sort((a, b) => parseInt(a.split('-')[1]) - parseInt(b.split('-')[1])).pop();  //get the last posted items ID
+
+        /*Check if the wait period since the last post has expired; if not, alert the user and halt further execution.
+        This function doesn't need to be called if */ 
         
-        //Check if the wait period since the last post has expired; if not, alert the user and halt further execution.
-        const postCheck = checkNewPostCreatedAfterTimeWindow(lastElement);
+        /*
+        const postCheck = checkNewPostCreatedAfterTimeWindow(lastElementKey);
         if (!postCheck.canPost) {
             const nextPostTimeFormatted = format24HourTime(postCheck.nextPostTime);
             alert(`You can post again at: ${nextPostTimeFormatted}`);               //TODO: Make alert actual popup, along with other alerts
             return;
-        }
+        }*/
 
-        let numberAfterHyphen = lastElement.substring(lastElement.lastIndexOf('-') + 1);    //get the number after the hyphon of the ID (this is the number of posts so far by that user)
+        let numberAfterHyphen = lastElementKey.substring(lastElementKey.lastIndexOf('-') + 1);   //get the number after the hyphon of the ID (this is the number of posts so far by that user)
+        keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`;     //increment the number of posts so far by one and append to the user cookie (this is they new post ID)
 
-        keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`; //increment the number of posts so far by one and append to the user cookie (this is they new post ID)
-        userPosts.push(keyValue);
-        localStorage.setItem('userPosts', JSON.stringify(userPosts));   //push the new keyValue (user cookie + incremented number of post by user)
+        userPosts.set(keyValue, { Up: 0, Down: 0 });
+        localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries()))); //push the new keyValue (user cookie + incremented number of post by user)   
     }
 
     const data = {
@@ -283,8 +301,9 @@ function createRectangleSVG(keyID, viewBox) {
 
 function createVSRectangleSVG(keyID, viewBox) {
     /* if postID not inside 'userPosts' array, then its not a user post, and can be hidden by the user 'non-user-post-svg'
-    If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js*/
-    const classAttribute = userPosts.includes(keyID) ? "SVG-Icon" : "SVG-Icon non-user-post-svg";   
+    If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js
+    TODO: CHange userPosts to a set (not array) so checking if id inside is O(1)*/
+    const classAttribute = userPosts.has(keyID) ? "SVG-Icon" : "SVG-Icon non-user-post-svg";   
 
 
     return `<div class="${classAttribute}">
@@ -365,4 +384,31 @@ function pushViewedPostID(postID) {
     stops[0].setAttribute('stop-color', stops[0].getAttribute('stop-color').replace('unviewed', 'viewed'));
     stops[1].setAttribute('stop-color', stops[1].getAttribute('stop-color').replace('unviewed', 'viewed'));
     stops[2].setAttribute('stop-color', stops[2].getAttribute('stop-color').replace('unviewed', 'viewed'));
+}
+
+/*Takes in the postID, the corresponding up up/down votes the post has on the server side
+If a posts vote numbers from the server side don't match the local storage corresponding post vote numbers, that means the post has been voted on while the user was gone
+Thus notify user about the votes on their post
+ */
+function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
+
+    let currentEntry = userPosts.get(postId);
+    /*
+    if (currentEntry.Up != UpNumber) {
+        console.log("Up noty");
+    } else if (currentEntry.Down != DownNumber) {
+        console.log("Down noty");
+    } else {
+        console.log("Equal");
+    }*/
+
+    if (currentEntry.Up != UpNumber || currentEntry.Down != DownNumber) {
+        document.styleSheets[1].cssRules[28].style.display = 'inline';
+    }
+
+    // Update userPosts map if postId exists in it
+    if (userPosts.has(postId)) {
+        userPosts.set(postId, { Up: UpNumber, Down: DownNumber });
+        localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
+    }
 }

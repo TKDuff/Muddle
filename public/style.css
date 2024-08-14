@@ -222,3 +222,8 @@ html, body {
 .non-user-post-svg {
     display: inline;
 }
+
+/*index is [1][28]*/
+.notification-circle-icon {
+    display: none;
+}
