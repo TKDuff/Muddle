@@ -1,11 +1,41 @@
-let mapIsFullScreen = true;
+let mapIsFullScreenVirtualScroll = true;
+let lastButtonPressed = null;
+
+
 let clusterize = null;  // Holds the Clusterize instance
 let observer;
 let observedVSmarkerSvg = null;
 let observedVSmarkerSvgID = null;   //id used by 'handleZoomAnim' to know which circle should retain the dark shading
 
 $('#buttonsContainer').on('click', '#feedButton', function() {
-    if (mapIsFullScreen) { //map is currently full screen, so switch it to half screen, turn off the event listener
+    toggleSVGVisibility(1, 27, 'inline');   
+    virtualScrollToggling('feedButton');
+});
+
+function virtualScrollToggling (currentButtonPressed) { //handles switching bettwen user posts virtual scroll and all post virtual scrool
+
+    if (lastButtonPressed === currentButtonPressed && !mapIsFullScreenVirtualScroll) {    //if the VS is shown and the toggle button is pressed again, hide it
+        console.log(`Hide the ${currentButtonPressed} VS`);
+        toggleVirtualScroll();
+        mapIsFullScreenVirtualScroll = true;
+    } else if (lastButtonPressed !== currentButtonPressed && !mapIsFullScreenVirtualScroll) {   //Maintain the current virtual scroll if a different button is pressed but it's already shown (switching).
+        console.log(`Switch to ${currentButtonPressed} VS, from previous ${lastButtonPressed}`);
+        mapIsFullScreenVirtualScroll = false;
+    } else if (lastButtonPressed === currentButtonPressed && mapIsFullScreenVirtualScroll) {    //Show the virtual scroll if the same button is pressed again but it is currently hidden.
+        console.log(`Show the ${currentButtonPressed} VS, previously hidden`);
+        toggleVirtualScroll();
+        mapIsFullScreenVirtualScroll = false;
+    } else if (lastButtonPressed !== currentButtonPressed && mapIsFullScreenVirtualScroll) {    //Show the virtual scroll if a different button is pressed and it is currently hidden.
+        console.log(`Show the ${currentButtonPressed} VS`);
+        toggleVirtualScroll();
+        mapIsFullScreenVirtualScroll = false;
+    }  
+
+    lastButtonPressed = currentButtonPressed;
+}
+
+function toggleVirtualScroll() {
+    if (mapIsFullScreenVirtualScroll) { //map is currently full screen, so switch it to half screen, turn off the event listener
         switchAllRectanglesToCircles();
 
         $('#MaynoothMap').css('height', '65%');
@@ -15,7 +45,7 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
         map.off('zoomend', handleZoomEnd);
 
         map.invalidateSize({pan: false});   //Updates map to reflect change in container size (map truly now half the screen), pan false prevents the map from automatically panning when its size is invalidated
-        mapIsFullScreen = false; // Update the state
+        mapIsFullScreenVirtualScroll = false; // Update the state
     } else {    
         /*if map is half screen (V.S) then switch is back to full screen and turn on event listener
         Don't need listeners...
@@ -29,9 +59,10 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
         map.on('zoomend', handleZoomEnd);
 
         map.invalidateSize({pan: false});
-        mapIsFullScreen = true; // Update the state
+        mapIsFullScreenVirtualScroll = true; // Update the state
     }  
-});
+}
+
 
 function initIntersectionObserver() {
 //config for interaction observer

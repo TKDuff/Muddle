@@ -1,11 +1,13 @@
 $('#buttonsContainer').on('click', '#toggleButton', function() {
-    toggleSVGVisibility(1, 27);
+    toggleSVGVisibility(1, 27, 'none');
+    virtualScrollToggling('toggleButton');
+    
 });
 
-function toggleSVGVisibility(i, j) {
+function toggleSVGVisibility(i, j, option) {
     const stylesheet = document.styleSheets[i];
     const cssRule = stylesheet.cssRules[j]; 
-    cssRule.style.display = (cssRule.style.display === 'none' ? 'inline' : 'none'); //if currently none, set to inline, otherwise sets it to none
+    cssRule.style.display = option;//(cssRule.style.display === 'none' ? 'inline' : 'none'); //if currently none, set to inline, otherwise sets it to none
 }
 
 /* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)*/

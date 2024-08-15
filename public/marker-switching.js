@@ -60,14 +60,14 @@ function handleZoomAnim(currentZoom) {
         
         /*
         First branch is special condition
-        IF in virtual scroll mode (!mapIsFullScreen) and the current marker icon id is equal to the current id of the SVG post viewed in the virtual scroll (the row)
+        IF in virtual scroll mode (!mapIsFullScreenVirtualScroll) and the current marker icon id is equal to the current id of the SVG post viewed in the virtual scroll (the row)
         THEN set the html to be the circle icon, but pass the 'darken-svg' parameter, which is applies that CSS class to the SVG, thus shading the circle
         
         When user viws virtual scroll post, the corresponding map marker circle is shaded, however when zoom the SVG string is re-applied and thus the CSS class shading is removed (darken-svg)
         This condition check if the current marker element is the corresponding currently viewed V.S post, if so, it updates the html and includes the CSS shading class in the html
         */
 
-        if(!mapIsFullScreen && svgElement.attr('id') === observedVSmarkerSvgID) {   //could use the postCacheMap leafletID field to make this O(1), no need to check on each iteration. No big difference if done
+        if(!mapIsFullScreenVirtualScroll && svgElement.attr('id') === observedVSmarkerSvgID) {   //could use the postCacheMap leafletID field to make this O(1), no need to check on each iteration. No big difference if done
             icon.options.html = createCircleSVG(svgElement.attr('id'), 25, "darken-svg");
         } else if (isCircle) {
             icon.options.html = createCircleSVG(svgElement.attr('id'), 25);//createSVGTemplate(svgElement.attr('id'), 'circle', 25);

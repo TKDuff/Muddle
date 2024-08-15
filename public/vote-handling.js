@@ -103,9 +103,7 @@ function voteNotificationStyling(action, direction, oppositeDirection , KeyID, c
     if (oppositeDirection !== null) { //if switch vote, ensures the corresponding local storage elements Up and Down fields swap values appropriatly
         currentEntry[oppositeDirection] = currentEntry[oppositeDirection]-1;
         userPosts.set(KeyID, currentEntry);
-    }
-    
-    
+    }    
     localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
-
+    document.styleSheets[1].cssRules[28].style.display = 'inline';
 }
