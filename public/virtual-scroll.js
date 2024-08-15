@@ -15,18 +15,14 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
 function virtualScrollToggling (currentButtonPressed) { //handles switching bettwen user posts virtual scroll and all post virtual scrool
 
     if (lastButtonPressed === currentButtonPressed && !mapIsFullScreenVirtualScroll) {    //if the VS is shown and the toggle button is pressed again, hide it
-        console.log(`Hide the ${currentButtonPressed} VS`);
         toggleVirtualScroll();
         mapIsFullScreenVirtualScroll = true;
     } else if (lastButtonPressed !== currentButtonPressed && !mapIsFullScreenVirtualScroll) {   //Maintain the current virtual scroll if a different button is pressed but it's already shown (switching).
-        console.log(`Switch to ${currentButtonPressed} VS, from previous ${lastButtonPressed}`);
         mapIsFullScreenVirtualScroll = false;
     } else if (lastButtonPressed === currentButtonPressed && mapIsFullScreenVirtualScroll) {    //Show the virtual scroll if the same button is pressed again but it is currently hidden.
-        console.log(`Show the ${currentButtonPressed} VS, previously hidden`);
         toggleVirtualScroll();
         mapIsFullScreenVirtualScroll = false;
     } else if (lastButtonPressed !== currentButtonPressed && mapIsFullScreenVirtualScroll) {    //Show the virtual scroll if a different button is pressed and it is currently hidden.
-        console.log(`Show the ${currentButtonPressed} VS`);
         toggleVirtualScroll();
         mapIsFullScreenVirtualScroll = false;
     }  

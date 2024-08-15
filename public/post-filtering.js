@@ -18,6 +18,26 @@ function toggleSVGVisibility(i, j, option) {
     
 }
 
+/*Takes in the postID, the corresponding up up/down votes the post has on the server side
+If a posts vote numbers from the server side don't match the local storage corresponding post vote numbers, that means the post has been voted on while the user was gone
+Thus notify user about the votes on their post
+ */
+function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
+
+    let currentEntry = userPosts.get(postId);
+
+    if (currentEntry.Up != UpNumber || currentEntry.Down != DownNumber) {
+        document.styleSheets[1].cssRules[28].style.display = 'inline';
+    }
+
+    // Update userPosts map if postId exists in it
+    if (userPosts.has(postId)) {
+        userPosts.set(postId, { Up: UpNumber, Down: DownNumber });
+        localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
+    }
+}
+
+
 /* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)*/
 /*
 getSVGVisibility();
