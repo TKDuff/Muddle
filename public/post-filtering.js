@@ -1,19 +1,27 @@
 $('#buttonsContainer').on('click', '#toggleButton', function() {
     toggleSVGVisibility(1, 27, 'none');
     virtualScrollToggling('toggleButton');
+    //document.styleSheets[1].cssRules[28].style.display = 'none';
+    toggleSVGVisibility(1,28, 'none')
+
     
 });
 
 function toggleSVGVisibility(i, j, option) {
     const stylesheet = document.styleSheets[i];
     const cssRule = stylesheet.cssRules[j]; 
+    /* TODO: This ensures the re-paint happens, is needed solely for the line 'toggleSVGVisibility(1,28, 'none')' called when hiding notification on clicking toggle button
+    Beginning to show crack in such a large code-base
+    */
+    console.log(cssRule.style.display); 
     cssRule.style.display = option;//(cssRule.style.display === 'none' ? 'inline' : 'none'); //if currently none, set to inline, otherwise sets it to none
+    
 }
 
 /* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)*/
 /*
-toggleSVGVisibility();
-function toggleSVGVisibility() {
+getSVGVisibility();
+function getSVGVisibility() {
     
     const stylesheets = document.styleSheets;
     const cssClass = 'non-user-post-svg';

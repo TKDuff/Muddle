@@ -393,14 +393,6 @@ Thus notify user about the votes on their post
 function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
 
     let currentEntry = userPosts.get(postId);
-    /*
-    if (currentEntry.Up != UpNumber) {
-        console.log("Up noty");
-    } else if (currentEntry.Down != DownNumber) {
-        console.log("Down noty");
-    } else {
-        console.log("Equal");
-    }*/
 
     if (currentEntry.Up != UpNumber || currentEntry.Down != DownNumber) {
         document.styleSheets[1].cssRules[28].style.display = 'inline';
