@@ -228,8 +228,15 @@ html, body {
     display: none;
 }
 
-.hidden-option {
+/*TODO: Make this an animation, as of now first thing the user observes the circle, it dissapears, so can't really tell there was a notification for that post*/
+/* .hidden-option {
     display: none;
+} */
+
+.hidden-option {
+    opacity: 0;
+    visibility: hidden; /* Use visibility to remove the element from the interaction layer while it's invisible */
+    transition: opacity 0.2s, visibility 0.2s;
 }
 
 .visible-option {

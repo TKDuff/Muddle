@@ -324,7 +324,7 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
                   c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
                 </g>
-                <circle cx="200" cy="100" r="9" fill="red" class=${notificationOption}>
+                <circle id="red-circle" cx="200" cy="30" r="9" fill="red" class=${notificationOption}>
                 </svg>
                 </div>`
 }

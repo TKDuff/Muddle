@@ -40,6 +40,12 @@ function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
     }
 }
 
+/*Handles votes to user posts while user is active
+Given the ID of the user post that was voted on
+Find the index of the user post in the map
+Index is used in corresponding 'postData' array which pertains to the virtual scroll SVG ( map has 1:1 mapping with array)
+Update the corresponding userPost element SVG, replacing the 'hidden' to the 'visible' option for the notification circle
+  */
 function sessionVirtualScrollPostNotification(postID) {
     let index = 0;
     for (let key of postCacheMap.keys()) {
