@@ -19,21 +19,36 @@ function toggleSVGVisibility(i, j, option) {
 }
 
 /*Takes in the postID, the corresponding up up/down votes the post has on the server side
-If a posts vote numbers from the server side don't match the local storage corresponding post vote numbers, that means the post has been voted on while the user was gone
-Thus notify user about the votes on their post
+If a posts vote numbers from the server side don't match the local storage corresponding post vote numbers, that means the post has been voted on while the user was gone thus...
+1) Set the notification icon on the 'toggleButton' to true
+2) Set the local storage 'userPosts' map field elements for the correpsonding posts match the server votes
+3) Show the notification icon on the corresponding virtual scroll post, hence why the string is returned with 'visible-option' set (by default it is hidden)
+
+If the votes are the same upon coming back, then just return the normal virtaul scroll SVG with no notification
  */
 function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
-
     let currentEntry = userPosts.get(postId);
 
     if (currentEntry.Up != UpNumber || currentEntry.Down != DownNumber) {
         document.styleSheets[1].cssRules[28].style.display = 'inline';
-    }
-
-    // Update userPosts map if postId exists in it
-    if (userPosts.has(postId)) {
+        // Update userPosts map if postId exists in it
         userPosts.set(postId, { Up: UpNumber, Down: DownNumber });
         localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
+        return createVSRectangleSVG(postId, 400, "visible-option");
+    } else {
+        return createVSRectangleSVG(postId, 400);
+    }
+}
+
+function sessionVirtualScrollPostNotification(postID) {
+    let index = 0;
+    for (let key of postCacheMap.keys()) {
+        if (key === postID) {
+            let updatedSVG = postData[index].replace("hidden-option", "visible-option");
+            postData[index] = updatedSVG;
+            clusterize.update(postData);
+        }
+        index++;
     }
 }
 

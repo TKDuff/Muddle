@@ -107,21 +107,21 @@ function createPost(Post) {
     Post.Down = Post.Down.length;
     postCacheMap.set(Post._id, Post);
     
-    if (userPosts.has(Post._id)) {
-        localStorageVoteNotification(Post._id, Post.Up, Post.Down )
-    }
-
     //create single linear gradient, add it to the static dom, will be hidden but the id will be shared among all SVGs for that post (map circle, rectangle and V.S post)
     if (!viewedPostSet.has(Post._id)) {
         createCentralGradientDef(Post._id, "unviewed-default", "unviewed"); //if not viewed before make it white TODO: Change this to yellow
     } else {
         createCentralGradientDef(Post._id); //if viewed, by default made yellow TODO: Change to white
     }
-    
+
+    let svgString;
+    if (userPosts.has(Post._id)) {  //check if the current post is a user post
+        svgString = localStorageVoteNotification(Post._id, Post.Up, Post.Down ) //if votes on user post while gone, the virtual scroll SVG string will display the notification icon, hence it is pushed to the postData array
+    } else {
+        svgString = createVSRectangleSVG(Post._id, 400);
+    }
 
     const storedDocument = postCacheMap.get(Post._id);
-    let svgString = createVSRectangleSVG(Post._id, 400);
-
     //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
     storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
     postData.push(svgString);
@@ -299,12 +299,11 @@ function createRectangleSVG(keyID, viewBox) {
                 </div>`
 }
 
-function createVSRectangleSVG(keyID, viewBox) {
+function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-option") {
     /* if postID not inside 'userPosts' array, then its not a user post, and can be hidden by the user 'non-user-post-svg'
     If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js
     TODO: CHange userPosts to a set (not array) so checking if id inside is O(1)*/
     const classAttribute = userPosts.has(keyID) ? "SVG-Icon" : "SVG-Icon non-user-post-svg";   
-
 
     return `<div class="${classAttribute}">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 400 250">
@@ -319,13 +318,13 @@ function createVSRectangleSVG(keyID, viewBox) {
                   l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
                   C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
                 </g> 
-      
                 <g id="Down">
                   <rect x="0" y="200" width="200" height="30" fill-opacity="0" />
                   <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
                   c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
                 </g>
+                <circle cx="200" cy="100" r="9" fill="red" class=${notificationOption}>
                 </svg>
                 </div>`
 }

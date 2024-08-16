@@ -8,7 +8,7 @@ let observedVSmarkerSvg = null;
 let observedVSmarkerSvgID = null;   //id used by 'handleZoomAnim' to know which circle should retain the dark shading
 
 $('#buttonsContainer').on('click', '#feedButton', function() {
-    toggleSVGVisibility(1, 27, 'inline');   
+    toggleSVGVisibility(1, 27, 'block');   
     virtualScrollToggling('feedButton');
 });
 

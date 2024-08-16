@@ -220,10 +220,18 @@ html, body {
 }
 
 .non-user-post-svg {
-    display: inline;
+    display: block;    /*Setting to inline breaks virtual scroll as inline elements do not respect top and bottom margin or padding, and their width and height properties are not respected.*/
 }
 
 /*index is [1][28]*/
 .notification-circle-icon {
     display: none;
+}
+
+.hidden-option {
+    display: none;
+}
+
+.visible-option {
+    display: block; /* or 'block', depending on desired display type */
 }
