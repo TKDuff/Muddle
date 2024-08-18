@@ -1,8 +1,9 @@
 $('#buttonsContainer').on('click', '#toggleButton', function() {
+    isPostDataUsed = false;
     clusterize.update(userPostData);
     virtualScrollToggling('toggleButton');
     
-    toggleSVGVisibility(1,28, 'none')
+    toggleSVGVisibility(1,27, 'none')
 
     
 });
@@ -10,7 +11,7 @@ $('#buttonsContainer').on('click', '#toggleButton', function() {
 function toggleSVGVisibility(i, j, option) {
     const stylesheet = document.styleSheets[i];
     const cssRule = stylesheet.cssRules[j]; 
-    /* TODO: This ensures the re-paint happens, is needed solely for the line 'toggleSVGVisibility(1,28, 'none')' called when hiding notification on clicking toggle button
+    /* TODO: This ensures the re-paint happens, is needed solely for the line 'toggleSVGVisibility(1,27, 'none')' called when hiding notification on clicking toggle button
     Beginning to show crack in such a large code-base
     */
     console.log(cssRule.style.display); 
@@ -30,7 +31,7 @@ function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
     let currentEntry = userPosts.get(postId);
 
     if (currentEntry.Up != UpNumber || currentEntry.Down != DownNumber) {
-        document.styleSheets[1].cssRules[28].style.display = 'inline';
+        document.styleSheets[1].cssRules[27].style.display = 'inline';
         // Update userPosts map if postId exists in it
         userPosts.set(postId, { Up: UpNumber, Down: DownNumber });
         localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
@@ -40,21 +41,42 @@ function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
 /*Handles votes to user posts while user is active
 Given the ID of the user post that was voted on
 Find the index of the user post in the map
-Index is used in corresponding 'postData' array which pertains to the virtual scroll SVG ( map has 1:1 mapping with array)
+The postCacheMap and userPost have a 1:1 correspondance, so the index of a postCacheMap element corresponds direclty to its postData string 
+
+Thus, iterate over each postCahceMap key keeping an index for iteration, if the key matches the passed in key the current index if the index of the corresponding postData element for that post
+Using index, update the voted on postData element
+
+Have 'count' to keep track of all the postCacheMap keys iterated that are userPost keys (belong in userPostData)
+When eventaullu find the index for the postData, will also have the index in the userPostData array, and thus also update the SVG string in the userPostData array
+Increments the count if the current key exists within userPosts. This seems to serve as a way to count how many user posts are encountered before finding the specific postID
 Update the corresponding userPost element SVG, replacing the 'hidden' to the 'visible' option for the notification circle
   */
-function sessionVirtualScrollPostNotification(postID) {
+function sessionVirtualScrollPostNotification(postID, existingClass, newClass) {
     let index = 0;
+    let count = 0;
+    console.log(userPosts);
     for (let key of postCacheMap.keys()) {
         if (key === postID) {
-            let updatedSVG = postData[index].replace("hidden-option", "visible-option");
+            let updatedSVG = postData[index].replace(existingClass, newClass);
             postData[index] = updatedSVG;
-            clusterize.update(postData);
-        }
+            userPostData[count] = updatedSVG;
+            if (isPostDataUsed) {
+                /*TODO: On update replacing the SVG strings, thus the CSS transition (hidden-option) for the notification can't apply, SVG update before CSS finish */
+                // If isPostDataUsed is true, update userPostData first, then postData
+                clusterize.update(userPostData);
+                clusterize.update(postData);
+            } else {
+                // If isPostDataUsed is false, update postData first, then userPostData
+                clusterize.update(postData);
+                clusterize.update(userPostData);
+            }
+            break;
+        } else if (userPosts.has(key)) {
+            count++;
+        }  
         index++;
     }
 }
-
 
 /* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)*/
 /*

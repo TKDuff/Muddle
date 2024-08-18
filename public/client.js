@@ -34,7 +34,7 @@ const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -67,6 +67,7 @@ if (viewedPostStorage === null) {
     viewedPostSet = new Set(JSON.parse(viewedPostStorage));  // Parse the existing value into the global variable
 }
 
+let isPostDataUsed;
 let postData = [];
 let userPostData = [];
 
@@ -86,6 +87,7 @@ socket.on('allDocumentsFromDatabase', documents => {
 
 socket.on('newPost', (Post) => {
     createPost(Post)
+    isPostDataUsed = true;
     clusterize.update(postData);
 });
 
@@ -302,12 +304,11 @@ function createRectangleSVG(keyID, viewBox) {
 }
 
 function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-option") {
-    /* if postID not inside 'userPosts' array, then its not a user post, and can be hidden by the user 'non-user-post-svg'
+    /*
     If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js
-    TODO: CHange userPosts to a set (not array) so checking if id inside is O(1)*/
-    const classAttribute = userPosts.has(keyID) ? "SVG-Icon" : "SVG-Icon non-user-post-svg";   
+    TODO: CHange userPosts to a set (not array) so checking if id inside is O(1)*/ 
 
-    return `<div class="${classAttribute}">
+    return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 400 250">
                 <rect x="0" y="0" width="400" height="230" rx="10" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="400" height="230">

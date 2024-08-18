@@ -78,10 +78,20 @@ async function insertPostIntoLocationsCollection(message, collection, io) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     
     if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know
-      io.emit('postError', { error: "Post location is out of bounds.\nShould this be a popup SVG\nShould the option to post not be visible when out of bounds(See git)" });
-      return;
+      console.log("Out of bounds", messageVar.location);
+      // Update location to a random valid one
+      messageVar.location = {
+        type: "Point",
+        coordinates: [
+            getRandomInRange(southWest.lng, northEast.lng, 6),
+            getRandomInRange(southWest.lat, northEast.lat, 6)
+          ]
+        };
+
+      
+      //io.emit('postError', { error: "Post location is out of bounds.\nShould this be a popup SVG\nShould the option to post not be visible when out of bounds(See git)" });
+      //return;
     }
-    
     messageVar._id = keyVar
     messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
     await collection.insertOne(messageVar);

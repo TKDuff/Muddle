@@ -7,9 +7,8 @@ let observer;
 let observedVSmarkerSvg = null;
 let observedVSmarkerSvgID = null;   //id used by 'handleZoomAnim' to know which circle should retain the dark shading
 
-$('#buttonsContainer').on('click', '#feedButton', function() {
-    //toggleSVGVisibility(1, 27, 'block');  
-    
+$('#buttonsContainer').on('click', '#feedButton', function() { 
+    isPostDataUsed = true;  
     clusterize.update(postData);
     virtualScrollToggling('feedButton');
 });
@@ -78,10 +77,12 @@ observer = new IntersectionObserver((entries) => {
             console.log("Currently viewing", entry.target.id); //this happens twice on some for some reason
             pushViewedPostID(entry.target.id);
 
+            /*Upon viewing a user post with a notification in the virtaul scroll, remove the red dot (so swap the class on the SVG circle notification icon from visible to invisible) */
             const redCircle = entry.target.querySelector('#red-circle');
             if (redCircle.classList.contains('visible-option')) {   //if the current virtual scroll post has a notification (user post that was voted on)
-                redCircle.classList.replace('visible-option', 'hidden-option'); //hide the notification, replace class with hidden
-                document.styleSheets[1].cssRules[28].style.display = 'none';    //remove the SVG circle icon
+                //redCircle.classList.replace('visible-option', 'hidden-option'); //hide the notification, replace class with hidden
+                sessionVirtualScrollPostNotification(entry.target.id, "visible-option", "hidden-option");
+                document.styleSheets[1].cssRules[27].style.display = 'none';    //remove the SVG circle icon
             }
 
             document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.add('darken-svg');
@@ -107,6 +108,7 @@ function observeSVGs() {
 
 
 function initClusterize(postData) {
+    isPostDataUsed = true;
     initIntersectionObserver();
     clusterize = new Clusterize({
         rows: postData,
