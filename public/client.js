@@ -34,7 +34,7 @@ const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -93,7 +93,8 @@ socket.on('newPost', (Post) => {
 
 socket.on('postError', (error) => {
     console.error("Error received:", error.error); // Log the error or handle it accordingly
-    alert(error.error); // Display an alert to the user, or you could update the UI differently
+    showErrorSvg(error)
+    //alert(error.error); // Display an alert to the user, or you could update the UI differently
 });
 
 
@@ -344,6 +345,23 @@ function createCircleSVG(keyID, viewBox, darken = "") {
                     <circle cx="12.5" cy="12.5" r="10" fill="url(#Gradient-${keyID})" filter="url(#f1)" />
                 </svg>
             </div>`
+}
+
+
+function showErrorSvg(error) {
+    const container = document.getElementById('svgErrorContainer');
+
+    const svgError = `<svg width="100" height="50">
+    <rect width="100" height="50" style="fill: red;"></rect>
+    <text x="50" y="25" alignment-baseline="middle" text-anchor="middle" fill="white">Error!</text>
+    </svg>`;
+    
+    container.innerHTML = svgError;  
+
+    // Set a timer to clear the SVG after 5 seconds
+    setTimeout(() => {
+        container.innerHTML = '';  // Clears the SVG from the container
+    }, 5000);  // 5000 milliseconds = 5 seconds
 }
 
 $('#buttonsContainer').on('click', '#postButton', function() {

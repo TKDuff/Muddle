@@ -10,7 +10,7 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
         
         // Handle chat message event from the client
     socket.on('confessionFromClient', (message) => {
-    insertPostIntoLocationsCollection(message, collection, io);
+    insertPostIntoLocationsCollection(message, collection, io, socket);
     });
 
     socket.on('voteOnMarker', (markerKey) => {
@@ -74,23 +74,22 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 }
 
 // Insert strings into the "Locations" collection
-async function insertPostIntoLocationsCollection(message, collection, io) {
+async function insertPostIntoLocationsCollection(message, collection, io, socket) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     
-    if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know
-      console.log("Out of bounds", messageVar.location);
-      // Update location to a random valid one
-      messageVar.location = {
-        type: "Point",
-        coordinates: [
-            getRandomInRange(southWest.lng, northEast.lng, 6),
-            getRandomInRange(southWest.lat, northEast.lat, 6)
-          ]
-        };
+    console.log("Life");
 
-      
-      //io.emit('postError', { error: "Post location is out of bounds.\nShould this be a popup SVG\nShould the option to post not be visible when out of bounds(See git)" });
-      //return;
+    messageVar.location = {
+      type: "Point",
+      coordinates: [
+        -6.999517,
+        53.547081
+      ]
+    };
+       
+    if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
+      socket.emit('postError', { error: "Post location is out of bounds.\nShould this be a popup SVG\nShould the option to post not be visible when out of bounds(See git)" });
+      return;
     }
     messageVar._id = keyVar
     messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
