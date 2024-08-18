@@ -68,6 +68,7 @@ if (viewedPostStorage === null) {
 }
 
 let postData = [];
+let userPostData = [];
 
 /*When client connects, all docuements in the database are sent to the client
 when a new post is added to the mongoDB database, its mongoDB document data is sent to all clients
@@ -114,11 +115,12 @@ function createPost(Post) {
         createCentralGradientDef(Post._id); //if viewed, by default made yellow TODO: Change to white
     }
 
-    let svgString;
+    let svgString = createVSRectangleSVG(Post._id, 400);
+
+    
     if (userPosts.has(Post._id)) {  //check if the current post is a user post
-        svgString = localStorageVoteNotification(Post._id, Post.Up, Post.Down ) //if votes on user post while gone, the virtual scroll SVG string will display the notification icon, hence it is pushed to the postData array
-    } else {
-        svgString = createVSRectangleSVG(Post._id, 400);
+        localStorageVoteNotification(Post._id, Post.Up, Post.Down ) //if votes on user post while gone, the virtual scroll SVG string will display the notification icon, hence it is pushed to the postData array
+        userPostData.push(svgString);
     }
 
     const storedDocument = postCacheMap.get(Post._id);

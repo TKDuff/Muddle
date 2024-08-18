@@ -1,7 +1,7 @@
 $('#buttonsContainer').on('click', '#toggleButton', function() {
-    toggleSVGVisibility(1, 27, 'none');
+    clusterize.update(userPostData);
     virtualScrollToggling('toggleButton');
-    //document.styleSheets[1].cssRules[28].style.display = 'none';
+    
     toggleSVGVisibility(1,28, 'none')
 
     
@@ -34,9 +34,6 @@ function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
         // Update userPosts map if postId exists in it
         userPosts.set(postId, { Up: UpNumber, Down: DownNumber });
         localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
-        return createVSRectangleSVG(postId, 400, "visible-option");
-    } else {
-        return createVSRectangleSVG(postId, 400);
     }
 }
 
