@@ -92,7 +92,6 @@ socket.on('newPost', (Post) => {
 });
 
 socket.on('postError', (error) => {
-    console.error("Error received:", error.error); // Log the error or handle it accordingly
     showErrorSvg(error)
     //alert(error.error); // Display an alert to the user, or you could update the UI differently
 });
@@ -349,19 +348,20 @@ function createCircleSVG(keyID, viewBox, darken = "") {
 
 
 function showErrorSvg(error) {
+    console.log(error);
     const container = document.getElementById('svgErrorContainer');
 
-    const svgError = `<svg width="100" height="50">
-    <rect width="100" height="50" style="fill: red;"></rect>
-    <text x="50" y="25" alignment-baseline="middle" text-anchor="middle" fill="white">Error!</text>
+    const svgError = `<svg width="500" height="100">
+    <rect width="500" height="100" style="fill: red;"></rect>
+    <text x="50" y="25" alignment-baseline="middle" text-anchor="middle" fill="white">${error.error}</text>
     </svg>`;
     
     container.innerHTML = svgError;  
 
     // Set a timer to clear the SVG after 5 seconds
-    setTimeout(() => {
-        container.innerHTML = '';  // Clears the SVG from the container
-    }, 5000);  // 5000 milliseconds = 5 seconds
+    // setTimeout(() => {
+    //     container.innerHTML = '';  // Clears the SVG from the container
+    // }, 5000);  // 5000 milliseconds = 5 seconds
 }
 
 $('#buttonsContainer').on('click', '#postButton', function() {
