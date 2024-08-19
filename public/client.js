@@ -174,13 +174,13 @@ const sendToServer = (position) => {
         /*Check if the wait period since the last post has expired; if not, alert the user and halt further execution.
         This function doesn't need to be called if */ 
         
-        /*
+        
         const postCheck = checkNewPostCreatedAfterTimeWindow(lastElementKey);
         if (!postCheck.canPost) {
             const nextPostTimeFormatted = format24HourTime(postCheck.nextPostTime);
-            alert(`You can post again at: ${nextPostTimeFormatted}`);               //TODO: Make alert actual popup, along with other alerts
+            showErrorSvg(`You can post again at: ${nextPostTimeFormatted}`);               //TODO: Make alert actual popup, along with other alerts
             return;
-        }*/
+        }
 
         let numberAfterHyphen = lastElementKey.substring(lastElementKey.lastIndexOf('-') + 1);   //get the number after the hyphon of the ID (this is the number of posts so far by that user)
         keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`;     //increment the number of posts so far by one and append to the user cookie (this is they new post ID)
@@ -206,9 +206,6 @@ const sendToServer = (position) => {
     };
 
     socket.emit('confessionFromClient', {messageVar: data, keyVar: keyValue});
-    // console.log(key);
-    // key++;
-    // console.log(key);
 }
 
 function sendServer() {
@@ -224,7 +221,7 @@ function sendServer() {
         },
         // lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,
         // long: parseFloat(position.coords.longitude/*-6.598420*/) /* * (1 + (Math.random() * 0.000005)) */,
-        confession: "Direct user post, remove this", 
+        confession: "stupid", 
         Up: [],
         Down: []
     };
@@ -380,9 +377,9 @@ function showErrorSvg(error) {
     container.innerHTML = svgError;  
 
     // Set a timer to clear the SVG after 5 seconds
-    // setTimeout(() => {
-    //     container.innerHTML = '';  // Clears the SVG from the container
-    // }, 5000);  // 5000 milliseconds = 5 seconds
+    setTimeout(() => {
+        container.innerHTML = '';  // Clears the SVG from the container
+    }, 5000);  // 5000 milliseconds = 5 seconds
 }
 
 $('#buttonsContainer').on('click', '#postButton', function() {

@@ -1,3 +1,5 @@
+const { contains } = require("jquery");
+
 const southWest = { lat: 53.512570, lng: -7.391644 };
 const northEast = { lat: 53.552589, lng: -7.328690 };
 
@@ -83,11 +85,19 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
         53.547081
       ]
     };
-       
-    if (!checkWithinBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
+    
+    
+    if (isOutOfBounds) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
       socket.emit('postError', { error: "Posting out of bounds" });
       return;
+    } else  if (invalidPostLength(messageVar.confession)) {
+      socket.emit('postError', { error: "Post length must be between 1 and 250 characters" });
+      return;
+    } else if (containSlur(messageVar.confession)) {
+      socket.emit('postError', { error: "Nuh uh" }); //no slur
+      return;
     }
+    
     messageVar._id = keyVar
     messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
     await collection.insertOne(messageVar);
@@ -95,13 +105,31 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
   }
 
 
-function checkWithinBounds(point) {
-  return (
-      point.coordinates[1] >= southWest.lat && point.coordinates[1] <= northEast.lat &&
-      point.coordinates[0] >= southWest.lng && point.coordinates[0] <= northEast.lng
-  );
+  function isOutOfBounds(point) {
+    return (
+        point.coordinates[1] < southWest.lat || point.coordinates[1] > northEast.lat ||
+        point.coordinates[0] < southWest.lng || point.coordinates[0] > northEast.lng
+    );
 }
+
   
+function invalidPostLength(text) {
+  const length = text.trim().length;  // Trims whitespace from both ends of the string before counting
+  return length < 1 && length > 250;
+}
+
+/*TODO: Expand this function to email you the text over post, so you can check for pure slurs, for now simple check using regex */
+function containSlur (text) {
+  const n1Regex = /\b[nΠñÑη]\s*[iíîïì1!lLyYÝýỳι]\s*[gGbB]{2}\s*[^lL]\b/i;    //guys I found this online so don't cancel me
+  const n2Regex = /\b[NnΠñÑη]\s*[ÏIÎÍÌ|iíîïì1!lyYÝýỳι]\s*[KkGBgbg]\s*[KkGGBgbg]\s*[^lL]\s*[Rr]\b/i;   
+  const f1Regex = /\b[fphƒ]{1}\s*[a@α4]{1}\s*[g69]{2}\s*[o0öσ]{1}\s*[t7+]{1}\b/i; //I changed the one above for this, don't cancel me  
+  const f2Regex = /\b[fphƒ]{1}\s*[a@α4]{1}\s*[g69]{2}\s*[o0öσ]{1}\s*[t7+]{1}\s*[Ss5]{1}\b/i; //I changed the one above for this, don't cancel me  
+
+  const combinedRegex = new RegExp(`${f1Regex.source}|${f2Regex.source}||${n1Regex.source}|${n2Regex.source}`, 'i');
+  return combinedRegex.test(text);
+
+}
+
 
 
   async function findNonOverlappingLocation(location, collection, depth = 0) {

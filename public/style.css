@@ -241,6 +241,9 @@ html, body {
 
 #svgErrorContainer {
     position: absolute;  /* or 'absolute' or 'fixed' depending on your layout needs */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjusts the positioning to truly center the div */
     z-index: 500;       /* Adjust z-index as needed to bring it above other content */
     width: 100%;         /* Set a specific size if necessary */
     height: 100px;       /* Set a specific size if necessary */
