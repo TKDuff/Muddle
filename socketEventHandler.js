@@ -78,16 +78,17 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 // Insert strings into the "Locations" collection
 async function insertPostIntoLocationsCollection(message, collection, io, socket) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
+
+    /*  Give fake bounds
     messageVar.location = {
       type: "Point",
       coordinates: [
         -6.999517,
         53.547081
       ]
-    };
-    
-    
-    if (isOutOfBounds) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
+    };*/
+
+    if (isOutOfBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
       socket.emit('postError', { error: "Posting out of bounds" });
       return;
     } else  if (invalidPostLength(messageVar.confession)) {
@@ -125,7 +126,7 @@ function containSlur (text) {
   const f1Regex = /\b[fphƒ]{1}\s*[a@α4]{1}\s*[g69]{2}\s*[o0öσ]{1}\s*[t7+]{1}\b/i; //I changed the one above for this, don't cancel me  
   const f2Regex = /\b[fphƒ]{1}\s*[a@α4]{1}\s*[g69]{2}\s*[o0öσ]{1}\s*[t7+]{1}\s*[Ss5]{1}\b/i; //I changed the one above for this, don't cancel me  
 
-  const combinedRegex = new RegExp(`${f1Regex.source}|${f2Regex.source}||${n1Regex.source}|${n2Regex.source}`, 'i');
+  const combinedRegex = new RegExp(`${f1Regex.source}|${f2Regex.source}|${n1Regex.source}|${n2Regex.source}`, 'i');
   return combinedRegex.test(text);
 
 }

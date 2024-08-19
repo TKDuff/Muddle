@@ -74,18 +74,18 @@ Upon vieing an SVG, the corresponding map marker icon is shaded*/
 observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            console.log("Currently viewing", entry.target.id); //this happens twice on some for some reason
-            pushViewedPostID(entry.target.id);
+            let observedID = entry.target.id;
+            pushViewedPostID(observedID);
 
             /*Upon viewing a user post with a notification in the virtaul scroll, remove the red dot (so swap the class on the SVG circle notification icon from visible to invisible) */
             const redCircle = entry.target.querySelector('#red-circle');
             if (redCircle.classList.contains('visible-option')) {   //if the current virtual scroll post has a notification (user post that was voted on)
                 //redCircle.classList.replace('visible-option', 'hidden-option'); //hide the notification, replace class with hidden
-                sessionVirtualScrollPostNotification(entry.target.id, "visible-option", "hidden-option");
+                sessionVirtualScrollPostNotification(observedID, "visible-option", "hidden-option");
                 document.styleSheets[1].cssRules[27].style.display = 'none';    //remove the SVG circle icon
             }
 
-            document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.add('darken-svg');
+            document.querySelector(`.leaflet-marker-icon svg[id="${observedID}"]`).classList.add('darken-svg');
         }else {
             document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.remove('darken-svg');
         }

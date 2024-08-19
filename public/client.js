@@ -132,7 +132,7 @@ function createPost(Post) {
 }
 
 function postConfession() {
-    navigator.geolocation.getCurrentPosition(/*sendToServer  TODO: This is the actual function*/sendServer, errorCallback, {
+    navigator.geolocation.getCurrentPosition(sendToServer, errorCallback, {
         enableHighAccuracy: true,
         maximumAge: 5000
     });
@@ -177,8 +177,8 @@ const sendToServer = (position) => {
         
         const postCheck = checkNewPostCreatedAfterTimeWindow(lastElementKey);
         if (!postCheck.canPost) {
-            const nextPostTimeFormatted = format24HourTime(postCheck.nextPostTime);
-            showErrorSvg(`You can post again at: ${nextPostTimeFormatted}`);               //TODO: Make alert actual popup, along with other alerts
+            const nextPostTimeFormatted = `You can post again at: ${format24HourTime(postCheck.nextPostTime)}` ;
+            showErrorSvg( { error : nextPostTimeFormatted });            //TODO: Make alert actual popup, along with other alerts
             return;
         }
 
@@ -207,28 +207,6 @@ const sendToServer = (position) => {
 
     socket.emit('confessionFromClient', {messageVar: data, keyVar: keyValue});
 }
-
-function sendServer() {
-
-    const data = {
-        time: Date.now(),
-        location: {
-            type: "Point",
-            coordinates: [
-                -6.999517,
-                53.547081
-              ]
-        },
-        // lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,
-        // long: parseFloat(position.coords.longitude/*-6.598420*/) /* * (1 + (Math.random() * 0.000005)) */,
-        confession: "stupid", 
-        Up: [],
-        Down: []
-    };
-
-    socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
-}
-
 
 /*Creates the post circle to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
@@ -383,8 +361,7 @@ function showErrorSvg(error) {
 }
 
 $('#buttonsContainer').on('click', '#postButton', function() {
-    //$('#inputPopup').show(); TODO: Use this line when done with the error SVG
-    sendServer();
+    $('#inputPopup').show();
 });
 
 

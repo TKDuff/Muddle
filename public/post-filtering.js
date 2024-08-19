@@ -54,7 +54,6 @@ Update the corresponding userPost element SVG, replacing the 'hidden' to the 'vi
 function sessionVirtualScrollPostNotification(postID, existingClass, newClass) {
     let index = 0;
     let count = 0;
-    console.log(userPosts);
     for (let key of postCacheMap.keys()) {
         if (key === postID) {
             let updatedSVG = postData[index].replace(existingClass, newClass);
