@@ -132,7 +132,7 @@ function createPost(Post) {
 }
 
 function postConfession() {
-    navigator.geolocation.getCurrentPosition(sendToServer, errorCallback, {
+    navigator.geolocation.getCurrentPosition(/*sendToServer  TODO: This is the actual function*/sendServer, errorCallback, {
         enableHighAccuracy: true,
         maximumAge: 5000
     });
@@ -209,6 +209,27 @@ const sendToServer = (position) => {
     // console.log(key);
     // key++;
     // console.log(key);
+}
+
+function sendServer() {
+
+    const data = {
+        time: Date.now(),
+        location: {
+            type: "Point",
+            coordinates: [
+                -6.999517,
+                53.547081
+              ]
+        },
+        // lat: parseFloat(position.coords.latitude/*53.385574*/) /* * (1 + (Math.random() * 0.000005))*/,
+        // long: parseFloat(position.coords.longitude/*-6.598420*/) /* * (1 + (Math.random() * 0.000005)) */,
+        confession: "Direct user post, remove this", 
+        Up: [],
+        Down: []
+    };
+
+    socket.emit('confessionFromClient', {messageVar: data, keyVar: key});
 }
 
 
@@ -365,7 +386,8 @@ function showErrorSvg(error) {
 }
 
 $('#buttonsContainer').on('click', '#postButton', function() {
-    $('#inputPopup').show();
+    //$('#inputPopup').show(); TODO: Use this line when done with the error SVG
+    sendServer();
 });
 
 

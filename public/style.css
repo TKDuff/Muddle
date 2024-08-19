@@ -240,8 +240,8 @@ html, body {
 }
 
 #svgErrorContainer {
-    position: relative;  /* or 'absolute' or 'fixed' depending on your layout needs */
-    z-index: 1000;       /* Adjust z-index as needed to bring it above other content */
+    position: absolute;  /* or 'absolute' or 'fixed' depending on your layout needs */
+    z-index: 500;       /* Adjust z-index as needed to bring it above other content */
     width: 100%;         /* Set a specific size if necessary */
     height: 100px;       /* Set a specific size if necessary */
 }
