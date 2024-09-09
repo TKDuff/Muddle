@@ -34,7 +34,7 @@ function amendpostCacheMapVoteValues (action, confessionKeyID, direction) {
     postDirectionValue[direction] += action;
     postCacheMap.set(confessionKeyID, postDirectionValue);
     changeOneGradient(postDirectionValue[direction], direction, confessionKeyID);
-
+    changeVoteTextValue(postDirectionValue[direction], direction, confessionKeyID);
     return postDirectionValue[direction];
 }
 
@@ -51,6 +51,10 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
     let stop = gradient.querySelector(`stop#${direction}`);
     stop.setAttribute('stop-color', `var(--viewed-${direction}-gradient-${DirectionArrayLength})`);
 }
+
+function changeVoteTextValue(DirectionArrayLength, direction, confessionKeyID) {
+    document.getElementById(`${direction}-Count-${confessionKeyID}`).textContent = DirectionArrayLength
+} 
 
 
 let highestZIndex = 100;
