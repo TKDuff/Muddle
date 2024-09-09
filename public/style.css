@@ -56,6 +56,12 @@
     transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
+#upMapIconArrow {
+    fill: rgb(33, 202, 73);
+    transform: scale(0.1) translate(1600px, 1700px); 
+    transform-origin: 0 0; /* or whatever point you want as the origin */
+}
+
 #Up:hover #upArrow{
     animation: fillChangeUpArrow 0.1s forwards;
 }
@@ -74,7 +80,7 @@
 
 #downMapIconArrow {
     fill: rgb(255, 117, 117);
-    transform: scale(0.1) translate(140px, 1700px); 
+    transform: scale(0.1) translate(110px, 1700px); 
     transform-origin: 0 0; /* or whatever point you want as the origin */
 }
 
