@@ -282,7 +282,7 @@ function createRectangleSVG(keyID, viewBox) {
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
                 <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="200" height="200">
-                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${keyID}, ${postCacheMap.get(keyID)['time']}</div>
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
                 <g id="Up">
                   <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
@@ -292,8 +292,8 @@ function createRectangleSVG(keyID, viewBox) {
                 </g> 
       
                 <g id="Down">
-                  <rect x="0" y="170" width="100" height="30" fill-opacity="0" />
-                  <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
+                  <rect x="0" y="168" width="100" height="30" fill-opacity="0" />
+                  <path  id="downMapIconArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
                   c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
                 </g>
