@@ -1,7 +1,7 @@
 const { contains } = require("jquery");
 
-const southWest = { lat: 53.512570, lng: -7.391644 };
-const northEast = { lat: 53.552589, lng: -7.328690 };
+const southWest = { lat: 53.364587, lng: -6.617803 };
+const northEast = { lat: 53.397097, lng: -6.572227 };
 
 async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     io.on('connection', async (socket) => {
@@ -79,14 +79,14 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 async function insertPostIntoLocationsCollection(message, collection, io, socket) {
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
 
-    /*  Give fake bounds
+    // Give fake bounds
     messageVar.location = {
       type: "Point",
       coordinates: [
-        -6.999517,
-        53.547081
+        getRandomInRange(southWest.lng, northEast.lng, 6),
+        getRandomInRange(southWest.lat, northEast.lat, 6)
       ]
-    };*/
+    };
 
     if (isOutOfBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
       socket.emit('postError', { error: "Posting out of bounds" });

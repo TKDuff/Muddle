@@ -1,22 +1,23 @@
 let startTime = 0;
+const maynoothCoords = [53.380022, -6.593628]
 
 //map setup
 const map = L.map('MaynoothMap', {
     zoomControl: false})
-    .setView([53.5366871,  -7.3576551], 13);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
+    .setView(maynoothCoords, 14);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
     
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     apikey: '18a1d8df90d14c23949921bcb3d0b5fc',
-    minZoom: 13,
+    minZoom: 14,
     maxZoom: 22
 }).addTo(map).on('load', function() {
     startTime = performance.now();
 });
 
 
-var southWest = L.latLng(53.512570, -7.391644);
-var northEast = L.latLng(53.552589, -7.328690);
+var southWest = L.latLng(53.36458707964082, -6.617803573608399);
+var northEast = L.latLng(53.39709744476498, -6.572227478027345);
 
 var bounds = L.latLngBounds(southWest, northEast);
 
@@ -174,13 +175,13 @@ const sendToServer = (position) => {
         /*Check if the wait period since the last post has expired; if not, alert the user and halt further execution.
         This function doesn't need to be called if */ 
         
-        
+        /*
         const postCheck = checkNewPostCreatedAfterTimeWindow(lastElementKey);
         if (!postCheck.canPost) {
             const nextPostTimeFormatted = `You can post again at: ${format24HourTime(postCheck.nextPostTime)}` ;
             showErrorSvg( { error : nextPostTimeFormatted });            //TODO: Make alert actual popup, along with other alerts
             return;
-        }
+        }*/
 
         let numberAfterHyphen = lastElementKey.substring(lastElementKey.lastIndexOf('-') + 1);   //get the number after the hyphon of the ID (this is the number of posts so far by that user)
         keyValue = `${key}-${parseInt(numberAfterHyphen) + 1}`;     //increment the number of posts so far by one and append to the user cookie (this is they new post ID)
@@ -262,6 +263,7 @@ function createCentralGradientDef(keyID, middleColour = 'viewed-default', viewed
 const THIRTY_SECONDS_MS = 30 * 1000;    //TODO: can remove this, for testing
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000; //3 hours in milliseconds, TODO: change this value to set the time between user posts, could be 24
 /*Check if new post to be created was made after set time period since the last post. Checking if new posts was made after the blocked posting period  */
+
 function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
     const timeSinceLastPost = Date.now() - postCacheMap.get(lastPostKey)['time'];
 
