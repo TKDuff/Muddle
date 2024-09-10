@@ -63,10 +63,11 @@ function changeVoteTextValue(DirectionArrayLength, direction, confessionKeyID) {
     Doing this would require changing 3 things, the postCacheMap string SVG, the postData and userPostData svg string arrays at that element
     This has been done before
      */
-    let SVGStringNumberSection = document.getElementById(`${direction}-Count-${confessionKeyID}`);
-    let existingSVGString = new RegExp(`data-id="${direction}-Count">\\d+</text>`);
-    modifyClusterizeArraysElementStrings(confessionKeyID, existingSVGString, `data-id="${direction}-Count">${DirectionArrayLength}</text>`)
-    SVGStringNumberSection.textContent = DirectionArrayLength
+    let existingSVGPattern = new RegExp(`data-id="${direction}-Count">\\d+</text>`);
+
+    modifyClusterizeArraysElementStrings(confessionKeyID, existingSVGPattern, `data-id="${direction}-Count">${DirectionArrayLength}</text>`)
+    document.getElementById(`${direction}-Count-${confessionKeyID}`).textContent = DirectionArrayLength;
+
 } 
 
 
