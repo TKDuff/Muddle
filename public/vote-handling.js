@@ -53,7 +53,20 @@ function changeOneGradient(DirectionArrayLength, direction, confessionKeyID) {
 }
 
 function changeVoteTextValue(DirectionArrayLength, direction, confessionKeyID) {
-    document.getElementById(`${direction}-Count-${confessionKeyID}`).textContent = DirectionArrayLength
+    /*This will change a particualr vote direction value, doing 2 things
+    1) Change the actual post html text, so the user will see the changw
+    2) Update the coressponding SVG string element in both the postData and userPostData arrays
+    This is better than calling update, no need update entire array when only one text item changes, also since both arrays updated cauases screen jank
+
+    Then get working for posts voted on in real time but that are not user posts
+
+    Doing this would require changing 3 things, the postCacheMap string SVG, the postData and userPostData svg string arrays at that element
+    This has been done before
+     */
+
+    let SVGStringNumberSection = document.getElementById(`${direction}-Count-${confessionKeyID}`);
+    testFunctionModifySVGStringCode(confessionKeyID, ">"+ SVGStringNumberSection.textContent + "</text>", ">"+ DirectionArrayLength + "</text>")
+    SVGStringNumberSection.textContent = DirectionArrayLength
 } 
 
 
@@ -112,4 +125,36 @@ function voteNotificationStyling(action, direction, oppositeDirection , KeyID, c
     document.styleSheets[1].cssRules[27].style.display = 'inline';
 
     sessionVirtualScrollPostNotification(KeyID, "hidden-option", "visible-option");
+}
+
+
+
+function testFunctionModifySVGStringCode(postID, existingSVGString, newSVGString) {
+    let index = 0;
+    let count = 0;
+    for (let key of postCacheMap.keys()) {
+        if (key === postID) {
+            console.log(existingSVGString, "\n", newSVGString); 
+            
+            let updatedSVG = postData[index].replace(existingSVGString, newSVGString);
+            postData[index] = updatedSVG;
+            userPostData[count] = updatedSVG;
+
+            
+            // if (isPostDataUsed) {
+            //     /*TODO: On update replacing the SVG strings, thus the CSS transition (hidden-option) for the notification can't apply, SVG update before CSS finish */
+            //     // If isPostDataUsed is true, update userPostData first, then postData
+            //     clusterize.update(userPostData);
+            //     clusterize.update(postData);
+            // } else {
+            //     // If isPostDataUsed is false, update postData first, then userPostData
+            //     clusterize.update(postData);
+            //     clusterize.update(userPostData);
+            // }
+            break;
+        } else if (userPosts.has(key)) {
+            count++;
+        }  
+        index++;
+    }
 }

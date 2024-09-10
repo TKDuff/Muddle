@@ -289,7 +289,7 @@ function createRectangleSVG(keyID, viewBox) {
                   <path  id="upMapIconArrow" d="M325.606,229.393l-150.004-150C172.79,76.58,168.974,75,164.996,75c-3.979,0-7.794,1.581-10.607,4.394
                   l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
                   C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
-                  <text id="Up-Count-${keyID}" x="130" y="195" font-size="25" fill="black">${postCacheMap.get(keyID)['Up']}</text>
+                  <text id="Up-Count-${keyID}" x="130" y="195" font-size="25" fill="rgb(33, 202, 73)">${postCacheMap.get(keyID)['Up']}</text>
                 </g> 
       
                 <g id="Down">
@@ -297,7 +297,7 @@ function createRectangleSVG(keyID, viewBox) {
                   <path  id="downMapIconArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
                   c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
-                  <text id="Down-Count-${keyID}" x="60" y="195" font-size="25" fill="black">${postCacheMap.get(keyID)['Down']}</text>
+                  <text id="Down-Count-${keyID}" x="60" y="195" font-size="25" fill="rgb(255, 117, 117)">${postCacheMap.get(keyID)['Down']}</text>
                 </g>
                 </svg>
                 </div>`
@@ -320,12 +320,15 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
                   <path  id="upArrow" d="M325.606,229.393l-150.004-150C172.79,76.58,168.974,75,164.996,75c-3.979,0-7.794,1.581-10.607,4.394
                   l-149.996,150c-5.858,5.858-5.858,15.355,0,21.213c5.857,5.857,15.355,5.858,21.213,0l139.39-139.393l139.397,139.393
                   C307.322,253.536,311.161,255,315,255c3.839,0,7.678-1.464,10.607-4.394C331.464,244.748,331.464,235.251,325.606,229.393z"/>
+                  <text id="Up-Count-${keyID}" x="320" y="215" font-size="25" fill="rgb(33, 202, 73)">${postCacheMap.get(keyID)['Up']}</text>
                 </g> 
+                
                 <g id="Down">
                   <rect x="0" y="200" width="200" height="30" fill-opacity="0" />
                   <path  id="downArrow" d="M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393
                   c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
+                  <text id="Down-Count-${keyID}" x="70" y="215" font-size="25" fill="rgb(255, 117, 117)">${postCacheMap.get(keyID)['Down']}</text>
                 </g>
                 <circle id="red-circle" cx="200" cy="30" r="9" fill="red" class=${notificationOption}>
                 </svg>
