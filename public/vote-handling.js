@@ -149,17 +149,13 @@ function testFunctionModifySVGStringCode(postID, existingSVGString, newSVGString
 }*/
 
 function modifyClusterizeArraysElementStrings(postID, existingSVGString, newSVGString) {
-    //console.log("The string", existingSVGString, " has to be changed to ", newSVGString);
-    let updatedSVG = ""
     let index = 0;
     let count = 0;
 
     for (let key of postCacheMap.keys()) {
         if (key === postID) {     
-            updatedSVG = postData[index]
-            updatedSVG = updatedSVG.replace(existingSVGString, newSVGString);
-            postData[index] = updatedSVG;
-            userPostData[count] = updatedSVG;
+            postData[index] = postData[index].replace(existingSVGString, newSVGString);
+            userPostData[count] = postData[index];  // Use the updated postData value directly
             break;
         } else if (userPosts.has(key)) {
             count++;
