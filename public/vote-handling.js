@@ -63,9 +63,9 @@ function changeVoteTextValue(DirectionArrayLength, direction, confessionKeyID) {
     Doing this would require changing 3 things, the postCacheMap string SVG, the postData and userPostData svg string arrays at that element
     This has been done before
      */
-
     let SVGStringNumberSection = document.getElementById(`${direction}-Count-${confessionKeyID}`);
-    testFunctionModifySVGStringCode(confessionKeyID, ">"+ SVGStringNumberSection.textContent + "</text>", ">"+ DirectionArrayLength + "</text>")
+    let existingSVGString = new RegExp(`data-id="${direction}-Count">\\d+</text>`);
+    modifyClusterizeArraysElementStrings(confessionKeyID, existingSVGString, `data-id="${direction}-Count">${DirectionArrayLength}</text>`)
     SVGStringNumberSection.textContent = DirectionArrayLength
 } 
 
@@ -128,7 +128,7 @@ function voteNotificationStyling(action, direction, oppositeDirection , KeyID, c
 }
 
 
-
+/*
 function testFunctionModifySVGStringCode(postID, existingSVGString, newSVGString) {
     let index = 0;
     let count = 0;
@@ -139,18 +139,26 @@ function testFunctionModifySVGStringCode(postID, existingSVGString, newSVGString
             let updatedSVG = postData[index].replace(existingSVGString, newSVGString);
             postData[index] = updatedSVG;
             userPostData[count] = updatedSVG;
+            break;
+        } else if (userPosts.has(key)) {
+            count++;
+        }  
+        index++;
+    }
+}*/
 
-            
-            // if (isPostDataUsed) {
-            //     /*TODO: On update replacing the SVG strings, thus the CSS transition (hidden-option) for the notification can't apply, SVG update before CSS finish */
-            //     // If isPostDataUsed is true, update userPostData first, then postData
-            //     clusterize.update(userPostData);
-            //     clusterize.update(postData);
-            // } else {
-            //     // If isPostDataUsed is false, update postData first, then userPostData
-            //     clusterize.update(postData);
-            //     clusterize.update(userPostData);
-            // }
+function modifyClusterizeArraysElementStrings(postID, existingSVGString, newSVGString) {
+    //console.log("The string", existingSVGString, " has to be changed to ", newSVGString);
+    let updatedSVG = ""
+    let index = 0;
+    let count = 0;
+
+    for (let key of postCacheMap.keys()) {
+        if (key === postID) {     
+            updatedSVG = postData[index]
+            updatedSVG = updatedSVG.replace(existingSVGString, newSVGString);
+            postData[index] = updatedSVG;
+            userPostData[count] = updatedSVG;
             break;
         } else if (userPosts.has(key)) {
             count++;

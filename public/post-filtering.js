@@ -52,28 +52,17 @@ Increments the count if the current key exists within userPosts. This seems to s
 Update the corresponding userPost element SVG, replacing the 'hidden' to the 'visible' option for the notification circle
   */
 function sessionVirtualScrollPostNotification(postID, existingClass, newClass) {
-    let index = 0;
-    let count = 0;
-    for (let key of postCacheMap.keys()) {
-        if (key === postID) {
-            let updatedSVG = postData[index].replace(existingClass, newClass);
-            postData[index] = updatedSVG;
-            userPostData[count] = updatedSVG;
-            if (isPostDataUsed) {
-                /*TODO: On update replacing the SVG strings, thus the CSS transition (hidden-option) for the notification can't apply, SVG update before CSS finish */
-                // If isPostDataUsed is true, update userPostData first, then postData
-                clusterize.update(userPostData);
-                clusterize.update(postData);
-            } else {
-                // If isPostDataUsed is false, update postData first, then userPostData
-                clusterize.update(postData);
-                clusterize.update(userPostData);
-            }
-            break;
-        } else if (userPosts.has(key)) {
-            count++;
-        }  
-        index++;
+    modifyClusterizeArraysElementStrings(postID, existingClass, newClass);
+
+    if (isPostDataUsed) {
+        /*TODO: On update replacing the SVG strings, thus the CSS transition (hidden-option) for the notification can't apply, SVG update before CSS finish */
+        // If isPostDataUsed is true, update userPostData first, then postData
+        clusterize.update(userPostData);
+        clusterize.update(postData);
+    } else {
+        // If isPostDataUsed is false, update postData first, then userPostData
+        clusterize.update(postData);
+        clusterize.update(userPostData);
     }
 }
 
