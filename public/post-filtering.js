@@ -3,10 +3,11 @@ $('#buttonsContainer').on('click', '#toggleButton', function() {
     clusterize.update(userPostData);
     virtualScrollToggling('toggleButton');
     
-    toggleSVGVisibility(1,27, 'none')
+    toggleSVGVisibility(1, 29 , 'none')
 
     
 });
+
 
 function toggleSVGVisibility(i, j, option) {
     const stylesheet = document.styleSheets[i];

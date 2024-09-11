@@ -13,7 +13,7 @@ $('#buttonsContainer').on('click', '#feedButton', function() {
     virtualScrollToggling('feedButton');
 });
 
-function virtualScrollToggling (currentButtonPressed) { //handles switching bettwen user posts virtual scroll and all post virtual scrool
+function virtualScrollToggling (currentButtonPressed) { //handles switching bettwen user posts virtual scroll and all post virtual scroll
 
     if (lastButtonPressed === currentButtonPressed && !mapIsFullScreenVirtualScroll) {    //if the VS is shown and the toggle button is pressed again, hide it
         toggleVirtualScroll();
