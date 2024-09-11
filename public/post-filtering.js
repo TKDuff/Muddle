@@ -68,7 +68,7 @@ function sessionVirtualScrollPostNotification(postID, existingClass, newClass) {
 }
 
 /* TODO: Remove this, helper function to get the index of the 'non-user-post-svg' function, which gets the index of that class to display/hide the SVGs (for virtual scroll)*/
-/*
+
 getSVGVisibility();
 function getSVGVisibility() {
     
@@ -93,4 +93,4 @@ function getSVGVisibility() {
         //The index 27 means that within the specific stylesheet at index 1 in the document.styleSheets array, the rule for .non-user-post-svg is the 28th rule (because indexing starts at 0).
         //Knowing the exact location of the rule allows you to directly manipulate its properties, such as changing display from inline to none, without needing to iterate through all rules again
     }
-}*/
+}
