@@ -80,16 +80,29 @@ socket.on('allDocumentsFromDatabase', documents => {
     documents.forEach(document => {
         /*You are passing the current documents svg string by reference here, not by value. This is key, as the postData holds a reference to the svg field of the current postCacheMap element. It does not have
         a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
-        createPost(document);
+        postData.push(createPost(document));
     });
     document.getElementById('zoomTime').textContent = `Time taken: ${(performance.now() - startTime)} ms`;
     initClusterize(postData);
 })
 
+/*Adding a new post to top of the postData array
+If added to top, shifts the current VS view up bu one post, so if looking at bottom, upon new post will shift view upto 2nd at bottom 
+This code Preserves the Scroll Position, by recording pre addition height then re-applying it when the new post is added simply
+*/
+
+const feedContainer = document.getElementById('feedContainer');
 socket.on('newPost', (Post) => {
-    createPost(Post)
+    const previousScrollTop = feedContainer.scrollTop;
+    const previousScrollHeight = feedContainer.scrollHeight;
+
+    postData.unshift(createPost(Post));
     isPostDataUsed = true;
     clusterize.update(postData);
+
+    const heightDifference = feedContainer.scrollHeight - previousScrollHeight;
+    feedContainer.scrollTop = previousScrollTop + heightDifference;
+
 });
 
 socket.on('postError', (error) => {
@@ -129,7 +142,8 @@ function createPost(Post) {
     const storedDocument = postCacheMap.get(Post._id);
     //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
     storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
-    postData.push(svgString);
+    //postData.push(svgString);
+    return svgString;
 }
 
 function postConfession() {
