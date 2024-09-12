@@ -123,7 +123,8 @@ function voteNotificationStyling(action, direction, oppositeDirection , KeyID, c
         userPosts.set(KeyID, currentEntry);
     }    
     localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
-    document.styleSheets[1].cssRules[27].style.display = 'inline';
+    console.log(document.styleSheets[1].cssRules[29].style.display);
+    document.styleSheets[1].cssRules[29].style.display = 'inline';
 
     sessionVirtualScrollPostNotification(KeyID, "hidden-option", "visible-option");
 }

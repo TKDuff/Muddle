@@ -82,7 +82,7 @@ observer = new IntersectionObserver((entries) => {
             if (redCircle.classList.contains('visible-option')) {   //if the current virtual scroll post has a notification (user post that was voted on)
                 //redCircle.classList.replace('visible-option', 'hidden-option'); //hide the notification, replace class with hidden
                 sessionVirtualScrollPostNotification(observedID, "visible-option", "hidden-option");
-                document.styleSheets[1].cssRules[27].style.display = 'none';    //remove the SVG circle icon
+                document.styleSheets[1].cssRules[29].style.display = 'none';    //remove the SVG circle icon
             }
 
             document.querySelector(`.leaflet-marker-icon svg[id="${observedID}"]`).classList.add('darken-svg');
