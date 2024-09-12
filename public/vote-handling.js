@@ -151,15 +151,21 @@ function testFunctionModifySVGStringCode(postID, existingSVGString, newSVGString
 
 function modifyClusterizeArraysElementStrings(postID, existingSVGString, newSVGString) {
     let index = 0;
-    let count = 0;
+    let count = -1;     // Initialize count to -1 indicate no valid index is set yet
 
     for (let key of postCacheMap.keys()) {
         if (key === postID) {     
+            // Update postData with the new SVG string
+
             postData[index] = postData[index].replace(existingSVGString, newSVGString);
-            userPostData[count] = postData[index];  // Use the updated postData value directly
+
+            // Only update userPostData if the key exists in userPosts (increment count from -1 to 0)
+            if (count >= 0) {
+                userPostData[count] = postData[index];
+            }
             break;
-        } else if (userPosts.has(key)) {
-            count++;
+        } else if (userPosts.has(key)) {    //if the key is contained inside the userPosts then increment count (not being incremented, being -1, means key not in userPosts at all)
+            count++;   
         }  
         index++;
     }

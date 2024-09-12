@@ -114,6 +114,7 @@ function initClusterize(postData) {
         rows: postData,
         scrollId: 'feedContainer',
         contentId: 'clusterize-content',
+        no_data_text: 'Your posts will appear here',
         rows_in_block: 2,
         blocks_in_cluster: 2,
         callbacks: {

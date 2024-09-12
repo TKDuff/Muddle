@@ -278,12 +278,21 @@ function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
 
 
 function createRectangleSVG(keyID, viewBox) {
-    //console.log("Length is", postCacheMap.get(keyID)['confession'].length);
+    let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
+
     return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 ${viewBox} ${viewBox}">
                 <rect x="0" y="0" width="200" height="200" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="200" height="200">
-                    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size: ${getFontSize(postCacheMap.get(keyID)['confession'].length)}px;" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
+                    <div xmlns="http://www.w3.org/1999/xhtml" 
+                    style="font-size: ${fontSize}px;
+                    display: flex; 
+                    justify-content: center; 
+                    align-items: center; 
+                    height: ${textHeight}%; 
+                    width: 100%; 
+                    text-align: center;"
+                    class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
                 <g id="Up">
                   <rect x="100" y="170" width="100" height="30" fill-opacity="0" />
@@ -305,16 +314,24 @@ function createRectangleSVG(keyID, viewBox) {
 }
 
 function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-option") {
+    let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
     /*
     If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js
     TODO: CHange userPosts to a set (not array) so checking if id inside is O(1)*/ 
-    console.log("Length is", postCacheMap.get(keyID)['confession'].length);
-
     return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 400 250">
                 <rect x="0" y="0" width="400" height="230" rx="10" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
                 <foreignObject x="0" y="0" width="400" height="230">
-                    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size: ${(getFontSize(postCacheMap.get(keyID)['confession'].length)) * 1.4 + 3}px;" class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
+                    <div xmlns="http://www.w3.org/1999/xhtml" 
+                    style=
+                    "font-size: ${fontSize * 1.4 + 3}px;
+                    display: flex; 
+                    justify-content: center; 
+                    align-items: center; 
+                    height: ${textHeight}%; 
+                    width: 100%; 
+                    text-align: center;"
+                    class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
                 <text x="200" y="215" class="svg-bottom-text" text-anchor="middle">${format24HourTime(postCacheMap.get(keyID)['time'])}</text>
                 <g id="Up">
@@ -351,28 +368,28 @@ function createCircleSVG(keyID, viewBox, darken = "") {
             </div>`
 }
 
-/*Font size for marker map rectangle */
 function getFontSize(characterCount) {
     if (characterCount <= 15) {
-        return 40;
+        return [40, 100];
     } else if (characterCount <= 30) {
-        return 30;
+        return [30, 100];
     } else if (characterCount <= 50) {
-        return 25;
+        return [25, 89];
     } else if (characterCount <= 75) {
-        return 22;
+        return [22, 89];
     } else if (characterCount <= 100) {
-        return 19;
+        return [19, 89];
     } else if (characterCount <= 150) {
-        return 17;
+        return [17, 85];
     } else if (characterCount <= 200) {
-        return 15;
+        return [15, 85];
     } else if (characterCount <= 225) {
-        return 14;
+        return [14, 85];
     } else {
-        return 13;  // For character counts above 225
+        return [13, 85];
     }
 }
+
 
 
 function showErrorSvg(error) {
