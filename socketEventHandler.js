@@ -22,18 +22,19 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     socket.on('wipeDB', () => {
       collection.deleteMany({});
     });
-
+    
     socket.on('createUniformFakePost', (count) => {
       let lat_row = fakePostLatLongValues.BASE_LAT
       let long_row = fakePostLatLongValues.BASE_LONG
       
       for(let i = 0; i < count; i++){
+        
         let uuid = uuidv4();
         const data = {
           time: i,
           location: {
             type: "Point",
-            coordinates: [long_row, lat_row ]
+            coordinates: [-6.606118, 53.387045]//[long_row, lat_row ]
           },
           confession: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent finibus mattis orci dignissim finibus. 
           Nulla dapibus ut nunc at rhoncus. Morbi sagittis sed arcu quis semper. 
@@ -41,11 +42,12 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
           Up: [],
           Down: []
         };
+        /*
         if(i % 5 == 0){
           long_row -= fakePostLatLongValues.LONG_DIFF
           lat_row = fakePostLatLongValues.BASE_LAT
         }
-        lat_row += fakePostLatLongValues.LAT_DIFF
+        lat_row += fakePostLatLongValues.LAT_DIFF*/
         insertPostIntoLocationsCollection({messageVar: data, keyVar: uuid},collection, io);
       };
     });
@@ -77,8 +79,10 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 
 // Insert strings into the "Locations" collection
 async function insertPostIntoLocationsCollection(message, collection, io, socket) {
-    const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
 
+  
+    const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
+    /*
     // Give fake bounds
     messageVar.location = {
       type: "Point",
@@ -100,7 +104,7 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
     }
     
     messageVar._id = keyVar
-    messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)
+    messageVar.location = await findNonOverlappingLocation(messageVar.location, collection)*/
     await collection.insertOne(messageVar);
     io.emit('newPost', messageVar);
   }
