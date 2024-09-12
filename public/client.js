@@ -80,7 +80,7 @@ socket.on('allDocumentsFromDatabase', documents => {
     documents.forEach(document => {
         /*You are passing the current documents svg string by reference here, not by value. This is key, as the postData holds a reference to the svg field of the current postCacheMap element. It does not have
         a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
-        postData.push(createPost(document));
+        createPost(document, Array.prototype.push);
     });
     document.getElementById('zoomTime').textContent = `Time taken: ${(performance.now() - startTime)} ms`;
     initClusterize(postData);
@@ -88,21 +88,18 @@ socket.on('allDocumentsFromDatabase', documents => {
 
 /*Adding a new post to top of the postData array
 If added to top, shifts the current VS view up bu one post, so if looking at bottom, upon new post will shift view upto 2nd at bottom 
-This code Preserves the Scroll Position, by recording pre addition height then re-applying it when the new post is added simply
+This code Preserves the Scroll Position, by recording pre addition height then re-applying post height when the new post is added simply maintains the height
 */
-
 const feedContainer = document.getElementById('feedContainer');
 socket.on('newPost', (Post) => {
     const previousScrollTop = feedContainer.scrollTop;
-    const previousScrollHeight = feedContainer.scrollHeight;
 
-    postData.unshift(createPost(Post));
+    createPost(Post, Array.prototype.unshift);
     isPostDataUsed = true;
     clusterize.update(postData);
 
-    const heightDifference = feedContainer.scrollHeight - previousScrollHeight;
-    feedContainer.scrollTop = previousScrollTop + heightDifference;
 
+    feedContainer.scrollTop = previousScrollTop + 269;  //
 });
 
 socket.on('postError', (error) => {
@@ -110,8 +107,7 @@ socket.on('postError', (error) => {
     //alert(error.error); // Display an alert to the user, or you could update the UI differently
 });
 
-
-function createPost(Post) {
+function createPost(Post, arrayMethod) {
     /*
     * Handles the post data from the server:
     * - Adds the "isCircle" boolean for SVG rendering.
@@ -136,14 +132,16 @@ function createPost(Post) {
     
     if (userPosts.has(Post._id)) {  //check if the current post is a user post
         localStorageVoteNotification(Post._id, Post.Up, Post.Down ) //if votes on user post while gone, the virtual scroll SVG string will display the notification icon, hence it is pushed to the postData array
-        userPostData.push(svgString);
+        //userPostData.push(svgString);
+        arrayMethod.call(userPostData, svgString)
     }
 
     const storedDocument = postCacheMap.get(Post._id);
     //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
     storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
     //postData.push(svgString);
-    return svgString;
+    arrayMethod.call(postData, svgString)
+    
 }
 
 function postConfession() {

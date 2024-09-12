@@ -27,7 +27,7 @@ function virtualScrollToggling (currentButtonPressed) { //handles switching bett
         toggleVirtualScroll();
         mapIsFullScreenVirtualScroll = false;
     }  
-
+    console.log("Scroll height", feedContainer.scrollHeight);
     lastButtonPressed = currentButtonPressed;
 }
 

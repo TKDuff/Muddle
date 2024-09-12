@@ -43,21 +43,6 @@ Character Counter is a 100% free online characters
 h : 100px
 30 = 30px
 
-/*Adding a new post to top of the postData array
-If added to top, shifts the current VS view up bu one post, so if looking at bottom, upon new post will shift view upto 2nd at bottom 
-This code Preserves the Scroll Position, by recording pre addition height then re-applying it when the new post is added simply
-*/
+//pass 'unshift' method as an argument, when called in function svgString is added to front of array
 
-const feedContainer = document.getElementById('feedContainer');
-socket.on('newPost', (Post) => {
-    const previousScrollTop = feedContainer.scrollTop;
-    const previousScrollHeight = feedContainer.scrollHeight;
-
-    postData.unshift(createPost(Post));
-    isPostDataUsed = true;
-    clusterize.update(postData);
-
-    const heightDifference = feedContainer.scrollHeight - previousScrollHeight;
-    feedContainer.scrollTop = previousScrollTop + heightDifference;
-
-});
+If click left blue, then middle blue, then create post, the VS post view is shifted down upon new user post
