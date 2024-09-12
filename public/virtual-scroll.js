@@ -114,7 +114,8 @@ function initClusterize(postData) {
         rows: postData,
         scrollId: 'feedContainer',
         contentId: 'clusterize-content',
-        no_data_text: 'Your posts will appear here',
+        no_data_text: 'Your posts will appear here',  // The plain text that will appear
+        no_data_class: 'svg-text-content no-svg-text-content',  // Apply your custom class here
         rows_in_block: 2,
         blocks_in_cluster: 2,
         callbacks: {

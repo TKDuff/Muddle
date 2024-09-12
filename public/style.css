@@ -259,3 +259,17 @@ html, body {
     width: 100%;         /* Set a specific size if necessary */
     height: 100px;       /* Set a specific size if necessary */
 }
+
+/*TODO: 
+Error, if there is no posts at all (even in the postData array) then the userPostData text 'Your post's will appear here' won't appear
+This is not a problem since there will always be user posts, since I don't plan on mass deleting
+Since the first people see it, there will be posts
+*/
+.no-svg-text-content {
+    font-size: 42px;  /* Adjust as needed */
+    height: 60%;
+    text-align: center;
+    position: absolute;  /* Use absolute positioning */
+    left: 50%;  /* Move the left side of the element to the center of the container */
+    transform: translateX(-50%);  /* Move the element back by half of its width */
+}
