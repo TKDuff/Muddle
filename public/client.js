@@ -1,10 +1,10 @@
 let startTime = 0;
-const maynoothCoords = [53.380022, -6.593628]
+const maynoothCoords = [53.387045, -6.606118];//[53.380022, -6.593628]
 
 //map setup
 const map = L.map('MaynoothMap', {
     zoomControl: false})
-    .setView(maynoothCoords, 14);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
+    .setView(maynoothCoords, 22);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
     
 L.tileLayer('https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=18a1d8df90d14c23949921bcb3d0b5fc', {
     attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -22,7 +22,7 @@ var northEast = L.latLng(53.39709744476498, -6.572227478027345);
 var bounds = L.latLngBounds(southWest, northEast);
 
 map.setMaxBounds(bounds);
-map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
+//map.fitBounds(bounds);      //Makes entire map visuble upon laoding, want this to be true, so when launch app see scope of all the posts. Better for user experience, see all the potential posts
 
 
 map.on('drag', function() {
@@ -236,7 +236,7 @@ So (13-22)^1.25 is 0.3464394161146186
 If change the starting view height, will have change hardcoded value (why not make it dynamic? No point in computing something that can be hardcoded)
 See the method 'handleZoomAnim(e)' for extra on this, they a tied together. 
 */
-let globalscaleFactor = 0.3464394161146186
+let globalscaleFactor = 1;//0.3464394161146186
 
 const createMarkerSVGIcon = (keyID) => {  
     return L.divIcon({
@@ -373,7 +373,8 @@ function createCircleSVG(keyID, viewBox, darken = "") {
                     <defs>
                         <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
                             <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
-                        </filter>    
+                        </filter>
+                          
                     </defs>
                     <circle cx="12.5" cy="12.5" r="10" fill="url(#Gradient-${keyID})" filter="url(#f1)" />
                 </svg>

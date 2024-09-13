@@ -33,6 +33,7 @@ function handleZoomAnim(currentZoom) {
     
     console.log(currentZoom)
     globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
+    console.log("gsf", globalscaleFactor);
 
     //Pre-compute the size of both circles/rectangles based on zoom GSF
     let circleSize = [CIRCICONSIZE * globalscaleFactor, CIRCICONSIZE * globalscaleFactor];
