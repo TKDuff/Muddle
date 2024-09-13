@@ -33,7 +33,6 @@ function handleZoomAnim(currentZoom) {
     
     console.log(currentZoom)
     globalscaleFactor = Math.pow(1.125, currentZoom - maxZoomLevel);
-    console.log("gsf", globalscaleFactor);
 
     //Pre-compute the size of both circles/rectangles based on zoom GSF
     let circleSize = [CIRCICONSIZE * globalscaleFactor, CIRCICONSIZE * globalscaleFactor];
@@ -95,10 +94,12 @@ function handleZoomEnd(e) {
     if(currentZoom > previousZoom && currentZoom >= 20){    //if zooming in and zoom greater than 20
         svgMarkerGroup.eachLayer(function(marker) {         //for each marker
         svgElement = $(marker._icon).find('.marker-svg');   //get the marker SVG
+
+        /*
         if(bounds.contains(marker.getLatLng()) && svgElement.hasClass('circle')) {  //if a marker is within the current visible bounds (viewing it) AND it is a circle (not a rectangle)
             updateIcon(marker, svgElement.attr('id'), 'rectangle', RECTICONSIZE, 200);  //switch the icon from the circle to a rectangle
             pushViewedPostID(svgElement.attr('id'))
-        }
+        }*/
     }) 
     }
     previousZoom = map.getZoom();

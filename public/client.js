@@ -368,15 +368,16 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
 
 //problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
 function createCircleSVG(keyID, viewBox, darken = "") {
-    return `<div class="SVG-Icon">
+    console.log("vb", viewBox);
+    return `<div class="SVG-Icon circle-pulse">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle ${darken}" viewBox="0 0 ${viewBox} ${viewBox}">
-                    <defs>
-                        <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
-                        </filter>
-                          
-                    </defs>
-                    <circle cx="12.5" cy="12.5" r="10" fill="url(#Gradient-${keyID})" filter="url(#f1)" />
+                <defs>
+                <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
+                </filter>
+                </defs>
+                
+                <circle cx="12.5" cy="12.5" r="12.5" fill="url(#Gradient-${keyID})" filter="url(#f1)" class="pulse-circle"/>
                 </svg>
             </div>`
 }
