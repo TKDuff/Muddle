@@ -79,7 +79,10 @@ socket.on('allDocumentsFromDatabase', documents => {
     documents.sort((a, b) => b.time - a.time);      //Can remove the sort
     documents.forEach(document => {
         /*You are passing the current documents svg string by reference here, not by value. This is key, as the postData holds a reference to the svg field of the current postCacheMap element. It does not have
-        a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
+        a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string
+
+        The false means no need for new circle animation, as this is a pre-existing circle
+        */
         createPost(document, Array.prototype.push, false);
     });
     document.getElementById('zoomTime').textContent = `Time taken: ${(performance.now() - startTime)} ms`;
@@ -94,7 +97,7 @@ const feedContainer = document.getElementById('feedContainer');
 socket.on('newPost', (Post) => {
     const previousScrollTop = feedContainer.scrollTop;
 
-    createPost(Post, Array.prototype.unshift, true);
+    createPost(Post, Array.prototype.unshift, true); //true: play the newly added circle animation while the user is viewing the map
     isPostDataUsed = true;
     clusterize.update(postData);
 
@@ -239,10 +242,10 @@ See the method 'handleZoomAnim(e)' for extra on this, they a tied together.
 let globalscaleFactor = 1;//0.3464394161146186
 
 const createMarkerSVGIcon = (keyID, liveNewPost) => {  
+    /*liveNewPost means the circle is added while the user is viewing the map. The animation plays in this case only, hence if true pass the classes which apply the animation */
     console.log("liveNewPost", liveNewPost);
     return L.divIcon({
         className: 'SVG-Icon',
-        //html:       createCircleSVG(keyID, 25),
         html : liveNewPost
         ? createCircleSVG(keyID, 25, "", "circle-pulse", "pulse-circle")
         : createCircleSVG(keyID, 25),  // Defaults will apply here
@@ -371,14 +374,12 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
 
 //problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
 function createCircleSVG(keyID, viewBox, darken = "", circlePulse = "", pulseCircle = "") {
-    console.log("circlePulse", circlePulse);
-    console.log("pulseCircle", pulseCircle);
     return `<div class="SVG-Icon ${circlePulse}">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle ${darken}" viewBox="0 0 ${viewBox} ${viewBox}">
                 <defs>
-                <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
-                </filter>
+                    <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="1.5" dy="1.5" stdDeviation="2"/>
+                    </filter>
                 </defs>
                 
                 <circle cx="12.5" cy="12.5" r="12.5" fill="url(#Gradient-${keyID})" filter="url(#f1)" class="${pulseCircle}"/>
@@ -468,4 +469,3 @@ function pushViewedPostID(postID) {
     stops[1].setAttribute('stop-color', stops[1].getAttribute('stop-color').replace('unviewed', 'viewed'));
     stops[2].setAttribute('stop-color', stops[2].getAttribute('stop-color').replace('unviewed', 'viewed'));
 }
-
