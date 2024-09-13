@@ -80,7 +80,7 @@ socket.on('allDocumentsFromDatabase', documents => {
     documents.forEach(document => {
         /*You are passing the current documents svg string by reference here, not by value. This is key, as the postData holds a reference to the svg field of the current postCacheMap element. It does not have
         a duplicate copy of the string, thus reducing memory. This is how the feed container post and marker icon use a reference to the same SVG string in the postCacheMap, not duplicate string*/
-        createPost(document, Array.prototype.push);
+        createPost(document, Array.prototype.push, false);
     });
     document.getElementById('zoomTime').textContent = `Time taken: ${(performance.now() - startTime)} ms`;
     initClusterize(postData);
@@ -94,7 +94,7 @@ const feedContainer = document.getElementById('feedContainer');
 socket.on('newPost', (Post) => {
     const previousScrollTop = feedContainer.scrollTop;
 
-    createPost(Post, Array.prototype.unshift);
+    createPost(Post, Array.prototype.unshift, true);
     isPostDataUsed = true;
     clusterize.update(postData);
 
@@ -107,7 +107,7 @@ socket.on('postError', (error) => {
     //alert(error.error); // Display an alert to the user, or you could update the UI differently
 });
 
-function createPost(Post, arrayMethod) {
+function createPost(Post, arrayMethod, liveNewPost) {
     /*
     * Handles the post data from the server:
     * - Adds the "isCircle" boolean for SVG rendering.
@@ -138,7 +138,7 @@ function createPost(Post, arrayMethod) {
 
     const storedDocument = postCacheMap.get(Post._id);
     //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
-    storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id);
+    storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id, liveNewPost);
     //postData.push(svgString);
     arrayMethod.call(postData, svgString)
     
@@ -223,8 +223,8 @@ const sendToServer = (position) => {
 
 /*Creates the post circle to be displayed on the map.
 Takes in the lat/long co-ords, confession which is the user text, keyID which is the posters Cookie and both direction Vote Counts */
-function createMarker(lat, long, keyID) {
-    const marker = L.marker([lat, long], {icon: createMarkerSVGIcon(keyID)});
+function createMarker(lat, long, keyID, liveNewPost) {
+    const marker = L.marker([lat, long], {icon: createMarkerSVGIcon(keyID, liveNewPost)});
     svgMarkerGroup.addLayer(marker);
     return L.stamp(marker); //returns the internal ID of the leaflet marker
 }
@@ -238,10 +238,14 @@ See the method 'handleZoomAnim(e)' for extra on this, they a tied together.
 */
 let globalscaleFactor = 1;//0.3464394161146186
 
-const createMarkerSVGIcon = (keyID) => {  
+const createMarkerSVGIcon = (keyID, liveNewPost) => {  
+    console.log("liveNewPost", liveNewPost);
     return L.divIcon({
         className: 'SVG-Icon',
-        html:       createCircleSVG(keyID, 25),
+        //html:       createCircleSVG(keyID, 25),
+        html : liveNewPost
+        ? createCircleSVG(keyID, 25, "", "circle-pulse", "pulse-circle")
+        : createCircleSVG(keyID, 25),  // Defaults will apply here
         iconSize: [(CIRCICONSIZE*globalscaleFactor), (CIRCICONSIZE*globalscaleFactor)],
         //TODO: Look into whether CIRCICONANCHOR is needed, is just the iconsize divided by 2, only used in 2 areas of the code, hard to keep track
         iconAnchor: [CIRCICONANCHOR*globalscaleFactor, CIRCICONANCHOR*globalscaleFactor]});
@@ -275,7 +279,6 @@ function createCentralGradientDef(keyID, middleColour = 'viewed-default', viewed
 const THIRTY_SECONDS_MS = 30 * 1000;    //TODO: can remove this, for testing
 const THREE_HOURS_MS = 3 * 60 * 60 * 1000; //3 hours in milliseconds, TODO: change this value to set the time between user posts, could be 24
 /*Check if new post to be created was made after set time period since the last post. Checking if new posts was made after the blocked posting period  */
-
 function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
     const timeSinceLastPost = Date.now() - postCacheMap.get(lastPostKey)['time'];
 
@@ -367,9 +370,10 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
 }
 
 //problem with the darken-svg, seems to only darken upon switching circle -> rect -> circle
-function createCircleSVG(keyID, viewBox, darken = "") {
-    console.log("vb", viewBox);
-    return `<div class="SVG-Icon circle-pulse">
+function createCircleSVG(keyID, viewBox, darken = "", circlePulse = "", pulseCircle = "") {
+    console.log("circlePulse", circlePulse);
+    console.log("pulseCircle", pulseCircle);
+    return `<div class="SVG-Icon ${circlePulse}">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg circle ${darken}" viewBox="0 0 ${viewBox} ${viewBox}">
                 <defs>
                 <filter id="f1" x="-20%" y="-20%" width="140%" height="140%">
@@ -377,7 +381,7 @@ function createCircleSVG(keyID, viewBox, darken = "") {
                 </filter>
                 </defs>
                 
-                <circle cx="12.5" cy="12.5" r="12.5" fill="url(#Gradient-${keyID})" filter="url(#f1)" class="pulse-circle"/>
+                <circle cx="12.5" cy="12.5" r="12.5" fill="url(#Gradient-${keyID})" filter="url(#f1)" class="${pulseCircle}"/>
                 </svg>
             </div>`
 }
