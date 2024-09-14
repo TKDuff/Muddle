@@ -468,3 +468,43 @@ function pushViewedPostID(postID) {
     stops[1].setAttribute('stop-color', stops[1].getAttribute('stop-color').replace('unviewed', 'viewed'));
     stops[2].setAttribute('stop-color', stops[2].getAttribute('stop-color').replace('unviewed', 'viewed'));
 }
+
+// Variable to store the last clicked circle
+let lastClickedCircle = null;
+
+// Function to handle the toggling and ensure only one button is darkened
+function toggleColor(clickedCircle) {
+    const isCurrentlyDarkened = clickedCircle.classList.contains('animated-darken');
+
+    // If a circle was clicked and is already darkened, lighten it and reset
+    if (isCurrentlyDarkened) {
+        clickedCircle.classList.remove('animated-darken');
+        clickedCircle.classList.add('animated-lighten');
+        lastClickedCircle = null;
+    } 
+    // If a different button was clicked
+    else {
+        if (lastClickedCircle) {
+            lastClickedCircle.classList.replace('animated-darken', 'animated-lighten');
+        }
+
+        clickedCircle.classList.replace('animated-lighten', 'animated-darken');
+        lastClickedCircle = clickedCircle;
+    }
+}
+
+// Attach a single event listener to the buttons container
+document.getElementById('buttonsContainer').addEventListener('click', (event) => {
+    // Check if the clicked element is a button that should trigger the color toggle
+    const clickedButton = event.target.closest('div');
+    if (!clickedButton) return;
+
+    // Get the associated circle using data attribute
+    const circleId = clickedButton.getAttribute('data-circle-id');
+    if (!circleId) return;
+
+    const circle = document.getElementById(circleId);
+    if (circle) {
+        toggleColor(circle);
+    }
+});

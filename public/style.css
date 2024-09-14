@@ -123,7 +123,7 @@ html, body {
 #buttonsContainer > div {
     fill: #7192ad;
     width: 60px;
-    height: 60px; 
+    height: 50px; 
     border: none;
     position: fixed; 
     margin: 0;
@@ -328,3 +328,18 @@ Since the first people see it, there will be posts
     background-color: rgba(0, 0, 0, .9);  /* Semi-transparent background */
     z-index: 999;  /* Ensure it's on top of Leaflet watermark */
 }
+
+/* Apply transition to all circles */
+.transition-circle {
+    transition: fill 0.2s ease;  
+  }
+  
+  /* Darker blue when clicked */
+  .animated-darken {
+    fill: #4D6C85;  /* Darker blue */
+  }
+  
+  /* Lighter blue (default state) */
+  .animated-lighten {
+    fill: #7192AD;  /* Lighter blue */
+  }
