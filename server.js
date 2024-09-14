@@ -50,7 +50,7 @@ async function connectToDatabase() {
 
 app.get('/', (req, res) => {
   if (!req.cookies.userData) {
-    res.cookie("userData", uuidv4());
+    res.cookie("userData", uuidv4(), { maxAge: 7 * 24 * 60 * 60 * 1000 });  /*TODO: Cookies at 7 days for now, how long should they last? I think a college year */
   } 
   res.sendFile(__dirname + '/public/index.html');
 });
