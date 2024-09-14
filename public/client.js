@@ -431,12 +431,6 @@ $('#buttonsContainer').on('click', '#postButton', function() {
     $('#inputPopup').show();
 });
 
-
-    // Handle hiding the popup
-$(".closePopup, #exitButton").on('click', function() {
-    $('#inputPopup').hide();
-});
-
 // Handle posting and hiding the popup
 $('.post').on('click', function() {
     postConfession();
@@ -495,6 +489,9 @@ function toggleColor(clickedCircle) {
 
 // Attach a single event listener to the buttons container
 document.getElementById('buttonsContainer').addEventListener('click', (event) => {
+    if(lastClickedCircle && lastClickedCircle.getAttribute('id') === 'firstBackgroundCircle') {
+        $('#inputPopup').hide();
+    }
     // Check if the clicked element is a button that should trigger the color toggle
     const clickedButton = event.target.closest('div');
     if (!clickedButton) return;
@@ -502,6 +499,10 @@ document.getElementById('buttonsContainer').addEventListener('click', (event) =>
     // Get the associated circle using data attribute
     const circleId = clickedButton.getAttribute('data-circle-id');
     if (!circleId) return;
+
+    if (circleId === 'firstBackgroundCircle' && !mapIsFullScreenVirtualScroll) {
+        toggleVirtualScroll();
+    }
 
     const circle = document.getElementById(circleId);
     if (circle) {
