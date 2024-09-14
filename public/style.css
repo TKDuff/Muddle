@@ -120,7 +120,7 @@ html, body {
     z-index: 1;
 }
 
-#postButton, #toggleButton, #feedButton {
+#buttonsContainer > div {
     fill: #7192ad;
     width: 60px;
     height: 60px; 
@@ -129,7 +129,7 @@ html, body {
     margin: 0;
     padding: 0;
     bottom: 1.5%; 
-    z-index: 2;
+    z-index: 1000;
 }
 
   #postButton {
@@ -316,4 +316,15 @@ Since the first people see it, there will be posts
 
 .pulse-circle {
     transform-origin: center; /* Ensure the SVG circle scales around its center */
+}
+
+/* Background Bar */
+#buttonsBackgroundBar {
+    position: fixed;
+    bottom: 0;  /* Position at the bottom of the screen */
+    left: 0;
+    width: 100%;  /* Full width of the screen */
+    height: 61px;  /* Adjust height as needed */
+    background-color: rgba(0, 0, 0, .9);  /* Semi-transparent background */
+    z-index: 999;  /* Ensure it's on top of Leaflet watermark */
 }
