@@ -80,10 +80,9 @@ observer = new IntersectionObserver((entries) => {
                 sessionVirtualScrollPostNotification(observedID, "visible-option", "hidden-option");
                 document.styleSheets[1].cssRules[29].style.display = 'none';    //remove the SVG circle icon
             }
-
-            document.querySelector(`.leaflet-marker-icon svg[id="${observedID}"]`).classList.add('darken-svg');
+            document.querySelector(`.leaflet-marker-icon svg[id="${observedID}"]`)?.classList.add('darken-svg');
         }else {
-            document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`).classList.remove('darken-svg');
+            document.querySelector(`.leaflet-marker-icon svg[id="${entry.target.id}"]`)?.classList.remove('darken-svg');
         }
     });
 }, options);

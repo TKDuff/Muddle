@@ -300,6 +300,7 @@ function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
 
 
 function createRectangleSVG(keyID, viewBox) {
+    console.log("createRectangleSVG")
     let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
 
     return `<div class="SVG-Icon">
@@ -375,7 +376,9 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
                   <text id="Down-Count-${keyID}" x="70" y="215" font-size="25" fill="rgb(255, 117, 117)" class="svg-text-content" data-id="Down-Count">${postCacheMap.get(keyID)['Down']}</text>
                 </g>
-                <circle id="red-circle" cx="200" cy="30" r="9" fill="red"  class=${notificationOption}>
+                <circle id="red-circle" cx="200" cy="30" r="9" fill="red"  class=${notificationOption}></circle>
+
+                <rect x="350" y="10" width="50" height="30" rx="5" fill="lightgray" stroke="black" stroke-width="1"/>
                 </svg>
                 </div>`
 }
@@ -539,18 +542,19 @@ customInput.addEventListener('input', function () {
 });
 
 function invalidPostLength(length) {
-    return length <= 5 || length > 250;
+    return length <= 0 || length > 250;
 }
 
 function deletePost(postID) {
+    console.log("djdjddjdj");
     socket.emit('deletePost', {keyVar: postID});
     removeFromLeaflet(postID);
     removeFromBothClusterizeArrays(postID);
     removeFromLocalStorage(postID);
+    removePostGradient(postID);
 }
 
 function removeFromLeaflet(postID) {
-    console.log(postCacheMap.get(postID));
     let marker = map._layers[postCacheMap.get(postID)['leafletID']];
     map.removeLayer(marker);
 }
@@ -558,18 +562,31 @@ function removeFromLeaflet(postID) {
 function removeFromBothClusterizeArrays(postID) {
     let index = 0;
     let count = -1;     // Initialize count to -1 indicate no valid index is set yet
-    console.log(postCacheMap.get(postID));
+
+    let currentScrollTop = feedContainer.scrollTop;
+
 
     for (let key of postCacheMap.keys()) {
         if (key === postID) {     
             postData.splice(index, 1);
             userPostData.splice(count, 1);
+            
             break;
         } else if (userPosts.has(key)) {    //if the key is contained inside the userPosts then increment count (not being incremented, being -1, means key not in userPosts at all)
             count++;   
         }  
         index++;
-    } 
+    }
+
+    //Does not work for bottom post
+    let previousScrollHeight = feedContainer.scrollHeight;
+    
+    clusterize.update(postData);
+
+    let newScrollHeight = feedContainer.scrollHeight;
+    let heightDifference = newScrollHeight - previousScrollHeight;
+    
+    feedContainer.scrollTop = currentScrollTop - heightDifference;
 }
 /*Be sure to put this after the function 'removeFromBothClusterizeArrays()' has been called, since that function iterates over 'userPosts' */
 function removeFromLocalStorage(postID) {
@@ -579,4 +596,9 @@ function removeFromLocalStorage(postID) {
 
     viewedPostSet.delete(postID); 
     localStorage.setItem('viewedPosts', JSON.stringify([...viewedPostSet]));
+}
+
+function removePostGradient(keyID) {
+    const gradientElement = document.getElementById(`Gradient-${keyID}`);
+    gradientElement.parentNode.removeChild(gradientElement);
 }
