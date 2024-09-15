@@ -8,7 +8,7 @@ const LOCALIO = 'http://localhost:3000/'
 
 const io = require('socket.io')(httpServer, {
   cors: {
-    origin: FLYIO,//'http://localhost:3000/',
+    origin: LOCALIO,//'http://localhost:3000/',
     methods: ["GET", "POST"],
     transports: ['websocket'],
     credentials: true

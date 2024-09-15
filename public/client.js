@@ -35,7 +35,7 @@ const localIO = 'http://localhost:3000/';
 const flyIo = 'https://red-surf-7071.fly.dev/';
 
 // Connect to the server
-const socket = io(flyIo, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
+const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
     transports: ['websocket'],
     withCredentials: true
   }); //the localhost address is not needed, will work without
@@ -541,4 +541,14 @@ customInput.addEventListener('input', function () {
 
 function invalidPostLength(length) {
     return length <= 5 || length > 250;
+}
+
+function deletePost(postID) {
+
+}
+
+function removeFromLeaflet(postID) {
+    console.log(postCacheMap.get(postID));
+    let marker = map._layers[postCacheMap.get(postID)['leafletID']];
+    map.removeLayer(marker);
 }
