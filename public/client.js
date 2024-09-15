@@ -313,7 +313,9 @@ function createRectangleSVG(keyID, viewBox) {
                     align-items: center; 
                     height: ${textHeight}%; 
                     width: 100%; 
-                    text-align: center;"
+                    text-align: center;
+                    word-break: break-word;
+                    "
                     class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
                 <g id="Up">
@@ -352,7 +354,9 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
                     align-items: center; 
                     height: ${textHeight}%; 
                     width: 100%; 
-                    text-align: center;"
+                    text-align: center;
+                    word-break: break-word;
+                    "
                     class="svg-text-content" >${postCacheMap.get(keyID)['confession']}</div>
                 </foreignObject>
                 <text x="200" y="215" class="svg-bottom-text" text-anchor="middle">${format24HourTime(postCacheMap.get(keyID)['time'])}</text>
@@ -533,7 +537,6 @@ customInput.addEventListener('input', function () {
     customInput.style.fontSize = `${fontSize }px`;
     console
     document.getElementById('customForeignObject').setAttribute('y', (textHeight/2)-20)
-    console.log("Height is ", textHeight);
 });
 
 function invalidPostLength(length) {
