@@ -205,6 +205,11 @@ const sendToServer = (position) => {
         localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries()))); //push the new keyValue (user cookie + incremented number of post by user)   
     }
 
+    if (invalidPostLength($('#customInput').val().trim().length)) {
+        showErrorSvg( { error : "Post length must be between 5 and 250 characters" });
+        return;
+    }
+
     const data = {
         time: Date.now(),
         location: {
@@ -411,7 +416,6 @@ function getFontSize(characterCount) {
 
 
 function showErrorSvg(error) {
-    console.log(error);
     const container = document.getElementById('svgErrorContainer');
 
     const svgError = `<svg width="500" height="100">
@@ -433,8 +437,9 @@ $('#buttonsContainer').on('click', '#postButton', function() {
 
 // Handle posting and hiding the popup
 $('.post').on('click', function() {
+    console.log();
     postConfession();
-    //need handshake method here
+    toggleColor(document.getElementById('firstBackgroundCircle'));
     $('#inputPopup').hide();
 });
 
@@ -517,7 +522,6 @@ const charCountDisplay = document.getElementById('postCharCount');
 customInput.addEventListener('input', function () {
     // Get the current length of the input text
     const currentLength = customInput.value.length;
-    const maxLength = 250
 
     // Update the character count display
     charCountDisplay.textContent = `${currentLength}/250`;
@@ -530,5 +534,8 @@ customInput.addEventListener('input', function () {
     console
     document.getElementById('customForeignObject').setAttribute('y', (textHeight/2)-20)
     console.log("Height is ", textHeight);
-
 });
+
+function invalidPostLength(length) {
+    return length <= 5 || length > 250;
+}

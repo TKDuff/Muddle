@@ -94,9 +94,6 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
     if (isOutOfBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
       socket.emit('postError', { error: "Posting out of bounds" });
       return;
-    } else  if (invalidPostLength(messageVar.confession)) {
-      socket.emit('postError', { error: "Post length must be between 1 and 250 characters" });
-      return;
     } else if (containSlur(messageVar.confession)) {
       socket.emit('postError', { error: "Nuh uh" }); //no slur
       return;
@@ -114,12 +111,6 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
         point.coordinates[1] < southWest.lat || point.coordinates[1] > northEast.lat ||
         point.coordinates[0] < southWest.lng || point.coordinates[0] > northEast.lng
     );
-}
-
-  
-function invalidPostLength(text) {
-  const length = text.trim().length;  // Trims whitespace from both ends of the string before counting
-  return length < 1 && length > 250;
 }
 
 /*TODO: Expand this function to email you the text over post, so you can check for pure slurs, for now simple check using regex */
