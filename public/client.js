@@ -509,3 +509,26 @@ document.getElementById('buttonsContainer').addEventListener('click', (event) =>
         toggleColor(circle);
     }
 });
+
+// Get the textarea, character count display, and foreignObject element
+const customInput = document.getElementById('customInput');
+const charCountDisplay = document.getElementById('postCharCount');
+
+customInput.addEventListener('input', function () {
+    // Get the current length of the input text
+    const currentLength = customInput.value.length;
+    const maxLength = 250
+
+    // Update the character count display
+    charCountDisplay.textContent = `${currentLength}/250`;
+
+    // Get the appropriate font size and height based on the character count
+    const [fontSize, textHeight] = getFontSize(currentLength);
+
+    // Dynamically update the font size and height of the textarea
+    customInput.style.fontSize = `${fontSize }px`;
+    console
+    document.getElementById('customForeignObject').setAttribute('y', (textHeight/2)-20)
+    console.log("Height is ", textHeight);
+
+});

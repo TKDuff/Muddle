@@ -30,7 +30,7 @@ function localStorageVoteNotification(postId, UpNumber, DownNumber ) {
     let currentEntry = userPosts.get(postId);
 
     if (currentEntry.Up != UpNumber || currentEntry.Down != DownNumber) {
-        document.styleSheets[1].cssRules[27].style.display = 'inline';
+        document.styleSheets[1].cssRules[29].style.display = 'inline';
         // Update userPosts map if postId exists in it
         userPosts.set(postId, { Up: UpNumber, Down: DownNumber });
         localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));

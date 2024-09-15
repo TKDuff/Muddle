@@ -178,14 +178,13 @@ html, body {
 
 
 #customInput {
-    background-color: var(--viewed-default);  /* Makes the input background yellow */
-    color: rgb(0, 0, 0);               /* Makes the text color blue */
+    font-family:'Roboto', sans-serif;
+    font-weight: 500; 
+    background-color: var(--viewed-default); 
+    color: rgb(0, 0, 0); 
     border: none;              /* Removes any default borders */
     outline: none;             /* Removes the default focus outline */
-    padding-top: 0%;
     resize: none;
-    font-family: Verdana,sans-serif;
-    font-size: 15px;
     overflow: hidden;
 
 }
