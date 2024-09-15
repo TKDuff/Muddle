@@ -73,6 +73,10 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
     };
   });
 
+  socket.on('deletePost', (postID) => {
+    collection.deleteOne({ _id: postID.keyVar });
+  });
+
 })
 }
 

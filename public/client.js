@@ -441,7 +441,6 @@ $('#buttonsContainer').on('click', '#postButton', function() {
 
 // Handle posting and hiding the popup
 $('.post').on('click', function() {
-    console.log();
     postConfession();
     toggleColor(document.getElementById('firstBackgroundCircle'));
     $('#inputPopup').hide();
@@ -544,11 +543,40 @@ function invalidPostLength(length) {
 }
 
 function deletePost(postID) {
-
+    socket.emit('deletePost', {keyVar: postID});
+    removeFromLeaflet(postID);
+    removeFromBothClusterizeArrays(postID);
+    removeFromLocalStorage(postID);
 }
 
 function removeFromLeaflet(postID) {
     console.log(postCacheMap.get(postID));
     let marker = map._layers[postCacheMap.get(postID)['leafletID']];
     map.removeLayer(marker);
+}
+
+function removeFromBothClusterizeArrays(postID) {
+    let index = 0;
+    let count = -1;     // Initialize count to -1 indicate no valid index is set yet
+    console.log(postCacheMap.get(postID));
+
+    for (let key of postCacheMap.keys()) {
+        if (key === postID) {     
+            postData.splice(index, 1);
+            userPostData.splice(count, 1);
+            break;
+        } else if (userPosts.has(key)) {    //if the key is contained inside the userPosts then increment count (not being incremented, being -1, means key not in userPosts at all)
+            count++;   
+        }  
+        index++;
+    } 
+}
+/*Be sure to put this after the function 'removeFromBothClusterizeArrays()' has been called, since that function iterates over 'userPosts' */
+function removeFromLocalStorage(postID) {
+    userPosts.delete(postID);
+    localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
+    console.log(`Deleted postID: ${postID} from userPosts and updated localStorage.`);
+
+    viewedPostSet.delete(postID); 
+    localStorage.setItem('viewedPosts', JSON.stringify([...viewedPostSet]));
 }
