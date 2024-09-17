@@ -546,7 +546,6 @@ function invalidPostLength(length) {
 }
 
 function deletePost(postID) {
-    console.log("djdjddjdj");
     socket.emit('deletePost', {keyVar: postID});
     removeFromLeaflet(postID);
     removeFromBothClusterizeArrays(postID);
@@ -560,33 +559,37 @@ function removeFromLeaflet(postID) {
 }
 
 function removeFromBothClusterizeArrays(postID) {
-    let index = 0;
-    let count = -1;     // Initialize count to -1 indicate no valid index is set yet
+    //let index = 0;
+    //let count = -1;     // Initialize count to -1 indicate no valid index is set yet
 
     let currentScrollTop = feedContainer.scrollTop;
+    let index = postData.findIndex(item => item.includes(postID));
+    console.log("index", index);
+    postData.splice(index, 1);
+    index = userPostData.findIndex(item => item.includes(postID));
+    console.log("next index", index);
+    userPostData.splice(index, 1);
+    postCacheMap.delete(postID);
 
+    // for (let key of postCacheMap.keys()) {
+    //     if (key === postID) {
 
-    for (let key of postCacheMap.keys()) {
-        if (key === postID) {     
-            postData.splice(index, 1);
-            userPostData.splice(count, 1);
-            
-            break;
-        } else if (userPosts.has(key)) {    //if the key is contained inside the userPosts then increment count (not being incremented, being -1, means key not in userPosts at all)
-            count++;   
-        }  
-        index++;
-    }
-
-    //Does not work for bottom post
+    //         postData.splice(index, 1);
+    //         userPostData.splice(count, 1);
+    //         postCacheMap.delete(postID);
+    //         break;
+    //     } else if (userPosts.has(key)) {    //if the key is contained inside the userPosts then increment count (not being incremented, being -1, means key not in userPosts at all)
+    //         count++;   
+    //     }  
+    //     index++;
+    // }
+    
     let previousScrollHeight = feedContainer.scrollHeight;
     
     clusterize.update(postData);
 
-    let newScrollHeight = feedContainer.scrollHeight;
-    let heightDifference = newScrollHeight - previousScrollHeight;
-    
-    feedContainer.scrollTop = currentScrollTop - heightDifference;
+
+    feedContainer.scrollTop = currentScrollTop - 134.5//heightDifference;
 }
 /*Be sure to put this after the function 'removeFromBothClusterizeArrays()' has been called, since that function iterates over 'userPosts' */
 function removeFromLocalStorage(postID) {
