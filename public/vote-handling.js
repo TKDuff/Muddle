@@ -150,7 +150,18 @@ function testFunctionModifySVGStringCode(postID, existingSVGString, newSVGString
     }
 }*/
 
+/*Need to fix for new posts */
 function modifyClusterizeArraysElementStrings(postID, existingSVGString, newSVGString) {
+    let index = postData.findIndex(item => item.includes(postID));
+    let count = userPostData.findIndex(item => item.includes(postID));
+
+    postData[index] = postData[index].replace(existingSVGString, newSVGString)
+
+    if (count !== -1) { //if postID not found in userPost, count is auto set to -1, if not -1 then actually update the userPost string in the array
+        userPostData[count] = postData[index];
+    }
+
+    /*
     let index = 0;
     let count = -1;     // Initialize count to -1 indicate no valid index is set yet
 
@@ -170,4 +181,14 @@ function modifyClusterizeArraysElementStrings(postID, existingSVGString, newSVGS
         }  
         index++;
     }
+    console.log("index", index)
+    console.log("count", count)*/
+
+    // let index = postData.findIndex(item => item.includes(postID));
+    // console.log("index", index)
+    // postData[index].replace(existingSVGString, newSVGString);
+
+    // let count = userPostData.findIndex(item => item.includes(postID));
+    // console.log("count", count)
+    // userPostData[count] = postData[index];
 }
