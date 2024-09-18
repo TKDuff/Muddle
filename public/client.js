@@ -589,8 +589,6 @@ function removeFromBothClusterizeArrays(postID) {
 function removeFromLocalStorage(postID) {
     userPosts.delete(postID);
     localStorage.setItem('userPosts', JSON.stringify(Array.from(userPosts.entries())));
-    console.log(`Deleted postID: ${postID} from userPosts and updated localStorage.`);
-
     viewedPostSet.delete(postID); 
     localStorage.setItem('viewedPosts', JSON.stringify([...viewedPostSet]));
 }
@@ -599,3 +597,7 @@ function removePostGradient(keyID) {
     const gradientElement = document.getElementById(`Gradient-${keyID}`);
     gradientElement.parentNode.removeChild(gradientElement);
 }
+
+socket.on('max-down-vote-delete', keyID => {
+    deletePost(keyID);
+});

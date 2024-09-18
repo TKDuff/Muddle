@@ -213,7 +213,15 @@ async function voteOnMarker(collection, io, markerKey) {
       await modifyVoteDirectionArray(collection, '$pull', oppositeDirection, confessionKeyID ,keyID);
       await modifyVoteDirectionArray(collection, '$addToSet', direction, confessionKeyID ,keyID);
     }
-    io.emit('newArrayLengths', action ,direction, oppositeDirection ,confessionKeyID);
+
+    //TODO: This is a quick fix, but bad to just query entire DB when make change. Code above explicity efficent to not request entire document
+    const updatedDocument = await collection.findOne({ _id: confessionKeyID });
+    if (updatedDocument['Down'].length == 5) {  //Upon 5 downvotes delete it, 5 for now, since no-one uses it
+      io.emit('max-down-vote-delete', confessionKeyID);
+    } else {
+      io.emit('newArrayLengths', action ,direction, oppositeDirection ,confessionKeyID);
+    }
+
 }
 
 async function modifyVoteDirectionArray(collection, modification, direction, confessionKeyID ,keyID) {
