@@ -116,7 +116,6 @@ function updateIcon(marker, key ,newShape, newSize, newViewBox) {
 
 function createSVGTemplate(keyID, shape, viewBox) {
     if(shape === 'rectangle'){
-        //console.log(keyID, 'has', postCacheMap.get(keyID)['Up'], 'upvotes');
         return createRectangleSVG(keyID, viewBox);
     } else {
         return createCircleSVG(keyID, viewBox);

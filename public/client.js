@@ -130,19 +130,28 @@ function createPost(Post, arrayMethod, liveNewPost) {
         createCentralGradientDef(Post._id); //if viewed, by default made yellow TODO: Change to white
     }
 
-    let svgString = createVSRectangleSVG(Post._id, 400);
+    let svgString;
 
     
     if (userPosts.has(Post._id)) {  //check if the current post is a user post
+        //use this to check if user post, if so create SVG string and now include the Bin SVG. Thus both the VS has the bin, not the map icon post
+        let deleteButtonSVG = `
+        <g transform="scale(1.4) translate(100, 140)" id="deleteButtonSVG">
+        <path d="M3 4L5.30343 18.0765C5.54671 19.5633 6.60471 20.7872 8.04061 21.2431L8.36905 21.3473C10.7316 22.0973 13.2684 22.0973 15.6309 21.3473L15.9594 21.2431C17.3953 20.7872 18.4533 19.5633 18.6966 18.0765L21 4" fill="white" stroke="rgb(255, 0, 100)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="12" cy="4" rx="9" ry="2" fill="white" stroke="rgb(255, 0, 100)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>`
+
+        svgString = createVSRectangleSVG(Post._id, 400, "hidden-option", deleteButtonSVG);
+
         localStorageVoteNotification(Post._id, Post.Up, Post.Down ) //if votes on user post while gone, the virtual scroll SVG string will display the notification icon, hence it is pushed to the postData array
-        //userPostData.push(svgString);
         arrayMethod.call(userPostData, svgString)
+    } else {
+        svgString = createVSRectangleSVG(Post._id, 400)
     }
 
     const storedDocument = postCacheMap.get(Post._id);
     //map field 'leafletID' is the internal ID of that marker in the featureGroup, not the cookie ID. postCacheMap has both cookieID and internal leaflet ID, 1:1, so no need iterate given speicific cookie ID
     storedDocument.leafletID = createMarker(Post.location.coordinates[1], Post.location.coordinates[0], Post._id, liveNewPost);
-    //postData.push(svgString);
     arrayMethod.call(postData, svgString)
     
 }
@@ -300,7 +309,6 @@ function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
 
 
 function createRectangleSVG(keyID, viewBox) {
-    console.log("createRectangleSVG")
     let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
 
     return `<div class="SVG-Icon">
@@ -338,11 +346,8 @@ function createRectangleSVG(keyID, viewBox) {
                 </div>`
 }
 
-function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-option") {
+function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-option", deleteButtonSVG = "") {
     let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
-    /*
-    If is a userpost, cannot be hidden. See the function 'toggleSVGVisibility()' in post-filtering.js
-    TODO: CHange userPosts to a set (not array) so checking if id inside is O(1)*/ 
     return `<div class="SVG-Icon">
                 <svg xmlns="http://www.w3.org/2000/svg" id="${keyID}" class="marker-svg rectangle" viewBox="0 0 400 250">
                 <rect x="0" y="0" width="400" height="230" rx="10" filter="url(#f1)" fill="url(#Gradient-${keyID})"/>
@@ -378,7 +383,8 @@ function createVSRectangleSVG(keyID, viewBox, notificationOption = "hidden-optio
                 </g>
                 <circle id="red-circle" cx="200" cy="30" r="9" fill="red"  class=${notificationOption}></circle>
 
-                <rect x="350" y="10" width="50" height="30" rx="5" fill="lightgray" stroke="black" stroke-width="1"/>
+                ${deleteButtonSVG}
+
                 </svg>
                 </div>`
 }

@@ -101,8 +101,11 @@ $('#clusterize-content').on('click', '.marker-svg', function(e) {
 
     if (closestUpOrDown.length) {
         handleVote($(this), closestUpOrDown.attr('id'));
+    } else if ( e.target.closest('g#deleteButtonSVG')) {    //if click on Bin, then delete the post altogethor
+        const svgElement = $(e.target.closest('svg'));
+        const svgId = svgElement.attr('id');  // Extract the ID
+        deletePost(svgId);
     } else {
-        console.log(this);
         panToCorrespondingMapMarker($(this));
     }
 });
