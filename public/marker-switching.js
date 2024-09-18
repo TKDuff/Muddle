@@ -70,7 +70,7 @@ function handleZoomAnim(currentZoom) {
         if(!mapIsFullScreenVirtualScroll && svgElement.attr('id') === observedVSmarkerSvgID) {   //could use the postCacheMap leafletID field to make this O(1), no need to check on each iteration. No big difference if done
             icon.options.html = createCircleSVG(svgElement.attr('id'), 25, "darken-svg");
         } else if (isCircle) {
-            icon.options.html = createCircleSVG(svgElement.attr('id'), 25);//createSVGTemplate(svgElement.attr('id'), 'circle', 25);
+            icon.options.html = createCircleSVG(svgElement.attr('id'), 25);
         }else {
             icon.options.html = createSVGTemplate(svgElement.attr('id'), 'rectangle', 200);
         }
@@ -116,7 +116,15 @@ function updateIcon(marker, key ,newShape, newSize, newViewBox) {
 
 function createSVGTemplate(keyID, shape, viewBox) {
     if(shape === 'rectangle'){
-        return createRectangleSVG(keyID, viewBox);
+        //do simple check here, if userPostData contains keyID, then include delete button
+        let result = userPostData.some(item => item.includes(keyID)) 
+        ? `<g transform="scale(1.2) translate(70, 144)" id="deleteButtonSVG">
+           <path d="M3 4L5.30343 18.0765C5.54671 19.5633 6.60471 20.7872 8.04061 21.2431L8.36905 21.3473C10.7316 22.0973 13.2684 22.0973 15.6309 21.3473L15.9594 21.2431C17.3953 20.7872 18.4533 19.5633 18.6966 18.0765L21 4" fill="white" stroke="rgb(255, 0, 100)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+           <ellipse cx="12" cy="4" rx="9" ry="2" fill="white" stroke="rgb(255, 0, 100)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+           </g>`
+           :
+           "";
+        return createRectangleSVG(keyID, viewBox, result);
     } else {
         return createCircleSVG(keyID, viewBox);
     }

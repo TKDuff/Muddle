@@ -83,7 +83,12 @@ function markerIconSVGSwitch (e) {
         //socket.emit('voteOnMarker', {direction: closestElement.attr('id'), confessionKeyID: svgElement.attr('id'), keyID: key});
         handleVote(svgElement, closestElement.attr('id'));
         return;
-    }   
+    } else if (e.originalEvent.target.closest('g#deleteButtonSVG')) {
+        console.log("delete");
+        const svgElement = $(e.originalEvent.target.closest('svg')).attr('id');
+        deletePost(svgElement);
+        return;
+    }
 
     /*This should go in the marker-switching file, as it is the main code for switching between circle and rectangle on the map (upon clicking a marker) */
     if (svgElement.hasClass('circle')) {
@@ -96,15 +101,15 @@ function markerIconSVGSwitch (e) {
     }
 }
 
+/*Handles virtual scroll post interactions*/
 $('#clusterize-content').on('click', '.marker-svg', function(e) {
     let closestUpOrDown = $(e.target).closest('g#Up, g#Down');
 
     if (closestUpOrDown.length) {
         handleVote($(this), closestUpOrDown.attr('id'));
     } else if ( e.target.closest('g#deleteButtonSVG')) {    //if click on Bin, then delete the post altogethor
-        const svgElement = $(e.target.closest('svg'));
-        const svgId = svgElement.attr('id');  // Extract the ID
-        deletePost(svgId);
+        const svgElement = $(e.target.closest('svg')).attr('id');
+        deletePost(svgElement);
     } else {
         panToCorrespondingMapMarker($(this));
     }

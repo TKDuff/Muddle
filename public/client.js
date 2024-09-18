@@ -308,7 +308,8 @@ function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
 }
 
 
-function createRectangleSVG(keyID, viewBox) {
+function createRectangleSVG(keyID, viewBox, deleteButtonSVG = "") {
+    console.log("keyID", keyID)
     let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
 
     return `<div class="SVG-Icon">
@@ -342,6 +343,9 @@ function createRectangleSVG(keyID, viewBox) {
                   s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z"/>
                   <text id="Down-Count-${keyID}" x="60" y="195" font-size="25" fill="rgb(255, 117, 117)" class="svg-text-content">${postCacheMap.get(keyID)['Down']}</text>
                 </g>
+
+                ${deleteButtonSVG}
+
                 </svg>
                 </div>`
 }
@@ -562,6 +566,7 @@ function deletePost(postID) {
 function removeFromLeaflet(postID) {
     let marker = map._layers[postCacheMap.get(postID)['leafletID']];
     map.removeLayer(marker);
+    svgMarkerGroup.removeLayer(marker);
 }
 
 function removeFromBothClusterizeArrays(postID) {
