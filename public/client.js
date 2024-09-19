@@ -42,6 +42,8 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
 
 
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
+const showSplashScreen = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('showSplashScreen=')).split('=')[1]);
+console.log(showSplashScreen)
 //let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);

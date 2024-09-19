@@ -24,6 +24,7 @@ const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
+var showSplashScreen;
 
 //set these values for creating fake posts here, initialise once
 const fakePostLatLongValues = {
@@ -49,11 +50,17 @@ async function connectToDatabase() {
 }
 
 app.get('/', (req, res) => {
-  if (!req.cookies.userData) {
+  const showSplashScreen = !req.cookies.userData;
+  console.log("showSplashScreen", showSplashScreen)
+  if (showSplashScreen) {
     res.cookie("userData", uuidv4(), { maxAge: 7 * 24 * 60 * 60 * 1000 });  /*TODO: Cookies at 7 days for now, how long should they last? I think a college year */
   } 
+
+  res.cookie("showSplashScreen", showSplashScreen, { maxAge: 5 * 60 * 1000 });
   res.sendFile(__dirname + '/public/index.html');
 });
+
+
 
 //these (2 app.use lines) have to be here for some reason, or else the http route will not assign cookies
 app.use(express.static('public'))   //display html file in public file
