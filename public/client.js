@@ -44,7 +44,7 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
 const showSplashScreen = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('showSplashScreen=')).split('=')[1]);
 
-if (showSplashScreen === 'true') {showSplashScreenSVG(key)}
+if (showSplashScreen === 'true') {showSplashScreenSVG()}
 
 //let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
@@ -317,7 +317,6 @@ function checkNewPostCreatedAfterTimeWindow(lastPostKey) {
 
 
 function createRectangleSVG(keyID, viewBox, deleteButtonSVG = "") {
-    console.log("keyID", keyID)
     let [fontSize, textHeight] = getFontSize(postCacheMap.get(keyID)['confession'].length);
 
     return `<div class="SVG-Icon">
@@ -607,51 +606,56 @@ function removePostGradient(keyID) {
 }
 
 
-function showSplashScreenSVG(key) {
+function showSplashScreenSVG() {
     const container = document.getElementById('splashScreen');
 
 const svgError = 
-`<svg width="350" height="420">  <!-- Adjusted height to 390 -->
-    <rect width="350" height="420" style="fill:#7192AD;" rx="10" ry="10"></rect>  <!-- Added rounded corners -->
+                `<svg width="350" height="420">  <!-- Adjusted height to 390 -->
+                    <rect width="350" height="420" style="fill:#7192AD;" rx="10" ry="10"></rect>  <!-- Added rounded corners -->
 
-    <!-- Welcome Header -->
-    <text x="175" y="30" alignment-baseline="middle" text-anchor="middle" fill="white" font-size="18" class="svg-text-content svg-bold">
-        Welcome to Maynooths-Bored
-    </text>
-
-    <!-- Use foreignObject for auto-wrapping -->
-    <foreignObject x="20" y="35" width="310" height="390">
-      <div xmlns="http://www.w3.org/1999/xhtml" 
-        style="color:white; font-size:14px; font-family:'Roboto', sans-serif; line-height:1.6; margin: 0; padding: 0; word-wrap: break-word;">
-
-        <!-- Adjust line height and spacing for paragraphs -->
-        <p style="margin-bottom: 10px;">You have been assigned a unique ID that's stored in the browser, this makes you anonymous.</p>
-        <p style="margin-bottom: 10px;">Each 'post' is bound to the user's unique ID.</p>
-
-        <!-- Title for You Can Section -->
-        <p style="font-weight:bold; margin-top: 10px; margin-bottom: 5px;">You can...</p>
-        <ul style="padding-left: 15px; list-style-type: disc; margin-top: 5px; margin-bottom: 15px;">
-          <li>Create a new post every 3 hours</li>
-          <li>Vote up or down on posts</li>
-          <li>Delete posts you created</li>
-        </ul>
-
-        <!-- Title for Posts Section -->
-        <p style="font-weight:bold; margin-top: 10px; margin-bottom: 5px;">Posts...</p>
-        <ul style="padding-left: 15px; list-style-type: disc; margin-top: 5px; margin-bottom: 15px;">
-          <li>Can only be created within Maynooth's geographic area</li>
-          <li>Are deleted after 5 down votes automatically</li>
-        </ul>
-
-        <!-- Final Note with wrapping and adjusted spacing -->
-        <p style="margin-top: 10px;">Please be respectful and down-vote posts you don't like to see.</p>
-      </div>
-    </foreignObject>
-</svg>`;
+                    <rect x="305" y="4" width="43" height="45" fill="transparent" cursor="pointer" class="closePopup"/>
+                    <line x1="315" y1="15" x2="335" y2="35" class="closePopupLine closePopup"/>
+                    <line x1="315" y1="35" x2="335" y2="15" class="closePopupLine closePopup"/>
 
 
-    
-    
-    
+                    <!-- Welcome Header -->
+                    <text x="175" y="30" alignment-baseline="middle" text-anchor="middle" fill="white" font-size="18" class="svg-text-content svg-bold">
+                        Welcome to Maynooths-Bored
+                    </text>
+
+                    <!-- Use foreignObject for auto-wrapping -->
+                    <foreignObject x="20" y="35" width="310" height="390">
+                    <div xmlns="http://www.w3.org/1999/xhtml" 
+                        style="color:white; font-size:14px; font-family:'Roboto', sans-serif; line-height:1.6; margin: 0; padding: 0; word-wrap: break-word;">
+
+                        <!-- Adjust line height and spacing for paragraphs -->
+                        <p style="margin-bottom: 10px;">You've been assigned a unique ID that's stored in your browser, making you anonymous.</p>
+                        <p style="margin-bottom: 10px;">Each 'post' is bound to the user's unique ID.</p>
+
+                        <!-- Title for You Can Section -->
+                        <p style="font-weight:bold; margin-top: 10px; margin-bottom: 5px;">You can...</p>
+                        <ul style="padding-left: 15px; list-style-type: disc; margin-top: 5px; margin-bottom: 15px;">
+                        <li>Create a new post every 3 hours</li>
+                        <li>Vote up or down on posts</li>
+                        <li>Delete posts you created</li>
+                        </ul>
+
+                        <!-- Title for Posts Section -->
+                        <p style="font-weight:bold; margin-top: 10px; margin-bottom: 5px;">Posts...</p>
+                        <ul style="padding-left: 15px; list-style-type: disc; margin-top: 5px; margin-bottom: 15px;">
+                        <li>Can only be created within Maynooth's geographic area</li>
+                        <li>Are deleted automatically after 5 downvotes</li>
+                        </ul>
+
+                        <!-- Final Note with wrapping and adjusted spacing -->
+                        <p style="margin-top: 10px;">Please be respectful and downvote posts you don't like to see.</p>
+                    </div>
+                    </foreignObject>
+                </svg>`;    
     container.innerHTML = svgError; 
 }
+
+$(".closePopup, #exitButton").on('click', function() {
+    const container = document.getElementById('splashScreen');
+    container.innerHTML = ''; 
+});

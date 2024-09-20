@@ -24,7 +24,6 @@ const { MongoClient, MaxKey } = require('mongodb');
 const uri = "mongodb+srv://thomaskilduff:leonard@cluster0.wns9h.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 var collection = client.db('Muddle').collection('Locations');
-var showSplashScreen;
 
 //set these values for creating fake posts here, initialise once
 const fakePostLatLongValues = {
@@ -50,7 +49,7 @@ async function connectToDatabase() {
 }
 
 app.get('/', (req, res) => {
-  const showSplashScreen = true;//!req.cookies.userData;
+  const showSplashScreen = !req.cookies.userData;
   if (showSplashScreen) {
     res.cookie("userData", uuidv4(), { maxAge: 7 * 24 * 60 * 60 * 1000 });  /*TODO: Cookies at 7 days for now, how long should they last? I think a college year */
   } 

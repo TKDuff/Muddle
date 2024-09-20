@@ -190,7 +190,7 @@ html, body {
 }
 
 .closePopupLine {
-    stroke: var(--viewed-Down-gradient-10);
+    stroke: #EEEEEE;
     stroke-width: 3;
 }
 
@@ -332,7 +332,7 @@ Since the first people see it, there will be posts
     bottom: 0;  /* Position at the bottom of the screen */
     left: 0;
     width: 100%;  /* Full width of the screen */
-    height: 61px;  /* Adjust height as needed */
+    height: 65px;  /* Adjust height as needed */
     background-color: rgba(0, 0, 0, .9);  /* Semi-transparent background */
     z-index: 999;  /* Ensure it's on top of Leaflet watermark */
 }
