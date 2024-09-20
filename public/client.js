@@ -109,8 +109,8 @@ socket.on('newPost', (Post) => {
     feedContainer.scrollTop = previousScrollTop + 269;  //
 });
 
-socket.on('postError', (error) => {
-    showErrorSvg(error)
+socket.on('postError', (errorData) => {
+    showErrorSvg(errorData.error, errorData.fontSize)
     //alert(error.error); // Display an alert to the user, or you could update the UI differently
 });
 
@@ -211,7 +211,7 @@ const sendToServer = (position) => {
         const postCheck = checkNewPostCreatedAfterTimeWindow(lastElementKey);
         if (!postCheck.canPost) {
             const nextPostTimeFormatted = `You can post again at: ${format24HourTime(postCheck.nextPostTime)}` ;
-            showErrorSvg( { error : nextPostTimeFormatted });            //TODO: Make alert actual popup, along with other alerts
+            showErrorSvg( { error : nextPostTimeFormatted }, 20);            //TODO: Make alert actual popup, along with other alerts
             return;
         }*/
 
@@ -223,7 +223,7 @@ const sendToServer = (position) => {
     }
 
     if (invalidPostLength($('#customInput').val().trim().length)) {
-        showErrorSvg( { error : "Post length must be between 5 and 250 characters" });
+        showErrorSvg( { error : "Post length must be between 5 and 250 characters" }, 16);
         return;
     }
 
@@ -438,30 +438,21 @@ function getFontSize(characterCount) {
 }
 
 
-//showErrorSvg( { error : "Post length must be between 5 and 250 characters" });
-//showErrorSvg( { error : "Can't post outside of Maynooths boundaries" });
-showErrorSvg( { error : "You can post again at: 21:45" });
-function showErrorSvg(error) {
+function showErrorSvg(error, fontSize) {
     const container = document.getElementById('svgErrorContainer');
 
     const svgError =
     `<svg class="fade-in" width="415" height="65">
         <rect x="2" y="2" width="410" height="55" style="fill: red; stroke: black; stroke-width: 3;"  rx="30" ry="40"></rect>
-        <text x="50%" y="45%" style="font-weight:bold;" fill="white" font-size="18" text-anchor="middle" dominant-baseline="middle">${error.error}</text>
+        <text x="50%" y="45%" style="font-weight:bold;" fill="white" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle">${error.error}</text>
     </svg>`;
     
     container.innerHTML = svgError;
 
-    // After 1 second (when fade-in is done), apply the fade-out animation
-    setTimeout(() => {
-        const svgElement = container.querySelector('svg');
-        svgElement.classList.add('fade-out');
-    }, 1000); // After 1s delay, apply fade-out class
 
-    // Automatically remove the error after fade-out (2s total duration: 1s for fade-in, 1s for fade-out)
     setTimeout(() => {
         container.innerHTML = '';
-    }, 2000); // Total duration includes 1s fade-in and 1s fade-out
+    }, 4000); 
 }
 
 
@@ -618,8 +609,8 @@ function removePostGradient(keyID) {
 
 function showSplashScreenSVG() {
     const container = document.getElementById('splashScreen');
-
-const svgError = 
+    
+    const svgError = 
                 `<svg width="350" height="420">
                     <rect width="350" height="420" style="fill:#7192AD;" rx="10" ry="10"></rect>  <!-- Added rounded corners -->
 
@@ -668,4 +659,5 @@ const svgError =
 $(".closePopup, #exitButton").on('click', function() {
     const container = document.getElementById('splashScreen');
     container.innerHTML = ''; 
-});
+    
+});//Is it possible on the client side browser to check if there is a cookie in the cookie storage?

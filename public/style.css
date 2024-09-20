@@ -369,27 +369,21 @@ font-weight: 500;
 
 .fade-in {
     opacity: 0;
-    animation: fadeInAnimation 1s forwards; /* Fade-in over 1 second */
+    animation: fadeInOut 4s forwards; /* Total duration: 6 seconds */
 }
 
-.fade-out {
-    animation: fadeOutAnimation 1s forwards; /* Fade-out after 1 second */
+@keyframes fadeInOut {
+    0% {
+        opacity: 0; /* Start fully transparent */
+    }
+    25% {
+        opacity: 1; /* Fade in by 1.5 seconds (25% of 6 seconds) */
+    }
+    75% {
+        opacity: 1; /* Stay fully visible for 3 seconds (from 1.5s to 4.5s) */
+    }
+    100% {
+        opacity: 0; /* Fade out over the last 1.5 seconds */
+    }
 }
 
-@keyframes fadeInAnimation {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeOutAnimation {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
-}

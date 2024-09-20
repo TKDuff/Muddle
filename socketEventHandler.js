@@ -81,9 +81,7 @@ async function socketHandler(io, collection, uuidv4, fakePostLatLongValues) {
 }
 
 // Insert strings into the "Locations" collection
-async function insertPostIntoLocationsCollection(message, collection, io, socket) {
-
-  
+async function insertPostIntoLocationsCollection(message, collection, io, socket) {  
     const {messageVar, keyVar} = message; //extracts the variables from the received data object, using object deconstruction
     
     // Give fake bounds
@@ -96,10 +94,9 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
     };
 
     if (isOutOfBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
-      socket.emit('postError', { error: "Can't post outside of Maynooths boundaries" });
+      socket.emit('postError', { error: "Can't post outside of Maynooths boundaries", fontSize: 20});
       return;
     } else if (containSlur(messageVar.confession)) {
-      socket.emit('postError', { error: "Nuh uh" }); //no slur
       return;
     }
     
