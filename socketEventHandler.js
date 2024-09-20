@@ -96,7 +96,7 @@ async function insertPostIntoLocationsCollection(message, collection, io, socket
     };
 
     if (isOutOfBounds(messageVar.location)) {  //if post out of bounds, don't add to database, return an error to the user to let them know   
-      socket.emit('postError', { error: "Posting out of bounds" });
+      socket.emit('postError', { error: "Can't post outside of Maynooths boundaries" });
       return;
     } else if (containSlur(messageVar.confession)) {
       socket.emit('postError', { error: "Nuh uh" }); //no slur

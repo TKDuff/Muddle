@@ -438,22 +438,32 @@ function getFontSize(characterCount) {
 }
 
 
-
+//showErrorSvg( { error : "Post length must be between 5 and 250 characters" });
+//showErrorSvg( { error : "Can't post outside of Maynooths boundaries" });
+showErrorSvg( { error : "You can post again at: 21:45" });
 function showErrorSvg(error) {
     const container = document.getElementById('svgErrorContainer');
 
-    const svgError = `<svg width="500" height="100">
-    <rect width="500" height="100" style="fill: red;"></rect>
-    <text x="50" y="25" alignment-baseline="middle" text-anchor="middle" fill="white">${error.error}</text>
+    const svgError =
+    `<svg class="fade-in" width="415" height="65">
+        <rect x="2" y="2" width="410" height="55" style="fill: red; stroke: black; stroke-width: 3;"  rx="30" ry="40"></rect>
+        <text x="50%" y="45%" style="font-weight:bold;" fill="white" font-size="18" text-anchor="middle" dominant-baseline="middle">${error.error}</text>
     </svg>`;
     
-    container.innerHTML = svgError;  
+    container.innerHTML = svgError;
 
-    // Set a timer to clear the SVG after 5 seconds
+    // After 1 second (when fade-in is done), apply the fade-out animation
     setTimeout(() => {
-        container.innerHTML = '';  // Clears the SVG from the container
-    }, 5000);  // 5000 milliseconds = 5 seconds
+        const svgElement = container.querySelector('svg');
+        svgElement.classList.add('fade-out');
+    }, 1000); // After 1s delay, apply fade-out class
+
+    // Automatically remove the error after fade-out (2s total duration: 1s for fade-in, 1s for fade-out)
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 2000); // Total duration includes 1s fade-in and 1s fade-out
 }
+
 
 $('#buttonsContainer').on('click', '#postButton', function() {
     $('#inputPopup').show();
@@ -610,7 +620,7 @@ function showSplashScreenSVG() {
     const container = document.getElementById('splashScreen');
 
 const svgError = 
-                `<svg width="350" height="420">  <!-- Adjusted height to 390 -->
+                `<svg width="350" height="420">
                     <rect width="350" height="420" style="fill:#7192AD;" rx="10" ry="10"></rect>  <!-- Added rounded corners -->
 
                     <rect x="305" y="4" width="43" height="45" fill="transparent" cursor="pointer" class="closePopup"/>

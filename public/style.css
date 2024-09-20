@@ -251,12 +251,10 @@ html, body {
 
 #svgErrorContainer {
     position: absolute;  /* or 'absolute' or 'fixed' depending on your layout needs */
-    top: 50%; /* Center vertically */
+    top: 10%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%); /* Adjusts the positioning to truly center the div */
     z-index: 500;       /* Adjust z-index as needed to bring it above other content */
-    width: 100%;         /* Set a specific size if necessary */
-    height: 100px;       /* Set a specific size if necessary */
 }
 
 #splashScreen {
@@ -359,4 +357,39 @@ font-weight: 500;
 
 #splashScreen svg text.svg-bold {
     font-weight: bold; /* Ensure the bold class adds font weight */
+}
+
+#adminButtons {
+    position: absolute;  /* or 'absolute' or 'fixed' depending on your layout needs */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjusts the positioning to truly center the div */
+    z-index: 500;       /* Adjust z-index as needed to bring it above other content */
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeInAnimation 1s forwards; /* Fade-in over 1 second */
+}
+
+.fade-out {
+    animation: fadeOutAnimation 1s forwards; /* Fade-out after 1 second */
+}
+
+@keyframes fadeInAnimation {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOutAnimation {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
