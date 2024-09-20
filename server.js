@@ -50,13 +50,11 @@ async function connectToDatabase() {
 }
 
 app.get('/', (req, res) => {
-  const showSplashScreen = !req.cookies.userData;
-  console.log("showSplashScreen", showSplashScreen)
+  const showSplashScreen = true;//!req.cookies.userData;
   if (showSplashScreen) {
     res.cookie("userData", uuidv4(), { maxAge: 7 * 24 * 60 * 60 * 1000 });  /*TODO: Cookies at 7 days for now, how long should they last? I think a college year */
   } 
-
-  res.cookie("showSplashScreen", showSplashScreen, { maxAge: 5 * 60 * 1000 });
+  res.cookie("showSplashScreen", showSplashScreen, { maxAge: 7 * 24 * 60 * 60 * 1000 });
   res.sendFile(__dirname + '/public/index.html');
 });
 

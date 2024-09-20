@@ -43,7 +43,9 @@ const socket = io(localIO, { //REMEBER TO ADD 'https://red-surf-7071.fly.dev/'
 
 const key = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('userData=')).split('=')[1]); //You need to look into this key variable, is it better to init it here, like a global variable
 const showSplashScreen = decodeURIComponent(document.cookie.split(';').find(cookie => cookie.trim().startsWith('showSplashScreen=')).split('=')[1]);
-console.log(showSplashScreen)
+
+if (showSplashScreen === 'true') {showSplashScreenSVG(key)}
+
 //let key = Math.floor((Math.random() * 1000) + 1);
 const postCacheMap = new Map();
 let svgMarkerGroup = L.featureGroup().addTo(map);
@@ -110,6 +112,10 @@ socket.on('newPost', (Post) => {
 socket.on('postError', (error) => {
     showErrorSvg(error)
     //alert(error.error); // Display an alert to the user, or you could update the UI differently
+});
+
+socket.on('max-down-vote-delete', keyID => {
+    deletePost(keyID);
 });
 
 function createPost(Post, arrayMethod, liveNewPost) {
@@ -600,6 +606,52 @@ function removePostGradient(keyID) {
     gradientElement.parentNode.removeChild(gradientElement);
 }
 
-socket.on('max-down-vote-delete', keyID => {
-    deletePost(keyID);
-});
+
+function showSplashScreenSVG(key) {
+    const container = document.getElementById('splashScreen');
+
+const svgError = 
+`<svg width="350" height="420">  <!-- Adjusted height to 390 -->
+    <rect width="350" height="420" style="fill:#7192AD;" rx="10" ry="10"></rect>  <!-- Added rounded corners -->
+
+    <!-- Welcome Header -->
+    <text x="175" y="30" alignment-baseline="middle" text-anchor="middle" fill="white" font-size="18" class="svg-text-content svg-bold">
+        Welcome to Maynooths-Bored
+    </text>
+
+    <!-- Use foreignObject for auto-wrapping -->
+    <foreignObject x="20" y="35" width="310" height="390">
+      <div xmlns="http://www.w3.org/1999/xhtml" 
+        style="color:white; font-size:14px; font-family:'Roboto', sans-serif; line-height:1.6; margin: 0; padding: 0; word-wrap: break-word;">
+
+        <!-- Adjust line height and spacing for paragraphs -->
+        <p style="margin-bottom: 10px;">You have been assigned a unique ID that's stored in the browser, this makes you anonymous.</p>
+        <p style="margin-bottom: 10px;">Each 'post' is bound to the user's unique ID.</p>
+
+        <!-- Title for You Can Section -->
+        <p style="font-weight:bold; margin-top: 10px; margin-bottom: 5px;">You can...</p>
+        <ul style="padding-left: 15px; list-style-type: disc; margin-top: 5px; margin-bottom: 15px;">
+          <li>Create a new post every 3 hours</li>
+          <li>Vote up or down on posts</li>
+          <li>Delete posts you created</li>
+        </ul>
+
+        <!-- Title for Posts Section -->
+        <p style="font-weight:bold; margin-top: 10px; margin-bottom: 5px;">Posts...</p>
+        <ul style="padding-left: 15px; list-style-type: disc; margin-top: 5px; margin-bottom: 15px;">
+          <li>Can only be created within Maynooth's geographic area</li>
+          <li>Are deleted after 5 down votes automatically</li>
+        </ul>
+
+        <!-- Final Note with wrapping and adjusted spacing -->
+        <p style="margin-top: 10px;">Please be respectful and down-vote posts you don't like to see.</p>
+      </div>
+    </foreignObject>
+</svg>`;
+
+
+    
+    
+    
+    container.innerHTML = svgError; 
+}

@@ -259,6 +259,15 @@ html, body {
     height: 100px;       /* Set a specific size if necessary */
 }
 
+#splashScreen {
+    position: absolute;  /* or 'absolute' or 'fixed' depending on your layout needs */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjusts the positioning to truly center the div */
+    z-index: 500;       /* Adjust z-index as needed to bring it above other content */
+
+}
+
 /*TODO: 
 Error, if there is no posts at all (even in the postData array) then the userPostData text 'Your post's will appear here' won't appear
 This is not a problem since there will always be user posts, since I don't plan on mass deleting
@@ -331,14 +340,23 @@ Since the first people see it, there will be posts
 /* Apply transition to all circles */
 .transition-circle {
     transition: fill 0.2s ease;  
-  }
-  
-  /* Darker blue when clicked */
-  .animated-darken {
-    fill: #4D6C85;  /* Darker blue */
-  }
-  
-  /* Lighter blue (default state) */
-  .animated-lighten {
-    fill: #7192AD;  /* Lighter blue */
-  }
+}
+
+/* Darker blue when clicked */
+.animated-darken {
+fill: #4D6C85;  /* Darker blue */
+}
+
+/* Lighter blue (default state) */
+.animated-lighten {
+fill: #7192AD;  /* Lighter blue */
+}
+
+#splashScreen svg text {
+font-family: 'Roboto', sans-serif;
+font-weight: 500;
+}
+
+#splashScreen svg text.svg-bold {
+    font-weight: bold; /* Ensure the bold class adds font weight */
+}

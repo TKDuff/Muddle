@@ -46,3 +46,21 @@ h : 100px
 //pass 'unshift' method as an argument, when called in function svgString is added to front of array
 
 If click left blue, then middle blue, then create post, the VS post view is shifted down upon new user post
+
+
+
+Splash screen text:
+Welcome to Maynooths-Bored, 
+You have been assigned a unique ID < > that's stored in the browser, this makes you anonymous
+Each 'post' is bound to users unique ID
+
+You can...
+Create a new post every 3 hours
+Vote (Up or Down) on posts with no time limit for voting
+Delete posts you created
+
+Posts...
+Can only be created within Maynooths geographic area
+Upon 5 down votes are deleted automatically
+
+Please be respectful and down vote posts you don't like to see
