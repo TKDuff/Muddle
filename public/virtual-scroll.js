@@ -32,7 +32,7 @@ function toggleVirtualScroll() {
         switchAllRectanglesToCircles();
 
         $('#MaynoothMap').css('height', '65%');
-        $('#feedContainer').css('height', '35%');
+        $('#feedContainer').css('height', 'calc(35% - 40px)');
 
         svgMarkerGroup.off('click', markerIconSVGSwitch);
         map.off('zoomend', handleZoomEnd);

@@ -216,7 +216,7 @@ html, body {
 
 
 #feedContainer {
-    height: 0; /* initially hidden */
+    height: calc(35% - 40px); /* initially hidden */
     overflow-y: auto; /* ensures scrollability */
 }
 
@@ -361,10 +361,11 @@ font-weight: 500;
 
 #adminButtons {
     position: absolute;  /* or 'absolute' or 'fixed' depending on your layout needs */
-    top: 50%; /* Center vertically */
+    top: 10%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%); /* Adjusts the positioning to truly center the div */
     z-index: 500;       /* Adjust z-index as needed to bring it above other content */
+    width: 100%
 }
 
 .fade-in {
