@@ -3,6 +3,7 @@ const maynoothCoords = [53.380022, -6.593628]
 
 //map setup
 const map = L.map('MaynoothMap', {
+    attributionControl:false,
     zoomControl: false})
     .setView(maynoothCoords, 14);  //Upon launc the zoom is 13, that fits the bounding map of Mulligar set by the 'bounds' variable (see 'fitBounds')
     
