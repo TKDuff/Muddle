@@ -411,7 +411,7 @@ function createCircleSVG(keyID, viewBox, darken = "", circlePulse = "", pulseCir
                     </filter>
                 </defs>
                 
-                <circle cx="12.5" cy="12.5" r="12.5" fill="url(#Gradient-${keyID})" filter="url(#f1)" class="${pulseCircle}"/>
+                <circle cx="10" cy="10" r="10" fill="url(#Gradient-${keyID})" filter="url(#f1)" class="${pulseCircle}"/>
                 </svg>
             </div>`
 }
