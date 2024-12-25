@@ -662,3 +662,11 @@ $(".closePopup, #exitButton").on('click', function() {
     container.innerHTML = ''; 
     
 });//Is it possible on the client side browser to check if there is a cookie in the cookie storage?
+
+
+
+
+/*
+Her eyes look up to me so open and true
+Our window's in perfect clear view
+That somehow I can't see through*/
